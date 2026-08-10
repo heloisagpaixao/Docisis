@@ -1,15 +1,21 @@
 const express = require('express');
 const router = express.Router();
 
+const CargosRoutes = require('./CargosRoutes');
 const FuncionariosRoutes = require('./FuncionariosRoutes');
-const CargosRoutes = require('./CargosRoutes')
+const produtoRoutes = require('./produtoRoutes');
+const loteRoutes = require('./loteRoutes');
+const notaFiscalRoutes = require('./notaFiscalRoutes');
+const entradaRoutes = require('./entradaRoutes');
+const saidaRoutes = require('./saidaRoutes');
+const estoqueRoutes = require('./estoqueRoutes');
 
-// Rota base (Root endpoint que estava em app.js)
+// Rota base (Root endpoint)
 router.get('/', (req, res) => {
     res.json({
-        mensagem: "API Docisis funcionando! 🧁",
+        mensagem: "API Docisis funcionando 📦",
         versao: "1.0.0",
-        arquitetura: "MVC + SOLID"
+        arquitetura: "MVC + SOLID (Refatorada)"
     });
 });
 

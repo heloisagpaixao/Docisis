@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const FuncionariosRoutes = require('./FuncionariosRoutes');
+const CargosRoutes = require('./CargosRoutes')
 
 // Rota base (Root endpoint que estava em app.js)
 router.get('/', (req, res) => {
@@ -14,5 +15,6 @@ router.get('/', (req, res) => {
 
 // Registrar domínios de rotas
 router.use('/funcionarios', FuncionariosRoutes);
+router.use('/cargos', CargosRoutes);
 
 module.exports = router;

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="src/styles/global.css" />
+    <link rel="stylesheet" href="src/styles/login.css" />
+    <title>Docisis - Entrar</title>
+</head>
+
+<body>
+    <header id="cabecalho-docisis">
+        <h1 id="nome-sistema">Docisis - Administração da Doceria</h1>
+        <p id="mensagem-saudacao">Carregando...</p>
+    </header>
+
+    <!-- Sem menu aqui: antes do login não há páginas autenticadas para navegar.
+       O menu com hamburguer entra nas páginas internas (produtos, estoque etc.). -->
+
+    <section id="area-autenticacao">
+        <div class="painel-login">
+            <h2 class="titulo-secao">Entrar no sistema</h2>
+
+            <p id="aviso-erro-login" class="mensagem-erro escondido" role="alert"></p>
+
+            <form id="formulario-login" action="" novalidate>
+                <div class="campo-grupo">
+                    <label for="email">E-mail corporativo:</label>
+                    <input type="email" id="email" name="email" placeholder="nome@docisis.com.br"
+                        autocomplete="username" required />
+                    <span class="ajuda-campo">Use o e-mail cadastrado pela empresa, não um e-mail pessoal.</span>
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="cpf">CPF:</label>
+                    <input type="number" id="cpf" name="cpf" placeholder="000.000.000-00" required />
+                    <span class="ajuda-campo">Informe apenas os números ou use o formato com pontos e traço.</span>
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="senha">Senha:</label>
+                    <input type="password" id="senha" name="senha" autocomplete="current-password" required />
+                    <span class="ajuda-campo">A mesma senha cadastrada no seu acesso interno.</span>
+                </div>
+
+                <button type="submit" id="botao-entrar">Entrar</button>
+            </form>
+        </div>
+    </section>
+
+    <footer id="rodape-sistema">
+        <div class="info-footer">
+            <p><strong>Docisis 2026</strong></p>
+            <p>Escola SESI/SENAI de Salto</p>
+        </div>
+        <p id="data-hora-atual"></p>
+    </footer>
+
+    <script src="src/scripts/global.js"></script>
+    <script src="src/scripts/api.js"></script>
+    <script src="src/scripts/login.js"></script>
+</body>
+
+</html>

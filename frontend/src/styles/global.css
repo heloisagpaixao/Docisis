@@ -1,0 +1,296 @@
+/*
+  global.css
+  Estilos base do sistema Docisis: tokens de design, reset, header,
+  rodapé e componentes reutilizáveis (formulários, botões, mensagens).
+  Toda página inclui este arquivo antes do seu CSS específico.
+*/
+ 
+:root {
+  --cor-fundo: #ffffff;
+  --cor-superficie: #FFFFFF;
+  --cor-borda: #E7DFD6;
+ 
+  --cor-texto: #2B211E;
+  --cor-texto-suave: #7A6F68;
+ 
+  --cor-primaria: #EB5E28;
+  --cor-primaria-hover: #3A211F;
+  --cor-destaque: #C77D3D;
+  --cor-destaque-hover:#003566;
+ 
+  --cor-sucesso: #5B8C5A;
+  --cor-sucesso-fundo: #EAF2E9;
+  --cor-alerta: #C08A2E;
+  --cor-alerta-fundo: #FBF1DF;
+  --cor-erro: #B5533C;
+  --cor-erro-fundo: #FBEAE5;
+ 
+  --fonte-base: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+ 
+  --texto-xs: 0.75rem;
+  --texto-sm: 0.875rem;
+  --texto-md: 1rem;
+  --texto-lg: 1.25rem;
+  --texto-xl: 1.75rem;
+ 
+  --espaco-1: 4px;
+  --espaco-2: 8px;
+  --espaco-3: 12px;
+  --espaco-4: 16px;
+  --espaco-5: 24px;
+  --espaco-6: 32px;
+  --espaco-8: 48px;
+ 
+  --raio-sm: 6px;
+  --raio-md: 10px;
+  --sombra-cartao: 0 1px 3px rgba(43, 33, 30, 0.08);
+}
+ 
+/* ---------- Reset ---------- */
+ 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+ 
+body {
+  font-family: var(--fonte-base);
+  font-size: var(--texto-md);
+  color: var(--cor-texto);
+  background: var(--cor-fundo);
+  line-height: 1.5;
+}
+ 
+a {
+  color: var(--cor-destaque);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+ 
+:focus-visible {
+  outline: 2px solid var(--cor-destaque);
+  outline-offset: 2px;
+}
+ 
+/* ---------- Cabeçalho ---------- */
+ 
+#cabecalho-docisis {
+  background: var(--cor-primaria);
+  color: #FFFFFF;
+  padding: var(--espaco-5) var(--espaco-6);
+}
+ 
+#nome-sistema {
+  font-size: var(--texto-lg);
+  font-weight: 700;
+}
+ 
+#mensagem-saudacao {
+  font-size: var(--texto-sm);
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: var(--espaco-1);
+}
+ 
+/* Menu hamburguer, usado nas páginas internas (não aparece no login) */
+ 
+#bt-menu {
+  display: none;
+}
+ 
+#label-menu {
+  display: none;
+  cursor: pointer;
+  font-size: var(--texto-xl);
+  color: #FFFFFF;
+}
+ 
+nav#menu ul {
+  list-style: none;
+  display: flex;
+  gap: var(--espaco-4);
+  margin-top: var(--espaco-3);
+}
+ 
+nav#menu a {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--texto-sm);
+  padding: var(--espaco-1) var(--espaco-2);
+  border-radius: var(--raio-sm);
+}
+ 
+nav#menu a:hover,
+nav#menu a.ativo {
+  background: var(--cor-destaque);
+  color: #FFFFFF;
+  text-decoration: none;
+}
+ 
+@media (max-width: 640px) {
+  #label-menu {
+    display: block;
+  }
+ 
+  nav#menu {
+    display: none;
+    width: 100%;
+  }
+ 
+  nav#menu ul {
+    flex-direction: column;
+    gap: var(--espaco-1);
+  }
+ 
+  #bt-menu:checked ~ nav#menu {
+    display: block;
+  }
+}
+ 
+/* ---------- Título de seção ---------- */
+ 
+.titulo-secao {
+  font-size: var(--texto-xl);
+  margin-bottom: var(--espaco-5);
+}
+ 
+/* ---------- Formulários ---------- */
+ 
+.campo-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  margin-bottom: var(--espaco-4);
+}
+ 
+.campo-grupo label {
+  font-size: var(--texto-sm);
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+}
+ 
+.campo-grupo input,
+.campo-grupo select,
+.campo-grupo textarea {
+  font-family: inherit;
+  font-size: var(--texto-md);
+  padding: var(--espaco-2) var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+ 
+.campo-grupo input:focus,
+.campo-grupo select:focus,
+.campo-grupo textarea:focus {
+  border-color: var(--cor-destaque);
+}
+ 
+.ajuda-campo {
+  font-size: var(--texto-xs);
+  color: var(--cor-texto-suave);
+}
+ 
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+ 
+/* ---------- Botões ---------- */
+ 
+button[type="submit"],
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-2);
+  border: none;
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-4);
+  font-size: var(--texto-sm);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background: var(--cor-primaria);
+  color: #FFFFFF;
+}
+ 
+button[type="submit"]:hover,
+.botao:hover {
+  background: var(--cor-primaria-hover);
+}
+ 
+button[type="submit"]:disabled,
+.botao:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+ 
+.botao-destaque {
+  background: var(--cor-destaque);
+}
+.botao-destaque:hover {
+  background: var(--cor-destaque-hover);
+}
+ 
+/* ---------- Mensagens de estado ---------- */
+ 
+.mensagem-erro {
+  background: var(--cor-erro-fundo);
+  color: var(--cor-erro);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-3);
+  font-size: var(--texto-sm);
+  margin-bottom: var(--espaco-4);
+}
+ 
+.mensagem-sucesso {
+  background: var(--cor-sucesso-fundo);
+  color: var(--cor-sucesso);
+  border-radius: var(--raio-sm);
+  padding: var(--espaco-2) var(--espaco-3);
+  font-size: var(--texto-sm);
+  margin-bottom: var(--espaco-4);
+}
+ 
+.escondido {
+  display: none !important;
+}
+ 
+/* ---------- Cartão genérico ---------- */
+ 
+.cartao {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  box-shadow: var(--sombra-cartao);
+  padding: var(--espaco-5);
+}
+ 
+/* ---------- Rodapé ---------- */
+ 
+#rodape-sistema {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+  padding: var(--espaco-5) var(--espaco-6);
+  color: var(--cor-texto-suave);
+  font-size: var(--texto-xs);
+  border-top: 1px solid var(--cor-borda);
+}
+ 
+#rodape-sistema .info-footer p {
+  line-height: 1.4;
+}
+ 
+
+
+
+
+
+

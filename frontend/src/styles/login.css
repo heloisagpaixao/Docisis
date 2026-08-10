@@ -1,0 +1,72 @@
+/*
+  login.css
+  Estilo específico da tela de login (index.html).
+  Layout: bloco centralizado na página, sem cartão com borda — campos
+  como caixas preenchidas e botão centralizado abaixo, conforme o
+  esquema de referência.
+*/
+
+#area-autenticacao {
+    min-height: calc(100vh - 90px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--espaco-6) var(--espaco-4);
+}
+
+.painel-login {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.painel-login .titulo-secao {
+    font-size: var(--texto-lg);
+    text-align: center;
+    margin-bottom: var(--espaco-6);
+}
+
+.painel-login .campo-grupo {
+    margin-bottom: var(--espaco-5);
+}
+
+.painel-login .campo-grupo label {
+    display: block;
+    font-size: var(--texto-sm);
+    font-weight: 400;
+    color: var(--cor-texto);
+    margin-bottom: var(--espaco-2);
+}
+
+.painel-login .campo-grupo input {
+    width: 100%;
+    background: var(--cor-borda);
+    border: none;
+    border-radius: 4px;
+    padding: var(--espaco-3);
+    font-size: var(--texto-md);
+}
+
+.painel-login .campo-grupo input:focus {
+    outline: 2px solid var(--cor-destaque);
+    outline-offset: 0;
+}
+
+.painel-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.painel-login form {
+    width: 100%;
+}
+
+.painel-login button[type="submit"] {
+    display: block;
+    margin: var(--espaco-4) auto 0;
+    min-width: 180px;
+    padding: var(--espaco-3) var(--espaco-5);
+    text-align: center;
+    line-height: 1.3;
+}

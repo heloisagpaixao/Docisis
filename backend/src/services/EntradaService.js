@@ -1,5 +1,5 @@
 const EntradaRepository = require('../repositories/EntradaRepository');
-const FuncionarioRepository = require('../repositories/FuncionarioRepository');
+const FuncionariosRepository = require('../repositories/FuncionariosRepository');
 const LoteRepository = require('../repositories/LoteRepository');
 
 class EntradaService {
@@ -36,7 +36,7 @@ class EntradaService {
         }
 
         // Verifica se o funcionário existe
-        const funcionarioExiste = await FuncionarioRepository.findById(id_funcionario);
+        const funcionarioExiste = await FuncionariosRepository.findById(id_funcionario);
         if (!funcionarioExiste) {
             throw { status: 404, mensagem: `Funcionário com ID ${id_funcionario} não encontrado` };
         }
@@ -76,7 +76,7 @@ class EntradaService {
         const atualizado = {};
 
         if (dados.id_funcionario !== undefined) {
-            const funcionarioExiste = await FuncionarioRepository.findById(dados.id_funcionario);
+            const funcionarioExiste = await FuncionariosRepository.findById(dados.id_funcionario);
             if (!funcionarioExiste) {
                 throw { status: 404, mensagem: `Funcionário com ID ${dados.id_funcionario} não encontrado` };
             }

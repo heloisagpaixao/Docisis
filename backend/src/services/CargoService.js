@@ -1,4 +1,4 @@
-const CargosRepository = require("../repositories/CargosRepository");
+const CargosRepository = require("../repositories/CargoRepository");
 
 class CargosService {
   async listarCargos() {

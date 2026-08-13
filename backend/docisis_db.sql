@@ -152,3 +152,14 @@ ALTER TABLE estoque
 ADD CONSTRAINT fk_estoque_lote
 FOREIGN KEY (id_lote)
 REFERENCES lotes(id);
+
+ALTER TABLE funcionarios ADD COLUMN foto_perfil VARCHAR(255) NULL;
+
+-- 1. Permite que a coluna id_funcionario fique vazia
+ALTER TABLE cargos MODIFY COLUMN id_funcionario INT NULL;
+
+-- 2. Insere os cargos sem precisar passar um funcionário
+INSERT INTO cargos (id_cargo, permissoes) VALUES 
+(1, true), 
+(2, true), 
+(3, false);

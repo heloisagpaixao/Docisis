@@ -1,9 +1,9 @@
-const CargosService = require("../services/CargosService");
+const CargoService = require("../services/CargoService");
 
-class CargosController {
+class CargoController {
   async listarCargos(req, res) {
     try {
-      const resultado = await CargosService.listarCargos();
+      const resultado = await CargoService.listarCargos();
 
       res.status(200).json(resultado);
     } catch (erro) {
@@ -17,7 +17,7 @@ class CargosController {
 
   async buscarCargosPorId(req, res) {
     try {
-      const resultado = await CargosService.buscarCargoPorId(
+      const resultado = await CargoService.buscarCargoPorId(
         req.params.id
       );
 
@@ -33,7 +33,7 @@ class CargosController {
 
   async cadastrarCargos(req, res) {
     try {
-      const resultado = await CargosService.cadastrarCargo(req.body);
+      const resultado = await CargoService.cadastrarCargo(req.body);
 
       res.status(201).json(resultado);
     } catch (erro) {
@@ -47,7 +47,7 @@ class CargosController {
 
   async atualizarCargos(req, res) {
     try {
-      const resultado = await CargosService.atualizarCargo(
+      const resultado = await CargoService.atualizarCargo(
         req.params.id,
         req.body
       );
@@ -64,7 +64,7 @@ class CargosController {
 
   async deletarCargos(req, res) {
     try {
-      const resultado = await CargosService.deletarCargo(
+      const resultado = await CargoService.deletarCargo(
         req.params.id
       );
 
@@ -79,4 +79,4 @@ class CargosController {
   }
 }
 
-module.exports = new CargosController();
+module.exports = new CargoController();

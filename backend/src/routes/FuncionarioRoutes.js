@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../config/multer");
-const FuncionariosController = require("../controllers/FuncionariosController");
+const FuncionariosController = require("../controllers/FuncionarioController");
 
 router.get("/", FuncionariosController.listar);
 router.get("/:id", FuncionariosController.buscarPorId);

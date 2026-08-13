@@ -1,8 +1,8 @@
-const FuncionariosRepository = require("../repositories/FuncionariosRepository");
+const FuncionarioRepository = require("../repositories/FuncionarioRepository");
 
-class FuncionariosService {
+class FuncionarioService {
   async listarFuncionarios() {
-    const funcionarios = await FuncionariosRepository.findAll();
+    const funcionarios = await FuncionarioRepository.findAll();
 
     return {
       sucesso: true,
@@ -16,7 +16,7 @@ class FuncionariosService {
       throw { status: 400, mensagem: "ID inválido" };
     }
 
-    const funcionario = await FuncionariosRepository.findById(id);
+    const funcionario = await FuncionarioRepository.findById(id);
     if (!funcionario) {
       throw { status: 404, mensagem: "Funcionário não encontrado" };
     }
@@ -52,7 +52,7 @@ class FuncionariosService {
     const cpfLimpo = cpf.trim();
     const emailLimpo = email.trim().toLowerCase();
 
-    const cpfExistente = await FuncionariosRepository.findByCpf(cpfLimpo);
+    const cpfExistente = await FuncionarioRepository.findByCpf(cpfLimpo);
     if (cpfExistente) {
       throw {
         status: 400,
@@ -60,7 +60,7 @@ class FuncionariosService {
       };
     }
 
-    const emailExistente = await FuncionariosRepository.findByEmail(emailLimpo);
+    const emailExistente = await FuncionarioRepository.findByEmail(emailLimpo);
     if (emailExistente) {
       throw {
         status: 400,
@@ -78,7 +78,7 @@ class FuncionariosService {
       foto_perfil: file ? `uploads/funcionarios/${file.filename}` : null,
     };
 
-    const id = await FuncionariosRepository.create(novoFuncionario);
+    const id = await FuncionarioRepository.create(novoFuncionario);
 
     return {
       sucesso: true,
@@ -92,7 +92,7 @@ class FuncionariosService {
       throw { status: 400, mensagem: "ID inválido" };
     }
 
-    const existe = await FuncionariosRepository.findById(id);
+    const existe = await FuncionarioRepository.findById(id);
     if (!existe) {
       throw { status: 404, mensagem: "Funcionário não encontrado" };
     }
@@ -106,7 +106,7 @@ class FuncionariosService {
     if (cpf !== undefined) {
       const cpfLimpo = cpf.trim();
       if (cpfLimpo !== existe.cpf) {
-        const cpfEmUso = await FuncionariosRepository.findByCpf(cpfLimpo);
+        const cpfEmUso = await FuncionarioRepository.findByCpf(cpfLimpo);
         if (cpfEmUso) {
           throw {
             status: 400,
@@ -120,7 +120,7 @@ class FuncionariosService {
     if (email !== undefined) {
       const emailLimpo = email.trim().toLowerCase();
       if (emailLimpo !== existe.email) {
-        const emailEmUso = await FuncionariosRepository.findByEmail(emailLimpo);
+        const emailEmUso = await FuncionarioRepository.findByEmail(emailLimpo);
         if (emailEmUso) {
           throw {
             status: 400,
@@ -150,7 +150,7 @@ class FuncionariosService {
       };
     }
 
-    await FuncionariosRepository.update(id, atualizado);
+    await FuncionarioRepository.update(id, atualizado);
 
     return {
       sucesso: true,
@@ -163,12 +163,12 @@ class FuncionariosService {
       throw { status: 400, mensagem: "ID inválido" };
     }
 
-    const existe = await FuncionariosRepository.findById(id);
+    const existe = await FuncionarioRepository.findById(id);
     if (!existe) {
       throw { status: 404, mensagem: "Funcionário não encontrado" };
     }
 
-    await FuncionariosRepository.delete(id);
+    await FuncionarioRepository.delete(id);
 
     return {
       sucesso: true,
@@ -177,4 +177,4 @@ class FuncionariosService {
   }
 }
 
-module.exports = new FuncionariosService();
+module.exports = new FuncionarioService();

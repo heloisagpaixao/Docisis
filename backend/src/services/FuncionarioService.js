@@ -1,4 +1,12 @@
+const fs = require("fs");
 const FuncionarioRepository = require("../repositories/FuncionarioRepository");
+
+// Auxiliar para remover arquivo enviado caso a validação ou cadastro falhem
+const removerArquivo = (file) => {
+  if (file?.path && fs.existsSync(file.path)) {
+    fs.unlinkSync(file.path);
+  }
+};
 
 class FuncionarioService {
   async listarFuncionarios() {
@@ -28,134 +36,158 @@ class FuncionarioService {
   }
 
   async cadastrarFuncionario(dados) {
-    let { nome, cpf, email, telefone, id_cargo, file } = dados;
+    const { file } = dados;
 
-    if (typeof id_cargo === "string") {
-      id_cargo = parseInt(id_cargo, 10);
-    }
+    try {
+      let { nome, cpf, email, telefone, id_cargo } = dados;
 
-    if (
-      !nome ||
-      !cpf ||
-      !email ||
-      !telefone ||
-      id_cargo === undefined ||
-      isNaN(id_cargo)
-    ) {
-      throw {
-        status: 400,
-        mensagem:
-          "Nome, CPF, e-mail, telefone e ID do cargo são obrigatórios e devem ser válidos",
+      if (typeof id_cargo === "string") {
+        id_cargo = parseInt(id_cargo, 10);
+      }
+
+      if (
+        !nome ||
+        !cpf ||
+        !email ||
+        !telefone ||
+        id_cargo === undefined ||
+        isNaN(id_cargo)
+      ) {
+        throw {
+          status: 400,
+          mensagem:
+            "Nome, CPF, e-mail, telefone e ID do cargo são obrigatórios e devem ser válidos",
+        };
+      }
+
+      const cpfLimpo = cpf.trim();
+      const emailLimpo = email.trim().toLowerCase();
+
+      const cpfExistente = await FuncionarioRepository.findByCpf(cpfLimpo);
+      if (cpfExistente) {
+        throw {
+          status: 400,
+          mensagem: "Já existe um funcionário cadastrado com este CPF",
+        };
+      }
+
+      const emailExistente =
+        await FuncionarioRepository.findByEmail(emailLimpo);
+      if (emailExistente) {
+        throw {
+          status: 400,
+          mensagem:
+            "Já existe um funcionário cadastrado com este e-mail corporativo",
+        };
+      }
+
+      const novoFuncionario = {
+        nome: nome.trim(),
+        cpf: cpfLimpo,
+        email: emailLimpo,
+        telefone: telefone.trim(),
+        id_cargo,
+        foto_perfil: file
+          ? `/public/uploads/funcionarios/${file.filename}`
+          : null,
       };
-    }
 
-    const cpfLimpo = cpf.trim();
-    const emailLimpo = email.trim().toLowerCase();
+      const id = await FuncionarioRepository.create(novoFuncionario);
 
-    const cpfExistente = await FuncionarioRepository.findByCpf(cpfLimpo);
-    if (cpfExistente) {
-      throw {
-        status: 400,
-        mensagem: "Já existe um funcionário cadastrado com este CPF",
+      return {
+        sucesso: true,
+        mensagem: "Funcionário cadastrado com sucesso",
+        id,
       };
+    } catch (error) {
+      // Se houver qualquer falha na regra de negócio ou banco, apaga o arquivo salvo pelo Multer
+      removerArquivo(file);
+      throw error;
     }
-
-    const emailExistente = await FuncionarioRepository.findByEmail(emailLimpo);
-    if (emailExistente) {
-      throw {
-        status: 400,
-        mensagem:
-          "Já existe um funcionário cadastrado com este e-mail corporativo",
-      };
-    }
-
-    const novoFuncionario = {
-      nome: nome.trim(),
-      cpf: cpfLimpo,
-      email: emailLimpo,
-      telefone: telefone.trim(),
-      id_cargo,
-      foto_perfil: file ? `uploads/funcionarios/${file.filename}` : null,
-    };
-
-    const id = await FuncionarioRepository.create(novoFuncionario);
-
-    return {
-      sucesso: true,
-      mensagem: "Funcionário cadastrado com sucesso",
-      id,
-    };
   }
 
   async atualizarFuncionario(id, dados) {
-    if (!id || isNaN(id)) {
-      throw { status: 400, mensagem: "ID inválido" };
-    }
+    const { file } = dados;
 
-    const existe = await FuncionarioRepository.findById(id);
-    if (!existe) {
-      throw { status: 404, mensagem: "Funcionário não encontrado" };
-    }
+    try {
+      if (!id || isNaN(id)) {
+        throw { status: 400, mensagem: "ID inválido" };
+      }
 
-    const atualizado = {};
-    let { nome, cpf, email, telefone, id_cargo } = dados;
+      const existe = await FuncionarioRepository.findById(id);
+      if (!existe) {
+        throw { status: 404, mensagem: "Funcionário não encontrado" };
+      }
 
-    if (nome !== undefined) atualizado.nome = nome.trim();
-    if (telefone !== undefined) atualizado.telefone = telefone.trim();
+      const atualizado = {};
+      let { nome, cpf, email, telefone, id_cargo } = dados;
 
-    if (cpf !== undefined) {
-      const cpfLimpo = cpf.trim();
-      if (cpfLimpo !== existe.cpf) {
-        const cpfEmUso = await FuncionarioRepository.findByCpf(cpfLimpo);
-        if (cpfEmUso) {
+      if (nome !== undefined) atualizado.nome = nome.trim();
+      if (telefone !== undefined) atualizado.telefone = telefone.trim();
+
+      if (cpf !== undefined) {
+        const cpfLimpo = cpf.trim();
+        if (cpfLimpo !== existe.cpf) {
+          const cpfEmUso = await FuncionarioRepository.findByCpf(cpfLimpo);
+          if (cpfEmUso) {
+            throw {
+              status: 400,
+              mensagem: "Já existe outro funcionário cadastrado com este CPF",
+            };
+          }
+        }
+        atualizado.cpf = cpfLimpo;
+      }
+
+      if (email !== undefined) {
+        const emailLimpo = email.trim().toLowerCase();
+        if (emailLimpo !== existe.email) {
+          const emailEmUso =
+            await FuncionarioRepository.findByEmail(emailLimpo);
+          if (emailEmUso) {
+            throw {
+              status: 400,
+              mensagem:
+                "Já existe outro funcionário cadastrado com este e-mail corporativo",
+            };
+          }
+        }
+        atualizado.email = emailLimpo;
+      }
+
+      if (id_cargo !== undefined) {
+        if (typeof id_cargo === "string") id_cargo = parseInt(id_cargo, 10);
+        if (isNaN(id_cargo)) {
           throw {
             status: 400,
-            mensagem: "Já existe outro funcionário cadastrado com este CPF",
+            mensagem: "ID do cargo deve ser um número válido",
           };
         }
+        atualizado.id_cargo = id_cargo;
       }
-      atualizado.cpf = cpfLimpo;
-    }
 
-    if (email !== undefined) {
-      const emailLimpo = email.trim().toLowerCase();
-      if (emailLimpo !== existe.email) {
-        const emailEmUso = await FuncionarioRepository.findByEmail(emailLimpo);
-        if (emailEmUso) {
-          throw {
-            status: 400,
-            mensagem:
-              "Já existe outro funcionário cadastrado com este e-mail corporativo",
-          };
-        }
+      if (file) {
+        atualizado.foto_perfil = `/public/uploads/funcionarios/${file.filename}`;
       }
-      atualizado.email = emailLimpo;
-    }
 
-    if (id_cargo !== undefined) {
-      if (typeof id_cargo === "string") id_cargo = parseInt(id_cargo, 10);
-      if (isNaN(id_cargo)) {
+      if (Object.keys(atualizado).length === 0) {
         throw {
           status: 400,
-          mensagem: "ID do cargo deve ser um número válido",
+          mensagem: "Nenhum dado válido enviado para atualização",
         };
       }
-      atualizado.id_cargo = id_cargo;
-    }
 
-    if (Object.keys(atualizado).length === 0) {
-      throw {
-        status: 400,
-        mensagem: "Nenhum dado válido enviado para atualização",
+      await FuncionarioRepository.update(id, atualizado);
+
+      return {
+        sucesso: true,
+        mensagem: "Dados do funcionário atualizados com sucesso",
       };
+    } catch (error) {
+      // Apaga o novo arquivo enviado se a atualização falhar
+      removerArquivo(file);
+      throw error;
     }
-
-    await FuncionarioRepository.update(id, atualizado);
-
-    return {
-      sucesso: true,
-      mensagem: "Dados do funcionário atualizados com sucesso",
-    };
   }
 
   async deletarFuncionario(id) {

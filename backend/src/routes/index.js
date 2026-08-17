@@ -20,7 +20,13 @@ router.get('/', (req, res) => {
 });
 
 // Registrar domínios de rotas
-router.use('/funcionarios', FuncionarioRoutes);
 router.use('/cargos', CargoRoutes);
+router.use('/entradas', entradaRoutes);
+router.use('/estoque', estoqueRoutes);
+router.use('/funcionarios', FuncionarioRoutes);
+router.use('/lotes', loteRoutes);
+router.use('/notasfiscais', notaFiscalRoutes);
+router.use('/produtos', produtoRoutes);
+router.use('/saidas', saidaRoutes);
 
 module.exports = router;

@@ -1,117 +1,58 @@
-const NotaFiscalRepository = require('../repositories/NotaFiscalRepository');
-const LoteRepository = require('../repositories/LoteRepository');
+const NotaFiscalRepository = require("../repositories/NotaFiscalRepository");
 
 class NotaFiscalService {
-    async listarNotas() {
-        const notas = await NotaFiscalRepository.findAll();
-        return {
-            sucesso: true,
-            dados: notas,
-            total: notas.length
-        };
+  async listarNotas() {
+    return await NotaFiscalRepository.findAll();
+  }
+
+  async buscarNotaPorId(id) {
+    const nota = await NotaFiscalRepository.findById(id);
+    if (!nota) {
+      throw { status: 404, mensagem: "Nota fiscal não encontrada." };
+    }
+    return nota;
+  }
+
+  async cadastrarNota(dados) {
+    // Extrai apenas os campos necessários, desconsiderando id_lote
+    const { fornecedor, quantidade, dt_compra } = dados;
+
+    if (!fornecedor || !quantidade) {
+      throw {
+        status: 400,
+        mensagem: "Os campos 'fornecedor' e 'quantidade' são obrigatórios.",
+      };
     }
 
-    async buscarNotaPorId(id) {
-        if (!id || isNaN(id)) {
-            throw { status: 400, mensagem: "ID inválido" };
-        }
+    const id_nota = await NotaFiscalRepository.create({
+      fornecedor,
+      quantidade,
+      dt_compra,
+    });
 
-        const nota = await NotaFiscalRepository.findById(id);
-        if (!nota) {
-            throw { status: 404, mensagem: "Nota fiscal não encontrada" };
-        }
+    return { id_nota, fornecedor, quantidade, dt_compra };
+  }
 
-        return {
-            sucesso: true,
-            dados: nota
-        };
+  async atualizarNota(id, dados) {
+    const notaExiste = await NotaFiscalRepository.findById(id);
+    if (!notaExiste) {
+      throw { status: 404, mensagem: "Nota fiscal não encontrada." };
     }
 
-    async cadastrarNota(dados) {
-        const { id_lote, fornecedor, quantidade, dt_compra } = dados;
+    // Garante que id_lote não seja enviado no UPDATE
+    delete dados.id_lote;
 
-        if (!fornecedor || quantidade === undefined) {
-            throw { status: 400, mensagem: "Os campos fornecedor e quantidade são obrigatórios" };
-        }
+    await NotaFiscalRepository.update(id, dados);
+    return { mensagem: "Nota fiscal atualizada com sucesso." };
+  }
 
-        if (!id_lote) {
-            throw { status: 400, mensagem: "O campo 'id_lote' é obrigatório" };
-        }
-
-        // Verifica se o lote existe
-        const loteExiste = await LoteRepository.findById(id_lote);
-        if (!loteExiste) {
-            throw { status: 404, mensagem: `Lote com ID ${id_lote} não encontrado` };
-        }
-
-        const novaNota = {
-            id_lote: Number(id_lote),
-            dt_compra: dt_compra || new Date(),
-            fornecedor: fornecedor.trim(),
-            quantidade: Number(quantidade)
-        };
-
-        const id = await NotaFiscalRepository.create(novaNota);
-
-        return {
-            sucesso: true,
-            mensagem: "Nota fiscal cadastrada com sucesso",
-            id
-        };
+  async deletarNota(id) {
+    const linhasAfetadas = await NotaFiscalRepository.delete(id);
+    if (!linhasAfetadas) {
+      throw { status: 404, mensagem: "Nota fiscal não encontrada." };
     }
-
-    async atualizarNota(id, dados) {
-        if (!id || isNaN(id)) {
-            throw { status: 400, mensagem: "ID inválido" };
-        }
-
-        const existe = await NotaFiscalRepository.findById(id);
-        if (!existe) {
-            throw { status: 404, mensagem: "Nota fiscal não encontrada" };
-        }
-
-        const atualizado = {};
-
-        if (dados.id_lote !== undefined) {
-            const loteExiste = await LoteRepository.findById(dados.id_lote);
-            if (!loteExiste) {
-                throw { status: 404, mensagem: `Lote com ID ${dados.id_lote} não encontrado` };
-            }
-            atualizado.id_lote = Number(dados.id_lote);
-        }
-        if (dados.fornecedor !== undefined) atualizado.fornecedor = dados.fornecedor.trim();
-        if (dados.quantidade !== undefined) atualizado.quantidade = Number(dados.quantidade);
-        if (dados.dt_compra !== undefined) atualizado.dt_compra = dados.dt_compra;
-
-        if (Object.keys(atualizado).length === 0) {
-            throw { status: 400, mensagem: "Nenhum dado válido enviado para atualização" };
-        }
-
-        await NotaFiscalRepository.update(id, atualizado);
-
-        return {
-            sucesso: true,
-            mensagem: "Nota fiscal atualizada com sucesso"
-        };
-    }
-
-    async deletarNota(id) {
-        if (!id || isNaN(id)) {
-            throw { status: 400, mensagem: "ID inválido" };
-        }
-
-        const existe = await NotaFiscalRepository.findById(id);
-        if (!existe) {
-            throw { status: 404, mensagem: "Nota fiscal não encontrada" };
-        }
-
-        await NotaFiscalRepository.delete(id);
-
-        return {
-            sucesso: true,
-            mensagem: "Nota fiscal apagada com sucesso"
-        };
-    }
+    return { mensagem: "Nota fiscal deletada com sucesso." };
+  }
 }
 
 module.exports = new NotaFiscalService();

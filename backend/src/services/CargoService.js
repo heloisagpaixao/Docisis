@@ -1,135 +1,90 @@
 const CargosRepository = require("../repositories/CargoRepository");
 
-class CargosService {
+class CargoService {
   async listarCargos() {
     const cargos = await CargosRepository.listar();
-
     return {
       sucesso: true,
-      cargos: cargos,
+      dados: cargos,
+      total: cargos.length,
     };
   }
 
   async buscarCargoPorId(id) {
     if (!id || isNaN(id)) {
-      const erro = new Error("ID do cargo inválido");
-      erro.status = 400;
-      erro.mensagem = "O ID do cargo deve ser um número válido.";
-      throw erro;
+      throw { status: 400, mensagem: "ID inválido" };
     }
 
     const cargo = await CargosRepository.buscarPorId(id);
-
     if (!cargo) {
-      const erro = new Error("Cargo não encontrado");
-      erro.status = 404;
-      erro.mensagem = "Cargo não encontrado.";
-      throw erro;
+      throw { status: 404, mensagem: "Cargo não encontrado" };
     }
 
     return {
       sucesso: true,
-      cargo: cargo,
+      dados: cargo,
     };
   }
 
   async cadastrarCargo(dados) {
-    const { permissoes, id_funcionario } = dados;
+    const { permissoes } = dados;
 
-    if (permissoes === undefined || permissoes === null) {
-      const erro = new Error("Permissão não informada");
-      erro.status = 400;
-      erro.mensagem = "O campo permissoes é obrigatório.";
-      throw erro;
+    if (permissoes === undefined) {
+      throw { status: 400, mensagem: "O campo 'permissoes' é obrigatório" };
     }
 
-    if (!id_funcionario) {
-      const erro = new Error("Funcionário não informado");
-      erro.status = 400;
-      erro.mensagem = "O campo id_funcionario é obrigatório.";
-      throw erro;
-    }
-
-    const cargo = await CargosRepository.cadastrar({
-      permissoes,
-      id_funcionario,
+    const novoCargo = await CargosRepository.cadastrar({
+      permissoes: Boolean(permissoes),
     });
 
     return {
       sucesso: true,
-      mensagem: "Cargo cadastrado com sucesso.",
-      cargo: cargo,
+      mensagem: "Cargo cadastrado com sucesso",
+      dados: novoCargo,
     };
   }
 
   async atualizarCargo(id, dados) {
     if (!id || isNaN(id)) {
-      const erro = new Error("ID do cargo inválido");
-      erro.status = 400;
-      erro.mensagem = "O ID do cargo deve ser um número válido.";
-      throw erro;
+      throw { status: 400, mensagem: "ID inválido" };
     }
 
-    const cargoExistente = await CargosRepository.buscarPorId(id);
-
-    if (!cargoExistente) {
-      const erro = new Error("Cargo não encontrado");
-      erro.status = 404;
-      erro.mensagem = "Cargo não encontrado.";
-      throw erro;
+    const existe = await CargosRepository.buscarPorId(id);
+    if (!existe) {
+      throw { status: 404, mensagem: "Cargo não encontrado" };
     }
 
-    const { permissoes, id_funcionario } = dados;
-
-    if (permissoes === undefined || permissoes === null) {
-      const erro = new Error("Permissão não informada");
-      erro.status = 400;
-      erro.mensagem = "O campo permissoes é obrigatório.";
-      throw erro;
-    }
-
-    if (!id_funcionario) {
-      const erro = new Error("Funcionário não informado");
-      erro.status = 400;
-      erro.mensagem = "O campo id_funcionario é obrigatório.";
-      throw erro;
+    if (dados.permissoes === undefined) {
+      throw { status: 400, mensagem: "Nenhum dado válido enviado para atualização" };
     }
 
     await CargosRepository.atualizar(id, {
-      permissoes,
-      id_funcionario,
+      permissoes: Boolean(dados.permissoes),
     });
 
     return {
       sucesso: true,
-      mensagem: "Cargo atualizado com sucesso.",
+      mensagem: "Cargo atualizado com sucesso",
     };
   }
 
   async deletarCargo(id) {
     if (!id || isNaN(id)) {
-      const erro = new Error("ID do cargo inválido");
-      erro.status = 400;
-      erro.mensagem = "O ID do cargo deve ser um número válido.";
-      throw erro;
+      throw { status: 400, mensagem: "ID inválido" };
     }
 
-    const cargoExistente = await CargosRepository.buscarPorId(id);
-
-    if (!cargoExistente) {
-      const erro = new Error("Cargo não encontrado");
-      erro.status = 404;
-      erro.mensagem = "Cargo não encontrado.";
-      throw erro;
+    const existe = await CargosRepository.buscarPorId(id);
+    if (!existe) {
+      throw { status: 404, mensagem: "Cargo não encontrado" };
     }
 
     await CargosRepository.deletar(id);
 
     return {
       sucesso: true,
-      mensagem: "Cargo deletado com sucesso.",
+      mensagem: "Cargo apagado com sucesso",
     };
   }
 }
 
-module.exports = new CargosService();
+module.exports = new CargoService();

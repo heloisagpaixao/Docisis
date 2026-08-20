@@ -31,10 +31,21 @@ class FuncionariosRepository {
     return rows[0];
   }
 
+  async findByEmailAndCpf(email, cpf) {
+    const [rows] = await pool.query(
+      `SELECT f.*, c.permissoes 
+       FROM funcionarios f 
+       JOIN cargos c ON f.id_cargo = c.id_cargo 
+       WHERE f.email = ? AND f.cpf = ?`,
+      [email, cpf]
+    );
+    return rows[0];
+  }
+
   async create(funcionario) {
     const sql = `
-        INSERT INTO funcionarios (nome, cpf, email, telefone, id_cargo, foto_perfil)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO funcionarios (nome, cpf, email, telefone, id_cargo, foto_perfil, senha)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
       funcionario.nome,
@@ -43,6 +54,7 @@ class FuncionariosRepository {
       funcionario.telefone,
       funcionario.id_cargo,
       funcionario.foto_perfil,
+      funcionario.senha,
     ];
 
     // Corrigido de db.execute para pool.query

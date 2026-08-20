@@ -3,12 +3,8 @@ const router = express.Router();
 
 const CargosRoutes = require('./CargosRoutes');
 const FuncionariosRoutes = require('./FuncionariosRoutes');
-const produtoRoutes = require('./produtoRoutes');
-const loteRoutes = require('./loteRoutes');
-const notaFiscalRoutes = require('./notaFiscalRoutes');
-const entradaRoutes = require('./entradaRoutes');
-const saidaRoutes = require('./saidaRoutes');
-const estoqueRoutes = require('./estoqueRoutes');
+const AuthRoutes = require('./AuthRoutes');
+const authMiddleware = require('../middlewares/auth');
 
 // Rota base (Root endpoint)
 router.get('/', (req, res) => {
@@ -19,8 +15,11 @@ router.get('/', (req, res) => {
     });
 });
 
-// Registrar domínios de rotas
-router.use('/funcionarios', FuncionariosRoutes);
-router.use('/cargos', CargosRoutes);
+// Rotas públicas
+router.use('/auth', AuthRoutes);
+
+// Rotas protegidas (Requer login JWT)
+router.use('/funcionarios', authMiddleware, FuncionariosRoutes);
+router.use('/cargos', authMiddleware, CargosRoutes);
 
 module.exports = router;

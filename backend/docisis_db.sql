@@ -20,6 +20,8 @@ CREATE TABLE funcionarios (
     email VARCHAR(150) NOT NULL UNIQUE,
     telefone VARCHAR(20) NOT NULL,
     id_cargo INT NOT NULL,
+    foto_perfil VARCHAR(255) NULL,
+    senha VARCHAR(255) NOT NULL,
     criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -28,7 +28,7 @@ class FuncionariosService {
   }
 
   async cadastrarFuncionario(dados) {
-    let { nome, cpf, email, telefone, id_cargo, file } = dados;
+    let { nome, cpf, email, telefone, id_cargo, senha, file } = dados;
 
     if (typeof id_cargo === "string") {
       id_cargo = parseInt(id_cargo, 10);
@@ -39,13 +39,14 @@ class FuncionariosService {
       !cpf ||
       !email ||
       !telefone ||
+      !senha ||
       id_cargo === undefined ||
       isNaN(id_cargo)
     ) {
       throw {
         status: 400,
         mensagem:
-          "Nome, CPF, e-mail, telefone e ID do cargo são obrigatórios e devem ser válidos",
+          "Nome, CPF, e-mail, telefone, senha e ID do cargo são obrigatórios e devem ser válidos",
       };
     }
 
@@ -69,6 +70,9 @@ class FuncionariosService {
       };
     }
 
+    const bcrypt = require("bcryptjs");
+    const senhaHash = await bcrypt.hash(senha, 10);
+
     const novoFuncionario = {
       nome: nome.trim(),
       cpf: cpfLimpo,
@@ -76,6 +80,7 @@ class FuncionariosService {
       telefone: telefone.trim(),
       id_cargo,
       foto_perfil: file ? `uploads/funcionarios/${file.filename}` : null,
+      senha: senhaHash,
     };
 
     const id = await FuncionariosRepository.create(novoFuncionario);
@@ -98,7 +103,7 @@ class FuncionariosService {
     }
 
     const atualizado = {};
-    let { nome, cpf, email, telefone, id_cargo } = dados;
+    let { nome, cpf, email, telefone, id_cargo, senha } = dados;
 
     if (nome !== undefined) atualizado.nome = nome.trim();
     if (telefone !== undefined) atualizado.telefone = telefone.trim();
@@ -141,6 +146,11 @@ class FuncionariosService {
         };
       }
       atualizado.id_cargo = id_cargo;
+    }
+
+    if (senha !== undefined && senha.trim() !== "") {
+      const bcrypt = require("bcryptjs");
+      atualizado.senha = await bcrypt.hash(senha, 10);
     }
 
     if (Object.keys(atualizado).length === 0) {

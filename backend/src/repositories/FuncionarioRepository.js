@@ -2,16 +2,25 @@ const pool = require("../config/database");
 
 class FuncionariosRepository {
   async findAll() {
-    const [rows] = await pool.query(
-      "SELECT * FROM funcionarios ORDER BY id DESC",
-    );
+    const [rows] = await pool.query(`
+      SELECT f.*, c.permissoes 
+      FROM funcionarios f
+      LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
+      ORDER BY f.id DESC
+    `);
     return rows;
   }
 
   async findById(id) {
-    const [rows] = await pool.query("SELECT * FROM funcionarios WHERE id = ?", [
-      id,
-    ]);
+    const [rows] = await pool.query(
+      `
+      SELECT f.*, c.permissoes 
+      FROM funcionarios f
+      LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
+      WHERE f.id = ?
+    `,
+      [id],
+    );
     return rows[0];
   }
 
@@ -44,8 +53,8 @@ class FuncionariosRepository {
 
   async create(funcionario) {
     const sql = `
-        INSERT INTO funcionarios (nome, cpf, email, telefone, id_cargo, foto_perfil, senha)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO funcionarios (nome, cpf, email, telefone, id_cargo, foto_perfil)
+        VALUES (?, ?, ?, ?, ?, ?)
     `;
     const params = [
       funcionario.nome,
@@ -54,10 +63,8 @@ class FuncionariosRepository {
       funcionario.telefone,
       funcionario.id_cargo,
       funcionario.foto_perfil,
-      funcionario.senha,
     ];
 
-    // Corrigido de db.execute para pool.query
     const [result] = await pool.query(sql, params);
     return result.insertId;
   }

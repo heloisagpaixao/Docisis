@@ -1,9 +1,9 @@
-const FuncionariosService = require("../services/FuncionariosService");
+const FuncionarioService = require("../services/FuncionarioService");
 
-class FuncionariosController {
+class FuncionarioController {
   async listar(req, res) {
     try {
-      const resultado = await FuncionariosService.listarFuncionarios();
+      const resultado = await FuncionarioService.listarFuncionarios();
       res.json(resultado);
     } catch (erro) {
       res.status(erro.status || 500).json({
@@ -16,7 +16,7 @@ class FuncionariosController {
 
   async buscarPorId(req, res) {
     try {
-      const resultado = await FuncionariosService.buscarFuncionarioPorId(
+      const resultado = await FuncionarioService.buscarFuncionarioPorId(
         req.params.id,
       );
       res.json(resultado);
@@ -31,7 +31,7 @@ class FuncionariosController {
 
   async cadastrar(req, res) {
     try {
-      const resultado = await FuncionariosService.cadastrarFuncionario({
+      const resultado = await FuncionarioService.cadastrarFuncionario({
         ...req.body,
         file: req.file,
       });
@@ -47,7 +47,7 @@ class FuncionariosController {
   async atualizar(req, res) {
     try {
       const { id } = req.params;
-      const resultado = await FuncionariosService.atualizarFuncionario(id, {
+      const resultado = await FuncionarioService.atualizarFuncionario(id, {
         ...req.body,
         file: req.file,
       });
@@ -62,7 +62,7 @@ class FuncionariosController {
 
   async deletar(req, res) {
     try {
-      const resultado = await FuncionariosService.deletarFuncionario(
+      const resultado = await FuncionarioService.deletarFuncionario(
         req.params.id,
       );
       res.json(resultado);
@@ -76,4 +76,4 @@ class FuncionariosController {
   }
 }
 
-module.exports = new FuncionariosController();
+module.exports = new FuncionarioController();

@@ -2,14 +2,17 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// Garante que a pasta de uploads exista
+// Inclui a subpasta 'funcionarios' no caminho
 const uploadDir = path.join(
   __dirname,
   "..",
   "..",
   "public",
   "uploads",
+  "funcionarios",
 );
+
+// Cria 'public/uploads/funcionarios' caso não exista
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -19,7 +22,6 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    // Renomeia o arquivo para evitar colisões
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   },

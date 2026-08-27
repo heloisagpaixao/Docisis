@@ -3,7 +3,7 @@ const pool = require("../config/database");
 class CargosRepository {
   async listar() {
     const [resultado] = await pool.query(
-      "SELECT id_cargo, permissoes, id_funcionario FROM cargos"
+      "SELECT id_cargo, permissoes FROM cargos",
     );
 
     return resultado;
@@ -11,34 +11,33 @@ class CargosRepository {
 
   async buscarPorId(id) {
     const [resultado] = await pool.query(
-      "SELECT id_cargo, permissoes, id_funcionario FROM cargos WHERE id_cargo = ?",
-      [id]
+      "SELECT id_cargo, permissoes FROM cargos WHERE id_cargo = ?",
+      [id],
     );
 
     return resultado[0];
   }
 
   async cadastrar(cargo) {
-    const { permissoes, id_funcionario } = cargo;
+    const { permissoes } = cargo;
 
     const [resultado] = await pool.query(
-      "INSERT INTO cargos (permissoes, id_funcionario) VALUES (?, ?)",
-      [permissoes, id_funcionario]
+      "INSERT INTO cargos (permissoes) VALUES (?)",
+      [permissoes],
     );
 
     return {
       id_cargo: resultado.insertId,
       permissoes,
-      id_funcionario,
     };
   }
 
   async atualizar(id, cargo) {
-    const { permissoes, id_funcionario } = cargo;
+    const { permissoes } = cargo;
 
     const [resultado] = await pool.query(
-      "UPDATE cargos SET permissoes = ?, id_funcionario = ? WHERE id_cargo = ?",
-      [permissoes, id_funcionario, id]
+      "UPDATE cargos SET permissoes = ? WHERE id_cargo = ?",
+      [permissoes, id],
     );
 
     return resultado;
@@ -47,7 +46,7 @@ class CargosRepository {
   async deletar(id) {
     const [resultado] = await pool.query(
       "DELETE FROM cargos WHERE id_cargo = ?",
-      [id]
+      [id],
     );
 
     return resultado;

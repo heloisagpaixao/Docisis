@@ -19,7 +19,9 @@ CREATE TABLE funcionarios (
     email VARCHAR(150) NOT NULL UNIQUE,
     telefone VARCHAR(20) NOT NULL,
     id_cargo INT NOT NULL,
-    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    foto_perfil VARCHAR(255) DEFAULT NULL,
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_funcionario_cargo FOREIGN KEY (id_cargo) REFERENCES cargos(id_cargo)
 );
 
 -- ===========================
@@ -110,6 +112,17 @@ CREATE TABLE estoque (
     id_lote INT NOT NULL,
     CONSTRAINT fk_estoque_lote FOREIGN KEY (id_lote) REFERENCES lotes(id)
 );
+
+-- ===========================
+-- ÍNDICES DE PERFORMANCE
+-- ===========================
+CREATE INDEX idx_lotes_quantidade_validade ON lotes(quantidade, dt_validade);
+CREATE INDEX idx_entradas_dt_entrada ON entradas(dt_entrada);
+CREATE INDEX idx_entradas_lote ON entradas(id_lote);
+CREATE INDEX idx_entradas_funcionario ON entradas(id_funcionario);
+CREATE INDEX idx_saidas_dt_saida ON saidas(dt_saida);
+CREATE INDEX idx_saidas_lote ON saidas(id_lote);
+CREATE INDEX idx_saidas_funcionario ON saidas(id_funcionario);
 
 -- ===========================
 -- DADOS INICIAIS

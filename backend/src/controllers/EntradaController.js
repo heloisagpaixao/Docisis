@@ -3,7 +3,7 @@ const EntradaService = require("../services/EntradaService");
 class EntradaController {
   async listar(req, res) {
     try {
-      const resultado = await EntradaService.listarEntradas();
+      const resultado = await EntradaService.listarEntradas(req.query);
       res.json(resultado);
     } catch (erro) {
       res.status(erro.status || 500).json({

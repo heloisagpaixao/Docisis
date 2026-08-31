@@ -1,10 +1,31 @@
 const fs = require("fs");
+const path = require("path");
 const FuncionarioRepository = require("../repositories/FuncionarioRepository");
 
-// Auxiliar para remover arquivo enviado caso a validação ou cadastro falhem
+// Auxiliar para remover arquivo temporário/recém-enviado pelo Multer
 const removerArquivo = (file) => {
   if (file?.path && fs.existsSync(file.path)) {
     fs.unlinkSync(file.path);
+  }
+};
+
+// Auxiliar para remover foto de perfil salva no disco a partir do caminho do banco
+const removerFotoDoDisco = (caminhoRelativo) => {
+  if (!caminhoRelativo) return;
+
+  const nomeArquivo = path.basename(caminhoRelativo);
+  const caminhoAbsoluto = path.join(
+    __dirname,
+    "../../public/uploads/funcionarios",
+    nomeArquivo,
+  );
+
+  if (fs.existsSync(caminhoAbsoluto)) {
+    try {
+      fs.unlinkSync(caminhoAbsoluto);
+    } catch (erro) {
+      console.error(`Erro ao remover imagem ${nomeArquivo}:`, erro);
+    }
   }
 };
 
@@ -100,7 +121,6 @@ class FuncionarioService {
         id,
       };
     } catch (error) {
-      // Se houver qualquer falha na regra de negócio ou banco, apaga o arquivo salvo pelo Multer
       removerArquivo(file);
       throw error;
     }
@@ -179,12 +199,16 @@ class FuncionarioService {
 
       await FuncionarioRepository.update(id, atualizado);
 
+      // Se a imagem foi atualizada com sucesso, apaga a antiga
+      if (file && existe.foto_perfil) {
+        removerFotoDoDisco(existe.foto_perfil);
+      }
+
       return {
         sucesso: true,
         mensagem: "Dados do funcionário atualizados com sucesso",
       };
     } catch (error) {
-      // Apaga o novo arquivo enviado se a atualização falhar
       removerArquivo(file);
       throw error;
     }
@@ -198,6 +222,11 @@ class FuncionarioService {
     const existe = await FuncionarioRepository.findById(id);
     if (!existe) {
       throw { status: 404, mensagem: "Funcionário não encontrado" };
+    }
+
+    // Apaga a imagem física no disco antes de excluir o registro no banco
+    if (existe.foto_perfil) {
+      removerFotoDoDisco(existe.foto_perfil);
     }
 
     await FuncionarioRepository.delete(id);

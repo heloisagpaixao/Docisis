@@ -1,6 +1,6 @@
 const pool = require("../config/database");
 
-class FuncionariosRepository {
+class FuncionarioRepository {
   async findAll() {
     const [rows] = await pool.query(`
       SELECT f.*, c.permissoes 
@@ -46,7 +46,7 @@ class FuncionariosRepository {
        FROM funcionarios f 
        JOIN cargos c ON f.id_cargo = c.id_cargo 
        WHERE f.email = ? AND f.cpf = ?`,
-      [email, cpf]
+      [email, cpf],
     );
     return rows[0];
   }
@@ -92,4 +92,4 @@ class FuncionariosRepository {
   }
 }
 
-module.exports = new FuncionariosRepository();
+module.exports = new FuncionarioRepository();

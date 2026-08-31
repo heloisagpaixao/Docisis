@@ -1,0 +1,88 @@
+const pool = require('../config/database');
+
+class EntradaRepository {
+    async findAll() {
+        const [rows] = await pool.query(`
+            SELECT e.*, f.nome AS funcionario_nome, l.materia_prima 
+            FROM entradas e
+            LEFT JOIN funcionarios f ON e.id_funcionario = f.id
+            LEFT JOIN lotes l ON e.id_lote = l.id
+            ORDER BY e.id_entrada DESC
+        `);
+        return rows;
+    }
+
+    async findById(id) {
+        const [rows] = await pool.query(`
+            SELECT e.*, f.nome AS funcionario_nome, l.materia_prima 
+            FROM entradas e
+            LEFT JOIN funcionarios f ON e.id_funcionario = f.id
+            LEFT JOIN lotes l ON e.id_lote = l.id
+            WHERE e.id_entrada = ?
+        `, [id]);
+        return rows[0];
+    }
+
+    /**
+     * Registra uma entrada e adiciona o lote ao estoque de forma atômica.
+     * Usa transação para garantir consistência.
+     */
+    async create(entradaData) {
+        const { dt_entrada, id_funcionario, id_lote, motivo } = entradaData;
+        const connection = await pool.getConnection();
+
+        try {
+            await connection.beginTransaction();
+
+            // Insere o registro de entrada
+            const [entradaResult] = await connection.query(
+                'INSERT INTO entradas (dt_entrada, id_funcionario, id_lote, motivo) VALUES (?, ?, ?, ?)',
+                [dt_entrada || new Date(), id_funcionario, id_lote, motivo]
+            );
+            const entradaId = entradaResult.insertId;
+
+            // Registra o lote no estoque (se ainda não existir)
+            const [estoqueExistente] = await connection.query(
+                'SELECT id_estoque FROM estoque WHERE id_lote = ?',
+                [id_lote]
+            );
+
+            if (estoqueExistente.length === 0) {
+                await connection.query(
+                    'INSERT INTO estoque (id_lote) VALUES (?)',
+                    [id_lote]
+                );
+            }
+
+            await connection.commit();
+            return entradaId;
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
+        }
+    }
+
+    async update(id, entradaData) {
+        const fields = [];
+        const values = [];
+        for (const [key, value] of Object.entries(entradaData)) {
+            fields.push(`${key} = ?`);
+            values.push(value);
+        }
+        if (fields.length === 0) return null;
+
+        values.push(id);
+        const query = `UPDATE entradas SET ${fields.join(', ')} WHERE id_entrada = ?`;
+        const [result] = await pool.query(query, values);
+        return result.affectedRows;
+    }
+
+    async delete(id) {
+        const [result] = await pool.query('DELETE FROM entradas WHERE id_entrada = ?', [id]);
+        return result.affectedRows;
+    }
+}
+
+module.exports = new EntradaRepository();

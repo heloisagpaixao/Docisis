@@ -1,20 +1,32 @@
 const express = require('express');
 const router = express.Router();
 
-const FuncionariosRoutes = require('./FuncionariosRoutes');
-const CargosRoutes = require('./CargosRoutes');         
+const cargoRoutes = require('./cargoRoutes');
+const funcionarioRoutes = require('./funcionarioRoutes');
+const produtoRoutes = require('./produtoRoutes');
+const loteRoutes = require('./loteRoutes');
+const notaFiscalRoutes = require('./notaFiscalRoutes');
+const entradaRoutes = require('./entradaRoutes');
+const saidaRoutes = require('./saidaRoutes');
+const estoqueRoutes = require('./estoqueRoutes');
 
-// Rota base (Root endpoint que estava em app.js)
+// Rota base (Root endpoint)
 router.get('/', (req, res) => {
     res.json({
-        mensagem: "API Docisis funcionando! 🧁",
+        mensagem: "API Docisis funcionando 📦",
         versao: "1.0.0",
-        arquitetura: "MVC + SOLID"
+        arquitetura: "MVC + SOLID (Refatorada)"
     });
 });
 
 // Registrar domínios de rotas
-router.use('/funcionarios', FuncionariosRoutes);
-router.use('/cargos', CargosRoutes);                      
+router.use('/cargos', cargoRoutes);
+router.use('/funcionarios', funcionarioRoutes);
+router.use('/produtos', produtoRoutes);
+router.use('/lotes', loteRoutes);
+router.use('/notas-fiscais', notaFiscalRoutes);
+router.use('/entradas', entradaRoutes);
+router.use('/saidas', saidaRoutes);
+router.use('/estoque', estoqueRoutes);
 
 module.exports = router;

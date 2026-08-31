@@ -69,13 +69,6 @@ class SaidaRepository {
         id_lote,
       ]);
 
-      // Se a quantidade chegou a zero, remove do estoque
-      if (novaQuantidade === 0) {
-        await connection.query("DELETE FROM estoque WHERE id_lote = ?", [
-          id_lote,
-        ]);
-      }
-
       await connection.commit();
       return saidaId;
     } catch (error) {

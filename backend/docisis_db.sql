@@ -123,6 +123,7 @@ CREATE INDEX idx_entradas_funcionario ON entradas(id_funcionario);
 CREATE INDEX idx_saidas_dt_saida ON saidas(dt_saida);
 CREATE INDEX idx_saidas_lote ON saidas(id_lote);
 CREATE INDEX idx_saidas_funcionario ON saidas(id_funcionario);
+CREATE INDEX idx_ajustes_lote ON ajustes(id_lote);
 
 -- ===========================
 -- DADOS INICIAIS

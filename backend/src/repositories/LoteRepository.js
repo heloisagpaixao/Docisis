@@ -48,6 +48,34 @@ class LoteRepository {
     return rows;
   }
 
+  async findMovimentacoes(idLote) {
+    const sql = `
+    SELECT 'ENTRADA' AS tipo, e.id_entrada AS id, e.dt_entrada AS data, e.motivo, NULL AS quantidade, f.nome AS funcionario_nome
+    FROM entradas e
+    LEFT JOIN funcionarios f ON e.id_funcionario = f.id
+    WHERE e.id_lote = ?
+
+    UNION ALL
+
+    SELECT 'SAIDA' AS tipo, s.id_saida AS id, s.dt_saida AS data, s.motivo, s.quantidade, f.nome AS funcionario_nome
+    FROM saidas s
+    LEFT JOIN funcionarios f ON s.id_funcionario = f.id
+    WHERE s.id_lote = ?
+
+    UNION ALL
+
+    SELECT 'AJUSTE' AS tipo, a.id_ajuste AS id, a.dt_ajuste AS data, a.motivo, a.quantidade_ajuste AS quantidade, f.nome AS funcionario_nome
+    FROM ajustes a
+    LEFT JOIN funcionarios f ON a.id_funcionario = f.id
+    WHERE a.id_lote = ?
+
+    ORDER BY data DESC
+  `;
+
+    const [rows] = await pool.query(sql, [idLote, idLote, idLote]);
+    return rows;
+  }
+
   async update(id, loteData) {
     const fields = [];
     const values = [];

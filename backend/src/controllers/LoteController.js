@@ -40,6 +40,19 @@ class LoteController {
     }
   }
 
+  async buscarMovimentacoes(req, res) {
+    try {
+      const resultado = await LoteService.buscarMovimentacoes(req.params.id);
+      res.json(resultado);
+    } catch (erro) {
+      res.status(erro.status || 500).json({
+        sucesso: false,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.stack || erro,
+      });
+    }
+  }
+
   async cadastrar(req, res) {
     try {
       const resultado = await LoteService.cadastrarLote(req.body);

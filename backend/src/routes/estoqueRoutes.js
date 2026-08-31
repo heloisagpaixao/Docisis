@@ -4,8 +4,5 @@ const EstoqueController = require('../controllers/EstoqueController');
 
 router.get('/', EstoqueController.listar);
 router.get('/:id', EstoqueController.buscarPorId);
-router.post('/', EstoqueController.cadastrar);
-router.put('/:id', EstoqueController.atualizar);
-router.delete('/:id', EstoqueController.deletar);
 
 module.exports = router;

@@ -3,31 +3,31 @@ const pool = require("../config/database");
 class EntradaRepository {
   async findAll() {
     const [rows] = await pool.query(`
-            SELECT e.*, f.nome AS funcionario_nome, l.materia_prima 
-            FROM entradas e
-            LEFT JOIN funcionarios f ON e.id_funcionario = f.id
-            LEFT JOIN lotes l ON e.id_lote = l.id
-            ORDER BY e.id_entrada DESC
-        `);
+          SELECT e.*, f.nome AS funcionario_nome, l.materia_prima 
+          FROM entradas e
+          LEFT JOIN funcionarios f ON e.id_funcionario = f.id
+          LEFT JOIN lotes l ON e.id_lote = l.id
+          ORDER BY e.id_entrada DESC
+      `);
     return rows;
   }
 
   async findById(id) {
     const [rows] = await pool.query(
       `
-            SELECT e.*, f.nome AS funcionario_nome, l.materia_prima 
-            FROM entradas e
-            LEFT JOIN funcionarios f ON e.id_funcionario = f.id
-            LEFT JOIN lotes l ON e.id_lote = l.id
-            WHERE e.id_entrada = ?
-        `,
+          SELECT e.*, f.nome AS funcionario_nome, l.materia_prima 
+          FROM entradas e
+          LEFT JOIN funcionarios f ON e.id_funcionario = f.id
+          LEFT JOIN lotes l ON e.id_lote = l.id
+          WHERE e.id_entrada = ?
+      `,
       [id],
     );
     return rows[0];
   }
 
   /**
-   * Registra uma entrada, atualiza a quantidade do lote e vincula ao estoque de forma atômica.
+   * Registra uma entrada e atualiza a quantidade do lote de forma atômica.
    * Usa transação para garantir consistência.
    */
   async create(entradaData) {
@@ -60,18 +60,6 @@ class EntradaRepository {
         "UPDATE lotes SET quantidade = quantidade + ? WHERE id = ?",
         [quantidade, id_lote],
       );
-
-      // 4. Registra o lote no estoque (se ainda não existir)
-      const [estoqueExistente] = await connection.query(
-        "SELECT id_estoque FROM estoque WHERE id_lote = ?",
-        [id_lote],
-      );
-
-      if (estoqueExistente.length === 0) {
-        await connection.query("INSERT INTO estoque (id_lote) VALUES (?)", [
-          id_lote,
-        ]);
-      }
 
       await connection.commit();
       return entradaId;

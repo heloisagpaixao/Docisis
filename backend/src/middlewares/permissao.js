@@ -10,7 +10,8 @@ module.exports = (req, res, next) => {
   if (!req.funcionario.permissoes) {
     return res.status(403).json({
       sucesso: false,
-      mensagem: "Acesso negado. Você não tem permissão para realizar esta ação.",
+      mensagem:
+        "Acesso negado. Você não tem permissão para realizar esta ação.",
     });
   }
 

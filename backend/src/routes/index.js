@@ -8,7 +8,7 @@ const loteRoutes = require('./loteRoutes');
 const notaFiscalRoutes = require('./notaFiscalRoutes');
 const entradaRoutes = require('./entradaRoutes');
 const saidaRoutes = require('./saidaRoutes');
-const estoqueRoutes = require('./estoqueRoutes');
+const estoqueRoutes = require('./EstoqueRoutes');
 
 // Rota base (Root endpoint)
 router.get('/', (req, res) => {

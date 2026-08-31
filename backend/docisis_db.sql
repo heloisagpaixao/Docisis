@@ -87,6 +87,22 @@ CREATE TABLE saidas (
 );
 
 -- ===========================
+-- AJUSTES
+-- ===========================
+CREATE TABLE ajustes (
+    id_ajuste INT AUTO_INCREMENT PRIMARY KEY,
+    dt_ajuste DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_funcionario INT NOT NULL,
+    id_lote INT NOT NULL,
+    quantidade_anterior INT NOT NULL,
+    quantidade_nova INT NOT NULL,
+    quantidade_ajuste INT NOT NULL,
+    motivo VARCHAR(100) NOT NULL,
+    CONSTRAINT fk_ajuste_funcionario FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id),
+    CONSTRAINT fk_ajuste_lote FOREIGN KEY (id_lote) REFERENCES lotes(id)
+);
+
+-- ===========================
 -- ESTOQUE
 -- ===========================
 CREATE TABLE estoque (

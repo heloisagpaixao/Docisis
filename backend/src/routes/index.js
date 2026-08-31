@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const cargoRoutes = require('./cargoRoutes');
-const funcionarioRoutes = require('./funcionarioRoutes');
+const CargosRoutes = require('./CargosRoutes');
+const FuncionariosRoutes = require('./FuncionariosRoutes');
 const produtoRoutes = require('./produtoRoutes');
 const loteRoutes = require('./loteRoutes');
 const notaFiscalRoutes = require('./notaFiscalRoutes');
@@ -20,13 +20,7 @@ router.get('/', (req, res) => {
 });
 
 // Registrar domínios de rotas
-router.use('/cargos', cargoRoutes);
-router.use('/funcionarios', funcionarioRoutes);
-router.use('/produtos', produtoRoutes);
-router.use('/lotes', loteRoutes);
-router.use('/notas-fiscais', notaFiscalRoutes);
-router.use('/entradas', entradaRoutes);
-router.use('/saidas', saidaRoutes);
-router.use('/estoque', estoqueRoutes);
+router.use('/funcionarios', FuncionariosRoutes);
+router.use('/cargos', CargosRoutes);
 
 module.exports = router;

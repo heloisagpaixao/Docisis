@@ -7,14 +7,16 @@ router.get("/", FuncionariosController.listar);
 router.get("/:id", FuncionariosController.buscarPorId);
 router.post(
   "/",
+  permissaoMiddleware,
   upload.single("foto_perfil"),
   FuncionariosController.cadastrar,
 );
 router.put(
   "/:id",
+  permissaoMiddleware,
   upload.single("foto_perfil"),
   FuncionariosController.atualizar,
 );
-router.delete("/:id", FuncionariosController.deletar);
+router.delete("/:id", permissaoMiddleware, FuncionariosController.deletar);
 
 module.exports = router;

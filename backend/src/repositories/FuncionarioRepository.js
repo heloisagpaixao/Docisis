@@ -1,6 +1,6 @@
 const pool = require("../config/database");
 
-class FuncionarioRepository {
+class FuncionariosRepository {
   async findAll() {
     const [rows] = await pool.query(`
       SELECT f.*, c.permissoes 
@@ -40,6 +40,19 @@ class FuncionarioRepository {
     return rows[0];
   }
 
+  // Usado pelo AuthService no login: precisa da senha (hash) e das
+  // permissões do cargo para montar o payload do JWT.
+  async findByEmailWithCargo(email) {
+    const [rows] = await pool.query(
+      `SELECT f.*, c.permissoes
+       FROM funcionarios f
+       LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
+       WHERE f.email = ?`,
+      [email],
+    );
+    return rows[0];
+  }
+
   async findByEmailAndCpf(email, cpf) {
     const [rows] = await pool.query(
       `SELECT f.*, c.permissoes 
@@ -53,13 +66,14 @@ class FuncionarioRepository {
 
   async create(funcionario) {
     const sql = `
-        INSERT INTO funcionarios (nome, cpf, email, telefone, id_cargo, foto_perfil)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO funcionarios (nome, cpf, email, senha, telefone, id_cargo, foto_perfil)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
       funcionario.nome,
       funcionario.cpf,
       funcionario.email,
+      funcionario.senha,
       funcionario.telefone,
       funcionario.id_cargo,
       funcionario.foto_perfil,
@@ -92,4 +106,4 @@ class FuncionarioRepository {
   }
 }
 
-module.exports = new FuncionarioRepository();
+module.exports = new FuncionariosRepository();

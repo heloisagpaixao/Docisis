@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../config/multer");
 const FuncionarioController = require("../controllers/FuncionarioController");
-const permissaoMiddleware = require('../middlewares/permissao')
+const permissaoMiddleware = require('../middlewares/permissaoMiddleware')
 
 router.get("/", FuncionarioController.listar);
 router.get("/:id", FuncionarioController.buscarPorId);

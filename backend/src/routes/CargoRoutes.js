@@ -1,13 +1,29 @@
-const { Router } = require('express');
-const CargosController = require('../controllers/CargoController');
-const permissaoMiddleware = require('../middlewares/permissao')
+const { Router } = require("express");
+const CargosController = require("../controllers/CargoController");
+const authMiddleware = require("../middlewares/authMiddleware");
+const permissaoMiddleware = require("../middlewares/permissaoMiddleware");
 
 const cargosRoutes = Router();
 
-cargosRoutes.get('/', CargosController.listarCargos); 
-cargosRoutes.get('/:id', CargosController.buscarCargosPorId); 
-cargosRoutes.post('/', permissaoMiddleware, CargosController.cadastrarCargos); 
-cargosRoutes.put('/:id', permissaoMiddleware, CargosController.atualizarCargos); 
-cargosRoutes.delete('/:id', permissaoMiddleware, CargosController.deletarCargos); 
+// Todas as rotas de cargos exigem estar logado
+cargosRoutes.use(authMiddleware);
+
+cargosRoutes.get("/", CargosController.listarCargos);
+cargosRoutes.get("/:id", CargosController.buscarCargosPorId);
+cargosRoutes.post(
+  "/",
+  permissaoMiddleware("cadastrar"),
+  CargosController.cadastrarCargos,
+);
+cargosRoutes.put(
+  "/:id",
+  permissaoMiddleware("editar"),
+  CargosController.atualizarCargos,
+);
+cargosRoutes.delete(
+  "/:id",
+  permissaoMiddleware("excluir"),
+  CargosController.deletarCargos,
+);
 
 module.exports = cargosRoutes;

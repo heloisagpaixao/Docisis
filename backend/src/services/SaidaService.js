@@ -1,5 +1,5 @@
 const SaidaRepository = require('../repositories/SaidaRepository');
-const FuncionariosRepository = require('../repositories/FuncionariosRepository');
+const FuncionariosRepository = require('../repositories/FuncionarioRepository');
 const LoteRepository = require('../repositories/LoteRepository');
 
 class SaidaService {

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const CargosRoutes = require('./CargosRoutes');
-const FuncionariosRoutes = require('./FuncionariosRoutes');
+const CargosRoutes = require('./CargoRoutes');
+const FuncionariosRoutes = require('./FuncionarioRoutes');
 const produtoRoutes = require('./produtoRoutes');
 const loteRoutes = require('./loteRoutes');
 const notaFiscalRoutes = require('./notaFiscalRoutes');

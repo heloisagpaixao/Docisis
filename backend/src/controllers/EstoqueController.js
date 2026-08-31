@@ -26,6 +26,21 @@ class EstoqueController {
       });
     }
   }
+
+  async buscarEstoqueBaixo(req, res) {
+    try {
+      const resultado = await EstoqueService.buscarEstoqueBaixo(
+        req.query.limite,
+      );
+      res.json(resultado);
+    } catch (erro) {
+      res.status(erro.status || 500).json({
+        sucesso: false,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.stack || erro,
+      });
+    }
+  }
 }
 
 module.exports = new EstoqueController();

@@ -3,13 +3,13 @@ const router = express.Router();
 
 const ajusteRoutes = require("./AjusteRoutes");
 const cargosRoutes = require("./CargoRoutes");
-const entradaRoutes = require("./entradaRoutes");
+const entradaRoutes = require("./EntradaRoutes");
 const estoqueRoutes = require("./EstoqueRoutes");
 const funcionariosRoutes = require("./FuncionarioRoutes");
-const loteRoutes = require("./loteRoutes");
-const notaFiscalRoutes = require("./notaFiscalRoutes");
-const produtoRoutes = require("./produtoRoutes");
-const saidaRoutes = require("./saidaRoutes");
+const loteRoutes = require("./LoteRoutes");
+const notaFiscalRoutes = require("./NotaFiscalRoutes");
+const produtoRoutes = require("./ProdutoRoutes");
+const saidaRoutes = require("./SaidaRoutes");
 
 // Rota base (Root endpoint)
 router.get("/", (req, res) => {

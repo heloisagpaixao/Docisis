@@ -26,6 +26,16 @@ class EstoqueService {
       dados: item,
     };
   }
+
+  async buscarEstoqueBaixo(limite) {
+    const limiteNum = parseInt(limite, 10) || 10;
+    const itens = await EstoqueRepository.findBaixo(limiteNum);
+    return {
+      sucesso: true,
+      dados: itens,
+      total: itens.length,
+    };
+  }
 }
 
 module.exports = new EstoqueService();

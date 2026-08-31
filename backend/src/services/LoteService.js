@@ -27,6 +27,16 @@ class LoteService {
     };
   }
 
+  async buscarVencendo(dias) {
+    const diasNum = parseInt(dias, 10) || 30;
+    const lotes = await LoteRepository.findVencendo(diasNum);
+    return {
+      sucesso: true,
+      dados: lotes,
+      total: lotes.length,
+    };
+  }
+
   async cadastrarLote(dados) {
     const { quantidade, materia_prima, dt_validade, id_nota } = dados;
 

@@ -40,6 +40,24 @@ class EstoqueRepository {
   async findByLoteId(id_lote) {
     return this.findById(id_lote);
   }
+
+  async findBaixo(limite = 10) {
+    const [rows] = await pool.query(
+      `
+        SELECT 
+            l.id AS id_estoque,
+            l.id AS id_lote,
+            l.quantidade, 
+            l.materia_prima, 
+            l.dt_validade
+        FROM lotes l
+        WHERE l.quantidade > 0 AND l.quantidade <= ?
+        ORDER BY l.quantidade ASC
+    `,
+      [Number(limite)],
+    );
+    return rows;
+  }
 }
 
 module.exports = new EstoqueRepository();

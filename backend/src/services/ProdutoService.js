@@ -43,7 +43,7 @@ class ProdutoService {
             nome: nome.trim(),
             dt_validade,
             codigo: Number(codigo),
-            peso: peso || null
+            peso: peso ?? null
         };
 
         const id = await ProdutoRepository.create(novoProduto);

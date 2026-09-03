@@ -19,8 +19,11 @@ CREATE TABLE funcionarios (
     email VARCHAR(150) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
     telefone VARCHAR(20) NOT NULL,
+    senha VARCHAR(255) NOT NULL DEFAULT '',
     id_cargo INT NOT NULL,
-    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    foto_perfil VARCHAR(255) DEFAULT NULL,
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_funcionario_cargo FOREIGN KEY (id_cargo) REFERENCES cargos(id_cargo)
 );
 
 -- ===========================
@@ -32,6 +35,7 @@ CREATE TABLE produtos (
     dt_validade DATE NOT NULL,
     codigo INT NOT NULL UNIQUE,
     peso DECIMAL(8,2),
+    imagem VARCHAR(255) DEFAULT NULL,
     criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     alterado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -44,6 +48,7 @@ CREATE TABLE nota_fiscal (
     dt_compra DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fornecedor VARCHAR(50) NOT NULL,
     quantidade INT NOT NULL,
+    arquivo VARCHAR(255) DEFAULT NULL,
     criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -88,6 +93,22 @@ CREATE TABLE saidas (
 );
 
 -- ===========================
+-- AJUSTES
+-- ===========================
+CREATE TABLE ajustes (
+    id_ajuste INT AUTO_INCREMENT PRIMARY KEY,
+    dt_ajuste DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_funcionario INT NOT NULL,
+    id_lote INT NOT NULL,
+    quantidade_anterior INT NOT NULL,
+    quantidade_nova INT NOT NULL,
+    quantidade_ajuste INT NOT NULL,
+    motivo VARCHAR(100) NOT NULL,
+    CONSTRAINT fk_ajuste_funcionario FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id),
+    CONSTRAINT fk_ajuste_lote FOREIGN KEY (id_lote) REFERENCES lotes(id)
+);
+
+-- ===========================
 -- ESTOQUE
 -- ===========================
 CREATE TABLE estoque (
@@ -95,6 +116,18 @@ CREATE TABLE estoque (
     id_lote INT NOT NULL,
     CONSTRAINT fk_estoque_lote FOREIGN KEY (id_lote) REFERENCES lotes(id)
 );
+
+-- ===========================
+-- ÍNDICES DE PERFORMANCE
+-- ===========================
+CREATE INDEX idx_lotes_quantidade_validade ON lotes(quantidade, dt_validade);
+CREATE INDEX idx_entradas_dt_entrada ON entradas(dt_entrada);
+CREATE INDEX idx_entradas_lote ON entradas(id_lote);
+CREATE INDEX idx_entradas_funcionario ON entradas(id_funcionario);
+CREATE INDEX idx_saidas_dt_saida ON saidas(dt_saida);
+CREATE INDEX idx_saidas_lote ON saidas(id_lote);
+CREATE INDEX idx_saidas_funcionario ON saidas(id_funcionario);
+CREATE INDEX idx_ajustes_lote ON ajustes(id_lote);
 
 -- ===========================
 -- DADOS INICIAIS

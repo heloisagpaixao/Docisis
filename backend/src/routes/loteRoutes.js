@@ -7,12 +7,10 @@ const LoteController = require("../controllers/LoteController");
 // Autenticação obrigatória
 router.use(authMiddleware);
 
-router.get("/", LoteController.listar);
-router.get("/:id", LoteController.buscarPorId);
-
-// Escrita exige permissão
-router.post("/", permissaoMiddleware, LoteController.cadastrar);
-router.put("/:id", permissaoMiddleware, LoteController.atualizar);
-router.delete("/:id", permissaoMiddleware, LoteController.deletar);
+router.get('/', LoteController.listar);
+router.get('/:id', LoteController.buscarPorId);
+router.post('/', LoteController.cadastrar);
+router.put('/:id', LoteController.atualizar);
+router.delete('/:id', LoteController.deletar);
 
 module.exports = router;

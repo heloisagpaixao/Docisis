@@ -1,51 +1,42 @@
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const FuncionariosRepository = require("../repositories/FuncionarioRepository");
+const FuncionariosRepository = require("../repositories/FuncionariosRepository");
 
 class AuthService {
-  async login(email, cpf, senha) {
-    if (!email || !cpf || !senha) {
-      throw { status: 400, mensagem: "E-mail corporativo, CPF e senha são obrigatórios." };
+  async login(email, senha) {
+    const funcionario =
+      await FuncionariosRepository.findByEmailWithCargo(email);
+
+    if (!funcionario || !funcionario.senha) {
+      throw new Error("Credenciais inválidas");
     }
 
-    const emailLimpo = email.trim().toLowerCase();
-    const cpfLimpo = cpf.trim();
+    const senhaValida = await bcrypt.compare(senha, funcionario.senha);
 
-    const funcionario = await FuncionariosRepository.findByEmailAndCpf(emailLimpo, cpfLimpo);
-    if (!funcionario) {
-      throw { status: 401, mensagem: "Credenciais inválidas." };
+    if (!senhaValida) {
+      throw new Error("Credenciais inválidas");
     }
 
-    const senhaCorreta = await bcrypt.compare(senha, funcionario.senha);
-    if (!senhaCorreta) {
-      throw { status: 401, mensagem: "Credenciais inválidas." };
-    }
-
-    // JWT payload: id, nome, email, id_cargo, permissoes
     const payload = {
       id: funcionario.id,
       nome: funcionario.nome,
-      email: funcionario.email,
       id_cargo: funcionario.id_cargo,
       permissoes: funcionario.permissoes,
     };
 
-    const secret = process.env.JWT_SECRET || "super_secret_key_docisis_2026";
-    const expiresIn = process.env.JWT_EXPIRES_IN || "1d";
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN || "8h",
+    });
 
-    const token = jwt.sign(payload, secret, { expiresIn });
+    delete funcionario.senha;
 
-    return {
-      sucesso: true,
-      mensagem: "Autenticação realizada com sucesso.",
-      token,
-      funcionario: {
-        id: funcionario.id,
-        nome: funcionario.nome,
-        email: funcionario.email,
-        permissoes: funcionario.permissoes,
-      },
-    };
+    return { token, funcionario };
+  }
+
+  async hashSenha(senhaPlana) {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(senhaPlana, salt);
   }
 }
 

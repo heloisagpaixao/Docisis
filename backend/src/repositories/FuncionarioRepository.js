@@ -40,13 +40,26 @@ class FuncionariosRepository {
     return rows[0];
   }
 
+  // Usado pelo AuthService no login: precisa da senha (hash) e das
+  // permissões do cargo para montar o payload do JWT.
+  async findByEmailWithCargo(email) {
+    const [rows] = await pool.query(
+      `SELECT f.*, c.permissoes
+       FROM funcionarios f
+       LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
+       WHERE f.email = ?`,
+      [email],
+    );
+    return rows[0];
+  }
+
   async findByEmailAndCpf(email, cpf) {
     const [rows] = await pool.query(
       `SELECT f.*, c.permissoes 
        FROM funcionarios f 
        JOIN cargos c ON f.id_cargo = c.id_cargo 
        WHERE f.email = ? AND f.cpf = ?`,
-      [email, cpf]
+      [email, cpf],
     );
     return rows[0];
   }

@@ -7,12 +7,10 @@ const EstoqueController = require("../controllers/EstoqueController");
 // Autenticação obrigatória
 router.use(authMiddleware);
 
-router.get("/", EstoqueController.listar);
-router.get("/:id", EstoqueController.buscarPorId);
-
-// Escrita exige permissão
-router.post("/", permissaoMiddleware, EstoqueController.cadastrar);
-router.put("/:id", permissaoMiddleware, EstoqueController.atualizar);
-router.delete("/:id", permissaoMiddleware, EstoqueController.deletar);
+router.get('/', EstoqueController.listar);
+router.get('/:id', EstoqueController.buscarPorId);
+router.post('/', EstoqueController.cadastrar);
+router.put('/:id', EstoqueController.atualizar);
+router.delete('/:id', EstoqueController.deletar);
 
 module.exports = router;

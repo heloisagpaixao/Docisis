@@ -27,6 +27,36 @@ class LoteService {
     };
   }
 
+  async buscarVencendo(dias) {
+    const diasNum = parseInt(dias, 10) || 30;
+    const lotes = await LoteRepository.findVencendo(diasNum);
+    return {
+      sucesso: true,
+      dados: lotes,
+      total: lotes.length,
+    };
+  }
+
+  async buscarMovimentacoes(idLote) {
+    if (!idLote || isNaN(idLote)) {
+      throw { status: 400, mensagem: "ID do lote inválido" };
+    }
+
+    const loteExiste = await LoteRepository.findById(idLote);
+    if (!loteExiste) {
+      throw { status: 404, mensagem: "Lote não encontrado" };
+    }
+
+    const movimentacoes = await LoteRepository.findMovimentacoes(idLote);
+
+    return {
+      sucesso: true,
+      lote_id: Number(idLote),
+      total: movimentacoes.length,
+      dados: movimentacoes,
+    };
+  }
+
   async cadastrarLote(dados) {
     const { quantidade, materia_prima, dt_validade, id_nota } = dados;
 

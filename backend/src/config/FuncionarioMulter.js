@@ -2,7 +2,6 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// Inclui a subpasta 'funcionarios' no caminho
 const uploadDir = path.join(
   __dirname,
   "..",
@@ -12,7 +11,6 @@ const uploadDir = path.join(
   "funcionarios",
 );
 
-// Cria 'public/uploads/funcionarios' caso não exista
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -23,16 +21,27 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `${uniqueSuffix}${ext}`);
   },
 });
 
 const fileFilter = (req, file, cb) => {
   const allowedMimeTypes = ["image/jpeg", "image/png", "image/jpg"];
-  if (allowedMimeTypes.includes(file.mimetype)) {
+  const allowedExtensions = /^\.(jpg|jpeg|png)$/i;
+
+  const ext = path.extname(file.originalname).toLowerCase();
+  const isValidMime = allowedMimeTypes.includes(file.mimetype);
+  const isValidExt = allowedExtensions.test(ext);
+
+  if (isValidMime && isValidExt) {
     cb(null, true);
   } else {
-    cb(new Error("Apenas arquivos de imagem (JPEG, JPG, PNG) são permitidos."));
+    cb(
+      new Error(
+        "Apenas arquivos de imagem válidos (JPEG, JPG, PNG) são permitidos.",
+      ),
+    );
   }
 };
 

@@ -1,59 +1,63 @@
-const pool = require('../config/database');
+const pool = require("../config/database");
 
 class EstoqueRepository {
-    async findAll() {
-        const [rows] = await pool.query(`
-            SELECT e.*, l.quantidade, l.materia_prima, l.dt_validade 
-            FROM estoque e
-            LEFT JOIN lotes l ON e.id_lote = l.id
-            ORDER BY e.id_estoque DESC
+  async findAll() {
+    const [rows] = await pool.query(`
+            SELECT 
+                l.id AS id_estoque,
+                l.id AS id_lote,
+                l.quantidade, 
+                l.materia_prima, 
+                l.dt_validade,
+                l.dt_criacao,
+                l.id_fornecedor
+            FROM lotes l
+            WHERE l.quantidade > 0
+            ORDER BY l.id DESC
         `);
-        return rows;
-    }
+    return rows;
+  }
 
-    async findById(id) {
-        const [rows] = await pool.query(`
-            SELECT e.*, l.quantidade, l.materia_prima, l.dt_validade 
-            FROM estoque e
-            LEFT JOIN lotes l ON e.id_lote = l.id
-            WHERE e.id_estoque = ?
-        `, [id]);
-        return rows[0];
-    }
+  async findById(id) {
+    const [rows] = await pool.query(
+      `
+            SELECT 
+                l.id AS id_estoque,
+                l.id AS id_lote,
+                l.quantidade, 
+                l.materia_prima, 
+                l.dt_validade,
+                l.dt_criacao,
+                l.id_fornecedor
+            FROM lotes l
+            WHERE l.id = ? AND l.quantidade > 0
+        `,
+      [id],
+    );
+    return rows[0];
+  }
 
-    async findByLoteId(id_lote) {
-        const [rows] = await pool.query('SELECT * FROM estoque WHERE id_lote = ?', [id_lote]);
-        return rows[0];
-    }
+  async findByLoteId(id_lote) {
+    return this.findById(id_lote);
+  }
 
-    async create(estoqueData) {
-        const { id_lote } = estoqueData;
-        const [result] = await pool.query(
-            'INSERT INTO estoque (id_lote) VALUES (?)',
-            [id_lote]
-        );
-        return result.insertId;
-    }
-
-    async update(id, estoqueData) {
-        const fields = [];
-        const values = [];
-        for (const [key, value] of Object.entries(estoqueData)) {
-            fields.push(`${key} = ?`);
-            values.push(value);
-        }
-        if (fields.length === 0) return null;
-
-        values.push(id);
-        const query = `UPDATE estoque SET ${fields.join(', ')} WHERE id_estoque = ?`;
-        const [result] = await pool.query(query, values);
-        return result.affectedRows;
-    }
-
-    async delete(id) {
-        const [result] = await pool.query('DELETE FROM estoque WHERE id_estoque = ?', [id]);
-        return result.affectedRows;
-    }
+  async findBaixo(limite = 10) {
+    const [rows] = await pool.query(
+      `
+        SELECT 
+            l.id AS id_estoque,
+            l.id AS id_lote,
+            l.quantidade, 
+            l.materia_prima, 
+            l.dt_validade
+        FROM lotes l
+        WHERE l.quantidade > 0 AND l.quantidade <= ?
+        ORDER BY l.quantidade ASC
+    `,
+      [Number(limite)],
+    );
+    return rows;
+  }
 }
 
 module.exports = new EstoqueRepository();

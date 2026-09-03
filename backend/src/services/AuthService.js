@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const FuncionariosRepository = require("../repositories/FuncionariosRepository");
+const FuncionariosRepository = require("../repositories/FuncionarioRepository");
 
 class AuthService {
   async login(email, cpf, senha) {

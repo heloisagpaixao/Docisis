@@ -1,22 +1,29 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../config/multer");
-const FuncionariosController = require("../controllers/FuncionariosController");
+const authMiddleware = require("../middlewares/auth");
+const permissaoMiddleware = require("../middlewares/permissao");
+const FuncionarioController = require("../controllers/FuncionarioController");
 
-router.get("/", FuncionariosController.listar);
-router.get("/:id", FuncionariosController.buscarPorId);
+// Todas as rotas de funcionários exigem autenticação
+router.use(authMiddleware);
+
+router.get("/", FuncionarioController.listar);
+router.get("/:id", FuncionarioController.buscarPorId);
+
+// Rotas que exigem permissão elevada (admin)
 router.post(
   "/",
   permissaoMiddleware,
   upload.single("foto_perfil"),
-  FuncionariosController.cadastrar,
+  FuncionarioController.cadastrar,
 );
 router.put(
   "/:id",
   permissaoMiddleware,
   upload.single("foto_perfil"),
-  FuncionariosController.atualizar,
+  FuncionarioController.atualizar,
 );
-router.delete("/:id", permissaoMiddleware, FuncionariosController.deletar);
+router.delete("/:id", permissaoMiddleware, FuncionarioController.deletar);
 
 module.exports = router;

@@ -1,4 +1,6 @@
 const fs = require("fs");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const FuncionarioRepository = require("../repositories/FuncionarioRepository");
 
 // Auxiliar para remover arquivo enviado caso a validação ou cadastro falhem
@@ -39,7 +41,7 @@ class FuncionarioService {
     const { file } = dados;
 
     try {
-      let { nome, cpf, email, telefone, id_cargo } = dados;
+      let { nome, cpf, email, senha, telefone, id_cargo } = dados;
 
       if (typeof id_cargo === "string") {
         id_cargo = parseInt(id_cargo, 10);
@@ -49,6 +51,7 @@ class FuncionarioService {
         !nome ||
         !cpf ||
         !email ||
+        !senha ||
         !telefone ||
         id_cargo === undefined ||
         isNaN(id_cargo)
@@ -81,10 +84,14 @@ class FuncionarioService {
         };
       }
 
+      const salt = await bcrypt.genSalt(10)
+      const senhaHash = await bcrypt.hash(senha, salt)
+
       const novoFuncionario = {
         nome: nome.trim(),
         cpf: cpfLimpo,
         email: emailLimpo,
+        senha: senhaHash.trim(),
         telefone: telefone.trim(),
         id_cargo,
         foto_perfil: file
@@ -105,6 +112,50 @@ class FuncionarioService {
       throw error;
     }
   }
+
+  async login(email, senha) {
+    if (!email || !senha) {
+      throw { status: 400, mensagem: "E-mail e senha são obrigatórios." };
+    }
+
+    const emailLimpo = email.trim().toLowerCase();
+    const funcionario = await FuncionarioRepository.findByEmail(emailLimpo);
+
+    if (!funcionario) {
+      throw { status: 401, mensagem: "Credenciais inválidas." };
+    }
+
+    const senhaCorreta = await bcrypt.compare(senha, funcionario.senha);
+    if (!senhaCorreta) {
+      throw { status: 401, mensagem: "Credenciais inválidas." };
+    }
+
+    const segredo = "chave_super_secreta_docisis_2026" || process.env.JWT_SECRET;
+    if (!segredo) {
+      throw { status: 500, mensagem: "Configuração do JWT ausente no servidor." };
+    }
+
+    const payload = {
+      id: funcionario.id,
+      nome: funcionario.nome,
+      email: funcionario.email,
+      id_cargo: funcionario.id_cargo,
+    };
+
+    const token = jwt.sign(payload, segredo, { expiresIn: "8h" });
+
+    return {
+      sucesso: true,
+      mensagem: "Login realizado com sucesso.",
+      token,
+      funcionario: {
+        id: funcionario.id,
+        nome: funcionario.nome,
+        email: funcionario.email,
+      },
+    };
+  }
+
 
   async atualizarFuncionario(id, dados) {
     const { file } = dados;

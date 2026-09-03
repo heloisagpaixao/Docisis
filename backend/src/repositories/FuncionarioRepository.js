@@ -53,13 +53,14 @@ class FuncionariosRepository {
 
   async create(funcionario) {
     const sql = `
-        INSERT INTO funcionarios (nome, cpf, email, telefone, id_cargo, foto_perfil)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO funcionarios (nome, cpf, email, senha, telefone, id_cargo, foto_perfil)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
       funcionario.nome,
       funcionario.cpf,
       funcionario.email,
+      funcionario.senha,
       funcionario.telefone,
       funcionario.id_cargo,
       funcionario.foto_perfil,

@@ -1,11 +1,18 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const EntradaController = require('../controllers/EntradaController');
+const authMiddleware = require("../middlewares/auth");
+const permissaoMiddleware = require("../middlewares/permissao");
+const EntradaController = require("../controllers/EntradaController");
 
-router.get('/', EntradaController.listar);
-router.get('/:id', EntradaController.buscarPorId);
-router.post('/', EntradaController.cadastrar);
-router.put('/:id', EntradaController.atualizar);
-router.delete('/:id', EntradaController.deletar);
+// Autenticação obrigatória
+router.use(authMiddleware);
+
+router.get("/", EntradaController.listar);
+router.get("/:id", EntradaController.buscarPorId);
+
+// Escrita exige permissão
+router.post("/", permissaoMiddleware, EntradaController.cadastrar);
+router.put("/:id", permissaoMiddleware, EntradaController.atualizar);
+router.delete("/:id", permissaoMiddleware, EntradaController.deletar);
 
 module.exports = router;

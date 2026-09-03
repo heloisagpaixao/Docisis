@@ -28,7 +28,7 @@ module.exports = (req, res, next) => {
     });
   }
 
-  const secret = process.env.JWT_SECRET || "super_secret_key_docisis_2026";
+  const secret = process.env.JWT_SECRET || "chave_super_secreta_docisis_2026";
 
   jwt.verify(token, secret, (err, decoded) => {
     if (err) {

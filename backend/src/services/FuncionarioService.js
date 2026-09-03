@@ -1,4 +1,7 @@
 const fs = require("fs");
+const path = require("path");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const FuncionarioRepository = require("../repositories/FuncionarioRepository");
 
 // Auxiliar para remover arquivo temporário/recém-enviado pelo Multer

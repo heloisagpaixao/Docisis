@@ -1,4 +1,5 @@
-const EntradaService = require("../services/EntradaService");
+const pool = require("../config/database");
+const EntradaService = require("../services/EntradaService")
 
 class EntradaController {
   async listar(req, res) {

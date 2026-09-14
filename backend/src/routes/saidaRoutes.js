@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../middlewares/auth");
-const permissaoMiddleware = require("../middlewares/permissao");
+const authMiddleware = require("../middlewares/Auth");
+const permissaoMiddleware = require("../middlewares/PermissaoMiddleware");
 const SaidaController = require("../controllers/SaidaController");
 
 // Autenticação obrigatória

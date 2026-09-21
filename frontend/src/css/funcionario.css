@@ -1,0 +1,339 @@
+/* ==========================================================================
+   DOCISIS - ESTILOS DA TELA DE PERFIL DO FUNCIONÁRIO (FUNCIONARIO.CSS)
+   ========================================================================== */
+
+/* Layout Geral de 2 Colunas */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #eaeaea;
+}
+
+/* --- 1. Sidebar Lateral Terracota Minimalista (Dock Ultra Slim) --- */
+.sidebar-docisis {
+    width: 68px;
+    background-color: var(--docisis-terracotta, #c44918);
+    color: #ffffff;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 100;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    padding: 1rem 0;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+    align-items: center;
+}
+
+.sidebar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border-left: none;
+}
+
+.sidebar-item:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.18);
+    transform: scale(1.05);
+}
+
+.sidebar-item.active {
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.25);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.sidebar-item span {
+    font-size: 0.58rem;
+    font-weight: 600;
+    margin-top: 0.15rem;
+    line-height: 1;
+    letter-spacing: 0.1px;
+}
+
+/* --- 2. Main Wrapper & Topbar Responsiva --- */
+.main-content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.topbar-docisis {
+    min-height: 65px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1.5rem;
+    gap: 1rem;
+    position: relative;
+    z-index: 10;
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.topbar-logo {
+    max-height: 44px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.user-profile-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: var(--docisis-navy, #08172e);
+    white-space: nowrap;
+}
+
+.user-name-text {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.avatar-sm {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #cbd5e1;
+    border: 2px solid var(--docisis-terracotta, #c44918);
+    flex-shrink: 0;
+}
+
+/* --- 3. Área de Trabalho (Workspace Cinza) --- */
+.workspace-docisis {
+    flex: 1;
+    background-color: #eaeaea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+/* Card Principal de Personalização (Branco) */
+.profile-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 3.5rem 4rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    width: 100%;
+}
+
+.profile-title {
+    font-size: 2rem;
+    font-weight: 500;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+}
+
+/* Sub-navegação por Abas Lado a Lado Alinhada à Esquerda */
+.nav-tabs-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+}
+
+.nav-tabs-docisis {
+    border-bottom: 2px solid #e2e8f0;
+    display: inline-flex;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-tabs-docisis .nav-item {
+    margin: 0;
+}
+
+.nav-tabs-docisis .nav-link {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    padding: 0.6rem 1.25rem;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+    background: transparent;
+    white-space: nowrap;
+}
+
+.nav-tabs-docisis .nav-link:hover {
+    color: var(--docisis-terracotta, #c44918);
+    border-bottom-color: rgba(196, 73, 24, 0.3);
+}
+
+.nav-tabs-docisis .nav-link.active {
+    color: var(--docisis-terracotta, #c44918);
+    background: transparent;
+    border-bottom: 3px solid var(--docisis-terracotta, #c44918);
+}
+
+/* --- Avatar Circular com Upload --- */
+.avatar-upload-wrapper {
+    width: 140px;
+    height: 140px;
+    position: relative;
+}
+
+.avatar-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.default-avatar-icon {
+    font-size: 7.5rem;
+    color: #9ca3af;
+    line-height: 1;
+}
+
+#avatar-img-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.avatar-circle:hover .avatar-overlay {
+    opacity: 1;
+}
+
+/* --- Form Inputs Cinza Alinhado à Esquerda --- */
+.form-label-simple {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control-gray {
+    background-color: #d9d9d9 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 0.85rem 1.2rem !important;
+    font-size: 0.95rem !important;
+    color: #1e293b !important;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.form-control-gray:focus {
+    background-color: #e5e7eb !important;
+    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.2) !important;
+    outline: none !important;
+}
+
+.max-w-460,
+.max-w-500,
+.max-w-550 {
+    max-width: 550px;
+    width: 100%;
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* Responsividade para telas menores (Tablets e Celulares) */
+@media (max-width: 992px) {
+    .topbar-logo {
+        max-height: 36px;
+    }
+
+    .user-name-text {
+        max-width: 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-layout {
+        flex-direction: column;
+    }
+
+    .sidebar-docisis {
+        width: 100%;
+        box-shadow: none;
+        padding: 0.25rem 0;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+        justify-content: space-around;
+        padding-top: 0;
+        overflow-x: auto;
+    }
+
+    .sidebar-item {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    .user-name-text {
+        display: none;
+    }
+
+    .topbar-docisis {
+        padding: 0.5rem 1rem;
+    }
+
+    .profile-card {
+        padding: 2rem 1.25rem;
+    }
+}

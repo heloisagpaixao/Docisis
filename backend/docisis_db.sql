@@ -19,7 +19,6 @@ CREATE TABLE funcionarios (
     email VARCHAR(150) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
     telefone VARCHAR(20) NOT NULL,
-    senha VARCHAR(255) NOT NULL DEFAULT '',
     id_cargo INT NOT NULL,
     foto_perfil VARCHAR(255) DEFAULT NULL,
     criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

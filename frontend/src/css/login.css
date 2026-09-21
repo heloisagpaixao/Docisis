@@ -1,0 +1,111 @@
+/* ==========================================================================
+   ESTILOS ESPECÍFICOS DE LOGIN, 2FA E REDEFINIÇÃO DE SENHA (LOGIN.CSS)
+   ========================================================================== */
+
+/* Círculos de Ícone dos Passos */
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-terracotta-light {
+    background-color: #fdf2ed;
+    color: var(--docisis-terracotta, #c44918);
+}
+
+.bg-navy-light {
+    background-color: #e2e8f0;
+    color: var(--docisis-navy, #08172e);
+}
+
+.bg-success-light {
+    background-color: #e6f4ea;
+    color: #198754;
+}
+
+.text-navy-docisis {
+    color: var(--docisis-navy, #08172e);
+}
+
+.link-terracotta {
+    color: var(--docisis-terracotta, #c44918);
+    transition: color 0.2s ease;
+}
+
+.link-terracotta:hover {
+    color: var(--docisis-terracotta-hover, #a63b11);
+}
+
+/* --- Caixas de Código PIN 2FA (6 dígitos) --- */
+.pin-container {
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.pin-box {
+    width: 44px;
+    height: 52px;
+    border: 1.5px solid var(--docisis-border, #e2e8f0);
+    border-radius: 8px;
+    background-color: #f8fafc;
+    color: var(--docisis-navy, #08172e);
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.pin-box:focus {
+    background-color: #ffffff;
+    border-color: var(--docisis-terracotta, #c44918);
+    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.15);
+    outline: none;
+}
+
+/* --- Checklist Dinâmico de Força de Senha --- */
+.password-checklist {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+.checklist-item {
+    padding: 3px 0;
+    transition: color 0.25s ease;
+    display: flex;
+    align-items: center;
+}
+
+.checklist-item.invalid {
+    color: #94a3b8;
+}
+
+.checklist-item.invalid i {
+    color: #dc3545;
+}
+
+.checklist-item.valid {
+    color: #198754;
+    font-weight: 600;
+}
+
+.checklist-item.valid i {
+    color: #198754;
+}
+
+/* Transições de Animação */
+.auth-step {
+    animation: fadeInStep 0.3s ease-out;
+}
+
+@keyframes fadeInStep {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

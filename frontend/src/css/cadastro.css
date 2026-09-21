@@ -1,0 +1,30 @@
+/* Estilos de Validação e Ajustes Específicos para a Tela de Cadastro */
+
+/* Indicador visual de erros de validação nos inputs */
+.was-validated .form-control:invalid,
+.was-validated .form-select:invalid {
+    border-color: #dc3545 !important;
+    background-image: none !important;
+}
+
+.was-validated .form-control:valid,
+.was-validated .form-select:valid {
+    border-color: #198754 !important;
+    background-image: none !important;
+}
+
+/* Animação suave para exibição do formulário */
+.docisis-card {
+    animation: fadeInCard 0.35s ease-out;
+}
+
+@keyframes fadeInCard {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,28 @@
+<svg width="280" height="70" viewBox="0 0 280 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Fundo transparente -->
+    
+    <!-- Batedor e Rolo de Massa cruzados ao fundo -->
+    <g stroke="#262626" stroke-width="3" stroke-linecap="round">
+        <!-- Rolo de massa -->
+        <line x1="12" y1="58" x2="58" y2="12" />
+        <!-- Cabo do batedor -->
+        <line x1="58" y1="58" x2="12" y2="12" />
+    </g>
+
+    <!-- Base do Cupcake (Laranja) -->
+    <path d="M 18 42 L 22 58 C 22.5 60 24 61 26 61 L 44 61 C 46 61 47.5 60 48 58 L 52 42 Z" fill="#E68524" />
+    
+    <!-- Cobertura do Cupcake (Laranja e Azul Celeste) -->
+    <!-- Camada Laranja -->
+    <path d="M 15 42 C 14 34 20 28 26 28 C 23 20 29 14 35 12 C 41 10 45 15 45 19 C 50 19 55 25 55 31 C 56 36 55 42 55 42 Z" fill="#E68524" />
+    <!-- Cobertura Azul Celeste Swirl -->
+    <path d="M 30 14 C 36 8 43 12 42 18 C 47 17 51 22 49 28 C 43 25 38 30 34 22 C 32 18 31 16 30 14 Z" fill="#52B6C6" />
+    <path d="M 21 34 C 26 31 32 31 38 35" stroke="#52B6C6" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Faixa Laranja "DOCISIS" -->
+    <rect x="8" y="34" width="54" height="15" rx="7.5" fill="#E68524" stroke="#FFFFFF" stroke-width="2" />
+    <text x="35" y="45" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="8.5" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">DOCISIS</text>
+
+    <!-- Texto DOCISIS Principal (Tipografia Serif Marinho Escuro) -->
+    <text x="78" y="52" font-family="'Playfair Display', 'Georgia', 'Times New Roman', serif" font-weight="900" font-size="42" fill="#061A34" letter-spacing="1">DOCISIS</text>
+</svg>

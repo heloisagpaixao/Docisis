@@ -1,0 +1,171 @@
+/* ==========================================================================
+   DOCISIS - SISTEMA DE GESTÃO PROFISSIONAL DE CONFEITARIA
+   Design System & Estilos Globais
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* Paleta de Cores Oficial Docisis */
+    --docisis-terracotta: #c44918;
+    --docisis-terracotta-hover: #a63b11;
+    --docisis-terracotta-light: #fdf2ed;
+    --docisis-navy: #08172e;
+    --docisis-navy-hover: #102747;
+    
+    /* Superfícies e Fundos */
+    --docisis-bg: #ffffff;
+    --docisis-surface: #ffffff;
+    --docisis-input-bg: #f8fafc;
+    --docisis-border: #e2e8f0;
+    --docisis-border-focus: #c44918;
+    
+    /* Tipografia e Cores de Texto */
+    --docisis-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --docisis-text-dark: #0f172a;
+    --docisis-text-muted: #64748b;
+    --docisis-text-label: #475569;
+    
+    /* Outros */
+    --docisis-radius: 8px;
+    --bs-body-font-family: var(--docisis-font);
+    --bs-body-bg: var(--docisis-bg);
+}
+
+body {
+    font-family: var(--docisis-font);
+    background-color: var(--docisis-bg);
+    color: var(--docisis-text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Ícone Quadrado/Retangular do Logo */
+.logo-icon-box {
+    width: 72px;
+    height: 48px;
+    background-color: var(--docisis-terracotta);
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem auto;
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(196, 73, 24, 0.22);
+}
+
+/* Título e Subtítulo */
+.brand-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--docisis-navy);
+    letter-spacing: -0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.brand-subtitle {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--docisis-text-muted);
+}
+
+/* Card Principal com Borda Superior Terracota */
+.docisis-card {
+    background-color: var(--docisis-surface);
+    border: 1.5px solid var(--docisis-terracotta);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(8, 23, 46, 0.05);
+    padding: 2.5rem 2rem;
+}
+
+/* Botão Estilo Navy */
+.btn-docisis-navy {
+    background-color: var(--docisis-navy);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.85rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.btn-docisis-navy:hover,
+.btn-docisis-navy:focus {
+    background-color: var(--docisis-navy-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(8, 23, 46, 0.2);
+}
+
+/* Labels em Caixa Alta */
+.form-label-uppercase {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--docisis-text-label);
+    margin-bottom: 0.4rem;
+}
+
+/* Inputs com Ícones Embutidos */
+.input-group-docisis {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-group-docisis .input-icon {
+    position: absolute;
+    left: 1rem;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.input-group-docisis .form-control,
+.input-group-docisis .form-select {
+    background-color: var(--docisis-input-bg);
+    border: 1px solid var(--docisis-border);
+    border-radius: 6px;
+    padding: 0.75rem 1rem 0.75rem 2.8rem;
+    font-size: 0.95rem;
+    color: var(--docisis-text-dark);
+    transition: all 0.2s ease;
+}
+
+.input-group-docisis .form-control:focus,
+.input-group-docisis .form-select:focus {
+    background-color: #ffffff;
+    border-color: var(--docisis-terracotta);
+    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.12);
+    outline: none;
+}
+
+/* Rodapé com Ícone Suporte */
+.support-footer {
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--docisis-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Utilitários */
+.escondido {
+    display: none !important;
+}

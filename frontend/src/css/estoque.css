@@ -1,0 +1,926 @@
+/* ==========================================================================
+   DOCISIS - ESTILOS DO MÓDULO DE ESTOQUE E MOVIMENTAÇÕES (ESTOQUE.CSS)
+   Design System, KPIs, Tabela Dinâmica e Modal Especializado
+   ========================================================================== */
+
+/* Container Principal de Estoque */
+.stock-container {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   1. CABEÇALHO DO MÓDULO
+   ========================================================================== */
+.stock-header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+.stock-title-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.stock-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+    letter-spacing: -0.5px;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.stock-title i {
+    color: var(--docisis-terracotta, #c44918);
+}
+
+.stock-subtitle {
+    font-size: 0.92rem;
+    color: var(--docisis-text-muted, #64748b);
+    margin-bottom: 0;
+}
+
+.stock-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* Botões do Topo */
+.btn-docisis-outline {
+    background-color: #ffffff;
+    color: var(--docisis-navy, #08172e);
+    border: 1.5px solid #cbd5e1;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.65rem 1.15rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-docisis-outline:hover {
+    background-color: #f8fafc;
+    border-color: var(--docisis-navy, #08172e);
+    color: var(--docisis-navy, #08172e);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(8, 23, 46, 0.06);
+}
+
+.btn-docisis-primary {
+    background-color: var(--docisis-terracotta, #c44918);
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(196, 73, 24, 0.25);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-docisis-primary:hover {
+    background-color: var(--docisis-terracotta-hover, #a63b11);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(196, 73, 24, 0.35);
+}
+
+/* ==========================================================================
+   2. KPI CARDS SUPERIORES
+   ========================================================================== */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.kpi-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.35rem 1.5rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 18px rgba(8, 23, 46, 0.03);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(8, 23, 46, 0.08);
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3.5px;
+}
+
+.kpi-card.kpi-total::before {
+    background: linear-gradient(90deg, #08172e, #1e3a8a);
+}
+
+.kpi-card.kpi-vencimentos::before {
+    background: linear-gradient(90deg, #d97706, #f59e0b);
+}
+
+.kpi-card.kpi-criticos::before {
+    background: linear-gradient(90deg, #c44918, #dc2626);
+}
+
+.kpi-card.kpi-valor::before {
+    background: linear-gradient(90deg, #059669, #10b981);
+}
+
+.kpi-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--docisis-text-muted, #64748b);
+}
+
+.kpi-icon-box {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.kpi-card.kpi-total .kpi-icon-box {
+    background-color: rgba(8, 23, 46, 0.07);
+    color: var(--docisis-navy, #08172e);
+}
+
+.kpi-card.kpi-vencimentos .kpi-icon-box {
+    background-color: rgba(217, 119, 6, 0.12);
+    color: #b45309;
+}
+
+.kpi-card.kpi-criticos .kpi-icon-box {
+    background-color: rgba(196, 73, 24, 0.12);
+    color: var(--docisis-terracotta, #c44918);
+}
+
+.kpi-card.kpi-valor .kpi-icon-box {
+    background-color: rgba(5, 150, 105, 0.12);
+    color: #059669;
+}
+
+.kpi-value-box {
+    margin-bottom: 0.5rem;
+}
+
+.kpi-main-number {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+}
+
+.kpi-sub-text {
+    font-size: 0.82rem;
+    color: var(--docisis-text-muted, #64748b);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+}
+
+.kpi-footer-badge {
+    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+    border-top: 1px dashed #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+}
+
+/* ==========================================================================
+   3. CARD PRINCIPAL DA TABELA DE ESTOQUE
+   ========================================================================== */
+.stock-main-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 6px 22px rgba(8, 23, 46, 0.04);
+    overflow: hidden;
+}
+
+/* Barra Superior de Filtros e Busca */
+.stock-toolbar {
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid #edf2f7;
+    background-color: #ffffff;
+}
+
+.toolbar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+/* Busca Rápida */
+.stock-search-group {
+    position: relative;
+    flex: 1;
+    min-width: 280px;
+    max-width: 440px;
+}
+
+.stock-search-group .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.stock-search-group .search-input {
+    width: 100%;
+    padding: 0.65rem 1rem 0.65rem 2.6rem;
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    background-color: #f8fafc;
+    font-size: 0.9rem;
+    color: var(--docisis-text-dark, #0f172a);
+    transition: all 0.2s ease;
+}
+
+.stock-search-group .search-input:focus {
+    outline: none;
+    border-color: var(--docisis-terracotta, #c44918);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.12);
+}
+
+.toolbar-secondary-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.select-filter-custom {
+    padding: 0.65rem 2rem 0.65rem 1rem;
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    background-color: #f8fafc;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.select-filter-custom:focus {
+    outline: none;
+    border-color: var(--docisis-terracotta, #c44918);
+    background-color: #ffffff;
+}
+
+/* Filtros por Pílulas (Pills) */
+.filter-pills-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+    scrollbar-width: thin;
+}
+
+.filter-pills-bar::-webkit-scrollbar {
+    height: 4px;
+}
+
+.filter-pills-bar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+}
+
+.pill-filter-btn {
+    border: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.45rem 0.95rem;
+    border-radius: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pill-filter-btn .pill-counter {
+    background-color: #e2e8f0;
+    color: #334155;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.1rem 0.45rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.pill-filter-btn:hover {
+    border-color: var(--docisis-terracotta, #c44918);
+    color: var(--docisis-terracotta, #c44918);
+    background-color: var(--docisis-terracotta-light, #fdf2ed);
+}
+
+.pill-filter-btn.active {
+    background-color: var(--docisis-navy, #08172e);
+    border-color: var(--docisis-navy, #08172e);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(8, 23, 46, 0.18);
+}
+
+.pill-filter-btn.active .pill-counter {
+    background-color: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+/* Pílula especial de Alerta/Crítico */
+.pill-filter-btn.pill-warning.active {
+    background-color: #b45309;
+    border-color: #b45309;
+}
+
+.pill-filter-btn.pill-danger.active {
+    background-color: var(--docisis-terracotta, #c44918);
+    border-color: var(--docisis-terracotta, #c44918);
+}
+
+/* ==========================================================================
+   4. TABELA DE ESTOQUE PROFISSIONAL
+   ========================================================================== */
+.table-responsive-docisis {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.stock-table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.88rem;
+}
+
+.stock-table thead th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 0.95rem 1.15rem;
+    border-top: none;
+    border-bottom: 1.5px solid #e2e8f0;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.stock-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.stock-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.stock-table tbody td {
+    padding: 1.1rem 1.15rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+}
+
+/* Coluna de Produto com Thumbnail/Ícone */
+.product-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.product-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: var(--docisis-navy, #08172e);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.product-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-info-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-weight: 700;
+    color: var(--docisis-navy, #08172e);
+    font-size: 0.92rem;
+    line-height: 1.25;
+}
+
+.product-sku {
+    font-size: 0.76rem;
+    color: #64748b;
+    font-family: monospace;
+    margin-top: 0.15rem;
+}
+
+/* Categoria Tag */
+.category-tag {
+    font-size: 0.74rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    display: inline-block;
+}
+
+/* Lote e Validade */
+.batch-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.batch-code {
+    font-weight: 700;
+    font-family: monospace;
+    font-size: 0.82rem;
+    color: #334155;
+}
+
+.expiry-badge {
+    font-size: 0.74rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.expiry-ok {
+    color: #059669;
+}
+
+.expiry-warning {
+    color: #d97706;
+}
+
+.expiry-critical {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+/* Barra de Nível de Estoque */
+.stock-level-cell {
+    min-width: 160px;
+}
+
+.stock-level-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.stock-min-hint {
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.stock-progress-track {
+    width: 100%;
+    height: 7px;
+    background-color: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.stock-progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.fill-success {
+    background-color: #059669;
+}
+
+.fill-warning {
+    background-color: #f59e0b;
+}
+
+.fill-danger {
+    background-color: #dc2626;
+}
+
+/* Badges de Status Geral */
+.status-pill {
+    padding: 0.3rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+}
+
+.status-normal {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.status-baixo {
+    background-color: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.status-critico {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* Botões de Ação na Tabela */
+.action-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-table-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.btn-table-action:hover {
+    border-color: var(--docisis-navy, #08172e);
+    color: var(--docisis-navy, #08172e);
+    background-color: #f8fafc;
+}
+
+.btn-table-movimentar {
+    background-color: var(--docisis-terracotta-light, #fdf2ed);
+    color: var(--docisis-terracotta, #c44918);
+    border: 1px solid rgba(196, 73, 24, 0.25);
+    font-weight: 700;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-table-movimentar:hover {
+    background-color: var(--docisis-terracotta, #c44918);
+    color: #ffffff;
+    border-color: var(--docisis-terracotta, #c44918);
+}
+
+/* ==========================================================================
+   5. RODAPÉ DA TABELA E PAGINAÇÃO
+   ========================================================================== */
+.stock-footer-bar {
+    padding: 1.15rem 1.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background-color: #ffffff;
+    border-top: 1px solid #edf2f7;
+}
+
+.stock-pagination-info {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.stock-pagination-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.page-btn {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #475569;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: var(--docisis-navy, #08172e);
+}
+
+.page-btn.active {
+    background-color: var(--docisis-terracotta, #c44918);
+    border-color: var(--docisis-terracotta, #c44918);
+    color: #ffffff;
+}
+
+.page-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   6. MODAL DETALHADO DE MOVIMENTAÇÃO DE ESTOQUE
+   ========================================================================== */
+.modal-movimentacao .modal-content {
+    border-radius: 14px;
+    border: 1.5px solid var(--docisis-terracotta, #c44918);
+    box-shadow: 0 16px 40px rgba(8, 23, 46, 0.18);
+    overflow: hidden;
+}
+
+.modal-movimentacao .modal-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #edf2f7;
+    padding: 1.25rem 1.75rem;
+}
+
+.modal-mov-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.modal-mov-title i {
+    color: var(--docisis-terracotta, #c44918);
+}
+
+/* Toggle de Tipo de Movimentação (Entrada vs Saída vs Ajuste) */
+.mov-type-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    background-color: #f1f5f9;
+    padding: 0.35rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.mov-type-btn {
+    border: none;
+    background: transparent;
+    padding: 0.65rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.mov-type-btn.type-entrada.active {
+    background-color: #ffffff;
+    color: #059669;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+}
+
+.mov-type-btn.type-saida.active {
+    background-color: #ffffff;
+    color: var(--docisis-terracotta, #c44918);
+    box-shadow: 0 2px 8px rgba(196, 73, 24, 0.15);
+}
+
+.mov-type-btn.type-ajuste.active {
+    background-color: #ffffff;
+    color: #d97706;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.15);
+}
+
+/* Card de Previsão de Saldo (Live Feedback) */
+.saldo-preview-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.saldo-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.saldo-item-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.saldo-item-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+}
+
+.saldo-arrow {
+    font-size: 1.25rem;
+    color: #94a3b8;
+}
+
+/* Estilos de Compliance e Notificação no Modal */
+.anvisa-notice-box {
+    background-color: #fdf8e6;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.78rem;
+    color: #92400e;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+    .stock-toolbar {
+        padding: 1.25rem 1rem;
+    }
+    
+    .stock-table thead th,
+    .stock-table tbody td {
+        padding: 0.85rem 0.85rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .stock-header-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stock-actions-group {
+        justify-content: stretch;
+    }
+
+    .stock-actions-group .btn-docisis-outline,
+    .stock-actions-group .btn-docisis-primary {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .toolbar-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stock-search-group {
+        max-width: 100%;
+    }
+
+    .toolbar-secondary-actions {
+        width: 100%;
+    }
+
+    .select-filter-custom {
+        flex: 1;
+    }
+
+    .mov-type-selector {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Toast de Notificação Estilizado */
+.docisis-toast-container {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1055;
+}
+
+.docisis-toast {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(8, 23, 46, 0.15);
+    border-left: 4px solid var(--docisis-terracotta, #c44918);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 320px;
+    max-width: 420px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.docisis-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}

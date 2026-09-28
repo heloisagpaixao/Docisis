@@ -11,7 +11,7 @@
 
 /* --- 1. Sidebar Lateral Terracota Minimalista (Dock Ultra Slim) --- */
 .sidebar-docisis {
-    width: 68px;
+    width: 72px;
     background-color: var(--docisis-terracotta, #c44918);
     color: #ffffff;
     flex-shrink: 0;
@@ -20,15 +20,23 @@
     align-items: center;
     z-index: 100;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-    padding: 1rem 0;
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
 }
 
 .sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 1.35rem;
     width: 100%;
+    height: 100%;
     align-items: center;
+}
+
+.sidebar-nav .sidebar-item:last-child {
+    margin-top: auto;
 }
 
 .sidebar-item {
@@ -36,14 +44,15 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 12px;
     color: rgba(255, 255, 255, 0.75);
     text-decoration: none;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     border-left: none;
+    padding: 0.35rem 0.2rem;
 }
 
 .sidebar-item:hover {
@@ -59,11 +68,48 @@
 }
 
 .sidebar-item span {
-    font-size: 0.58rem;
+    font-size: 0.62rem;
     font-weight: 600;
-    margin-top: 0.15rem;
+    margin-top: 0.2rem;
     line-height: 1;
     letter-spacing: 0.1px;
+}
+
+/* Espaçamento progressivo em telas maiores (Desktop / Widescreen) */
+@media (min-width: 992px) {
+    .sidebar-docisis {
+        width: 76px;
+        padding: 1.75rem 0;
+    }
+
+    .sidebar-nav {
+        gap: 1.75rem;
+    }
+
+    .sidebar-item {
+        width: 54px;
+        height: 54px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .sidebar-docisis {
+        width: 80px;
+        padding: 2rem 0;
+    }
+
+    .sidebar-nav {
+        gap: 2.25rem;
+    }
+
+    .sidebar-item {
+        width: 58px;
+        height: 58px;
+    }
+
+    .sidebar-item span {
+        font-size: 0.66rem;
+    }
 }
 
 /* --- 2. Main Wrapper & Topbar Responsiva --- */
@@ -307,15 +353,23 @@
 
     .sidebar-docisis {
         width: 100%;
+        height: auto;
+        min-height: unset;
+        position: static;
         box-shadow: none;
-        padding: 0.25rem 0;
+        padding: 0.5rem 0;
     }
 
     .sidebar-nav {
         flex-direction: row;
         justify-content: space-around;
+        height: auto;
         padding-top: 0;
         overflow-x: auto;
+    }
+
+    .sidebar-nav .sidebar-item:last-child {
+        margin-top: 0;
     }
 
     .sidebar-item {

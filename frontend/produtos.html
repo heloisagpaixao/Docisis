@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docisis - Cadastro de Produtos e Estoque</title>
+
+    <!-- Bootstrap 5 + Bootstrap Icons + Global CSS + Funcionario CSS + Produtos CSS -->
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="src/css/global.css">
+    <link rel="stylesheet" href="src/css/funcionario.css">
+    <link rel="stylesheet" href="src/css/produtos.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- ==========================================================================
+             1. BARRA LATERAL (SIDEBAR TERRACOTA MINIMALISTA DOCK)
+             ========================================================================== -->
+        <aside class="sidebar-docisis">
+            <nav class="sidebar-nav">
+                <a href="cadastro.html" class="sidebar-item" title="Administração">
+                    <i class="bi bi-clipboard-data fs-4"></i>
+                    <span>Admin</span>
+                </a>
+                <a href="produtos.html" class="sidebar-item active" title="Cadastro de Produtos">
+                    <i class="bi bi-plus-square fs-4"></i>
+                    <span>Produtos</span>
+                </a>
+                <a href="#" class="sidebar-item" title="Histórico">
+                    <i class="bi bi-clock-history fs-4"></i>
+                    <span>Histórico</span>
+                </a>
+                <a href="#" class="sidebar-item" title="Estoque">
+                    <i class="bi bi-box-seam fs-4"></i>
+                    <span>Estoque</span>
+                </a>
+                <a href="funcionario.html" class="sidebar-item" title="Configurações">
+                    <i class="bi bi-gear fs-4"></i>
+                    <span>Ajustes</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ==========================================================================
+             2. PAINEL PRINCIPAL (TOPBAR + WORKSPACE)
+             ========================================================================== -->
+        <div class="main-content-wrapper">
+            <!-- Barra Superior (Topbar Responsiva) -->
+            <header class="topbar-docisis">
+                <div class="topbar-brand">
+                    <img src="src/assets/logo-docisis.svg" alt="Docisis" class="topbar-logo">
+                </div>
+                <div class="topbar-user">
+                    <div class="user-profile-badge">
+                        <span id="topbar-username" class="fw-semibold user-name-text">Nome de Usuário</span>
+                        <img id="topbar-avatar" src="" alt="Avatar" class="avatar-sm">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Área de Trabalho (Workspace Cinza) -->
+            <main class="workspace-docisis">
+                <div class="container-fluid py-4 py-md-5">
+                    <div class="products-container">
+
+                        <!-- CARD PRINCIPAL DE CADASTRO -->
+                        <div class="docisis-main-card">
+                            
+                            <!-- Cabeçalho do Card -->
+                            <div class="page-header-content">
+                                <div>
+                                    <h1 class="page-title">Novo Produto no Catálogo</h1>
+                                    <p class="page-description">Cadastre itens da confeitaria, gerencie níveis de estoque, precificação e regras de compliance sanitário.</p>
+                                </div>
+                                <div class="page-actions-top">
+                                    <span class="badge rounded-pill bg-light text-secondary border px-3 py-2">
+                                        <i class="bi bi-shield-check text-success me-1"></i> Módulo Estoque Ativo
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Formulário Principal -->
+                            <form id="form-cadastro-produto" novalidate>
+                                
+                                <!-- Abas de Navegação -->
+                                <ul class="nav nav-tabs-docisis-custom" id="produtoTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="tab-basico-btn" data-bs-toggle="tab" data-bs-target="#tab-basico" type="button" role="tab" aria-selected="true">
+                                            <span class="step-indicator">1</span>
+                                            <span>Informações Básicas</span>
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="tab-inventario-btn" data-bs-toggle="tab" data-bs-target="#tab-inventario" type="button" role="tab" aria-selected="false">
+                                            <span class="step-indicator">2</span>
+                                            <span>Detalhes de Inventário</span>
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="tab-compliance-btn" data-bs-toggle="tab" data-bs-target="#tab-compliance" type="button" role="tab" aria-selected="false">
+                                            <span class="step-indicator">3</span>
+                                            <span>Compliance & Validade</span>
+                                        </button>
+                                    </li>
+                                </ul>
+
+                                <!-- Layout com Formulário à Esquerda e Painel Visual/Dicas à Direita -->
+                                <div class="row g-4 align-items-start">
+                                    
+                                    <!-- COLUNA ESQUERDA: CAMPOS DO FORMULÁRIO -->
+                                    <div class="col-lg-7 col-xl-8">
+                                        <div class="tab-content" id="produtoTabsContent">
+                                            
+                                            <!-- ABA 1: INFORMAÇÕES BÁSICAS -->
+                                            <div class="tab-pane fade show active" id="tab-basico" role="tabpanel" aria-labelledby="tab-basico-btn">
+                                                <div class="section-subtitle">
+                                                    <i class="bi bi-tag-fill"></i> Dados Comerciais & Identificação
+                                                </div>
+
+                                                <div class="row g-3">
+                                                    <!-- Nome do Produto -->
+                                                    <div class="col-12">
+                                                        <label for="produto-nome" class="form-label-custom">
+                                                            <span>Nome do Produto <span class="required-mark">*</span></span>
+                                                            <small class="text-muted fw-normal">Ex: Bolo Trufado Belga 1.2kg</small>
+                                                        </label>
+                                                        <input type="text" class="form-control-docisis" id="produto-nome" placeholder="Digite o nome completo do produto" required>
+                                                    </div>
+
+                                                    <!-- SKU / Código de Barras -->
+                                                    <div class="col-md-6">
+                                                        <label for="produto-sku" class="form-label-custom">
+                                                            <span>Código / SKU <span class="required-mark">*</span></span>
+                                                            <button type="button" id="btn-gerar-sku" class="btn btn-link btn-sm p-0 text-decoration-none text-terracotta fw-semibold" style="color: var(--docisis-terracotta); font-size: 0.78rem;">
+                                                                <i class="bi bi-magic"></i> Gerar SKU
+                                                            </button>
+                                                        </label>
+                                                        <div class="input-addon-group">
+                                                            <span class="addon-prefix"><i class="bi bi-upc-scan"></i></span>
+                                                            <input type="text" class="form-control-docisis" id="produto-sku" placeholder="DCS-BOL-2601" required>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Categoria -->
+                                                    <div class="col-md-6">
+                                                        <label for="produto-categoria" class="form-label-custom">
+                                                            <span>Categoria do Catálogo <span class="required-mark">*</span></span>
+                                                        </label>
+                                                        <select class="form-select-docisis" id="produto-categoria" required>
+                                                            <option value="" selected disabled>Selecione uma categoria...</option>
+                                                            <option value="BOL">Bolos & Tortas Artesanais</option>
+                                                            <option value="DOC">Doces Finos & Brigadeiros Gourmet</option>
+                                                            <option value="SOB">Sobremesas & Taças Geladas</option>
+                                                            <option value="PAO">Pães, Folhados & Croissants</option>
+                                                            <option value="CHO">Chocolataria & Trufas</option>
+                                                            <option value="BEB">Bebidas & Cafeteria</option>
+                                                            <option value="EMB">Kits para Presente & Embalagens</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Preço de Venda -->
+                                                    <div class="col-md-6">
+                                                        <label for="preco-venda" class="form-label-custom">
+                                                            <span>Preço de Venda (R$) <span class="required-mark">*</span></span>
+                                                        </label>
+                                                        <div class="input-addon-group">
+                                                            <span class="addon-prefix">R$</span>
+                                                            <input type="number" step="0.01" min="0" class="form-control-docisis" id="preco-venda" placeholder="0,00" required>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Custo de Produção -->
+                                                    <div class="col-md-6">
+                                                        <label for="custo-producao" class="form-label-custom">
+                                                            <span>Custo de Produção (R$)</span>
+                                                        </label>
+                                                        <div class="input-addon-group">
+                                                            <span class="addon-prefix">R$</span>
+                                                            <input type="number" step="0.01" min="0" class="form-control-docisis" id="custo-producao" placeholder="0,00">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Margem de Lucro Calculada Automaticamente -->
+                                                    <div class="col-12">
+                                                        <div id="badge-margem-lucro" class="margin-badge-box">
+                                                            <i class="bi bi-graph-up-arrow"></i>
+                                                            <span id="valor-margem-texto">Margem calculada após preenchimento</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Descrição e Apresentação -->
+                                                    <div class="col-12">
+                                                        <label for="produto-descricao" class="form-label-custom">
+                                                            <span>Descrição & Ficha Sensorial</span>
+                                                            <small class="text-muted fw-normal">Ingredientes nobres, recheios e acabamento</small>
+                                                        </label>
+                                                        <textarea class="form-control-docisis" id="produto-descricao" rows="3" placeholder="Ex: Massa amanteigada de cacau 70% com ganache aveludado de chocolate belga e finalização com raspas artesanais."></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Botão de Próximo Passo -->
+                                                <div class="d-flex justify-content-end mt-4 pt-2">
+                                                    <button type="button" id="btn-avancar-aba1" class="btn btn-docisis-outline">
+                                                        Ir para Inventário <i class="bi bi-arrow-right ms-1"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- ABA 2: DETALHES DE INVENTÁRIO -->
+                                            <div class="tab-pane fade" id="tab-inventario" role="tabpanel" aria-labelledby="tab-inventario-btn">
+                                                <div class="section-subtitle">
+                                                    <i class="bi bi-box-seam-fill"></i> Parâmetros de Estoque & Armazenamento
+                                                </div>
+
+                                                <div class="row g-3">
+                                                    <!-- Quantidade em Estoque Atual -->
+                                                    <div class="col-md-6">
+                                                        <label for="estoque-inicial" class="form-label-custom">
+                                                            <span>Estoque Inicial <span class="required-mark">*</span></span>
+                                                        </label>
+                                                        <div class="input-addon-group">
+                                                            <span class="addon-prefix"><i class="bi bi-boxes"></i></span>
+                                                            <input type="number" min="0" class="form-control-docisis" id="estoque-inicial" placeholder="0" required>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Unidade de Medida -->
+                                                    <div class="col-md-6">
+                                                        <label for="unidade-medida" class="form-label-custom">
+                                                            <span>Unidade de Medida <span class="required-mark">*</span></span>
+                                                        </label>
+                                                        <select class="form-select-docisis" id="unidade-medida" required>
+                                                            <option value="un" selected>Unidade (un)</option>
+                                                            <option value="kg">Quilograma (kg)</option>
+                                                            <option value="g">Grama (g)</option>
+                                                            <option value="fatia">Fatia individual</option>
+                                                            <option value="cento">Cento (100 un)</option>
+                                                            <option value="cx">Caixa / Kit (cx)</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Estoque Mínimo de Alerta -->
+                                                    <div class="col-md-6">
+                                                        <label for="estoque-minimo" class="form-label-custom">
+                                                            <span>Estoque Mínimo (Alerta Crítico)</span>
+                                                            <small class="text-muted fw-normal">Gera aviso preventivo</small>
+                                                        </label>
+                                                        <input type="number" min="0" class="form-control-docisis" id="estoque-minimo" placeholder="Ex: 5">
+                                                    </div>
+
+                                                    <!-- Estoque Máximo de Segurança -->
+                                                    <div class="col-md-6">
+                                                        <label for="estoque-maximo" class="form-label-custom">
+                                                            <span>Capacidade Máxima / Lote Ideal</span>
+                                                            <small class="text-muted fw-normal">Evita excessos</small>
+                                                        </label>
+                                                        <input type="number" min="0" class="form-control-docisis" id="estoque-maximo" placeholder="Ex: 50">
+                                                    </div>
+
+                                                    <!-- Localização / Prateleira -->
+                                                    <div class="col-md-6">
+                                                        <label for="estoque-localizacao" class="form-label-custom">
+                                                            <span>Localização Interna</span>
+                                                        </label>
+                                                        <select class="form-select-docisis" id="estoque-localizacao">
+                                                            <option value="vitrine">Balcão Expositor / Vitrine Principal</option>
+                                                            <option value="camara-fria-a">Câmara Fria A (Bolos Recheados)</option>
+                                                            <option value="camara-fria-b">Câmara Fria B (Sobremesas)</option>
+                                                            <option value="freezer">Freezer de Congelamento (-18°C)</option>
+                                                            <option value="prateleira-secos">Armazém / Prateleira Secos 02</option>
+                                                            <option value="bancada-finalizacao">Bancada de Finalização</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Fornecedor Principal -->
+                                                    <div class="col-md-6">
+                                                        <label for="fornecedor-principal" class="form-label-custom">
+                                                            <span>Fornecedor Principal de Insumos</span>
+                                                        </label>
+                                                        <input type="text" class="form-control-docisis" id="fornecedor-principal" placeholder="Ex: Callebaut Brasil / Laticínios da Serra">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Botões de Navegação -->
+                                                <div class="d-flex justify-content-between mt-4 pt-2">
+                                                    <button type="button" id="btn-voltar-aba2" class="btn btn-docisis-outline">
+                                                        <i class="bi bi-arrow-left me-1"></i> Voltar para Básicas
+                                                    </button>
+                                                    <button type="button" id="btn-avancar-aba2" class="btn btn-docisis-outline">
+                                                        Ir para Compliance <i class="bi bi-arrow-right ms-1"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- ABA 3: COMPLIANCE E VALIDADE -->
+                                            <div class="tab-pane fade" id="tab-compliance" role="tabpanel" aria-labelledby="tab-compliance-btn">
+                                                <div class="section-subtitle">
+                                                    <i class="bi bi-shield-check"></i> Segurança de Alimentos & Rastreabilidade
+                                                </div>
+
+                                                <div class="row g-3">
+                                                    <!-- Número do Lote -->
+                                                    <div class="col-md-6">
+                                                        <label for="lote-producao" class="form-label-custom">
+                                                            <span>Lote de Produção <span class="required-mark">*</span></span>
+                                                        </label>
+                                                        <div class="input-addon-group">
+                                                            <span class="addon-prefix"><i class="bi bi-hash"></i></span>
+                                                            <input type="text" class="form-control-docisis" id="lote-producao" placeholder="LOT-2026-09A" required>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Temperatura e Conservação -->
+                                                    <div class="col-md-6">
+                                                        <label for="condicao-armazenamento" class="form-label-custom">
+                                                            <span>Conservação & Temperatura <span class="required-mark">*</span></span>
+                                                        </label>
+                                                        <select class="form-select-docisis" id="condicao-armazenamento" required>
+                                                            <option value="refrigerado" selected>Refrigerado (2°C a 6°C)</option>
+                                                            <option value="congelado">Congelado (-18°C)</option>
+                                                            <option value="ambiente">Ambiente Seco & Arejado (15°C a 25°C)</option>
+                                                            <option value="aquecido">Estufa Climatizada (acima de 60°C)</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <!-- Data de Fabricação -->
+                                                    <div class="col-md-6">
+                                                        <label for="data-fabricacao" class="form-label-custom">
+                                                            <span>Data de Fabricação</span>
+                                                        </label>
+                                                        <input type="date" class="form-control-docisis" id="data-fabricacao">
+                                                    </div>
+
+                                                    <!-- Data de Validade -->
+                                                    <div class="col-md-6">
+                                                        <label for="data-validade" class="form-label-custom">
+                                                            <span>Data de Validade Recomendada <span class="required-mark">*</span></span>
+                                                        </label>
+                                                        <input type="date" class="form-control-docisis" id="data-validade" required>
+                                                    </div>
+
+                                                    <!-- Regulamentação Sanitária -->
+                                                    <div class="col-12">
+                                                        <label for="registro-sanitario" class="form-label-custom">
+                                                            <span>Enquadramento Sanitário (ANVISA / MAPA)</span>
+                                                        </label>
+                                                        <input type="text" class="form-control-docisis" id="registro-sanitario" placeholder="Dispensa de Registro conforme RDC 240/2018 (ANVISA)">
+                                                    </div>
+
+                                                    <!-- Alérgenos Obrigatórios (RDC 727/2022) -->
+                                                    <div class="col-12">
+                                                        <label class="form-label-custom">
+                                                            <span>Declaração de Alérgenos (Rotulagem)</span>
+                                                            <small class="text-muted fw-normal">Selecione para alertar no catálogo</small>
+                                                        </label>
+                                                        <div class="allergen-grid">
+                                                            <label class="allergen-chip selected">
+                                                                <input type="checkbox" name="alergenos" value="gluten">
+                                                                <span>Contém Glúten</span>
+                                                            </label>
+                                                            <label class="allergen-chip selected">
+                                                                <input type="checkbox" name="alergenos" value="lactose">
+                                                                <span>Contém Leite/Lactose</span>
+                                                            </label>
+                                                            <label class="allergen-chip selected">
+                                                                <input type="checkbox" name="alergenos" value="ovos">
+                                                                <span>Contém Ovos</span>
+                                                            </label>
+                                                            <label class="allergen-chip">
+                                                                <input type="checkbox" name="alergenos" value="castanhas">
+                                                                <span>Nozes / Castanhas</span>
+                                                            </label>
+                                                            <label class="allergen-chip">
+                                                                <input type="checkbox" name="alergenos" value="soja">
+                                                                <span>Derivados de Soja</span>
+                                                            </label>
+                                                            <label class="allergen-chip">
+                                                                <input type="checkbox" name="alergenos" value="amendoim">
+                                                                <span>Amendoim</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Botão de Retorno -->
+                                                <div class="d-flex justify-content-start mt-4 pt-2">
+                                                    <button type="button" id="btn-voltar-aba3" class="btn btn-docisis-outline">
+                                                        <i class="bi bi-arrow-left me-1"></i> Voltar para Inventário
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </div> <!-- /tab-content -->
+                                    </div>
+
+                                    <!-- COLUNA DIREITA: PREVIEW DA IMAGEM & CAIXA CONTEXTUAL DE DICAS -->
+                                    <div class="col-lg-5 col-xl-4">
+                                        
+                                        <!-- ÁREA DE PREVIEW DA IMAGEM -->
+                                        <div class="image-preview-panel">
+                                            <div class="image-preview-header">
+                                                <h4><i class="bi bi-camera-fill" style="color: var(--docisis-terracotta);"></i> Foto do Produto</h4>
+                                                <span id="image-status-badge" class="image-status-badge">
+                                                    <i class="bi bi-image text-muted"></i> Nenhuma foto
+                                                </span>
+                                            </div>
+
+                                            <!-- Dropzone Interativo -->
+                                            <div id="image-dropzone" class="image-dropzone" title="Clique ou arraste uma foto para cá">
+                                                <input type="file" id="foto-produto-input" accept="image/png, image/jpeg, image/webp" class="d-none">
+                                                
+                                                <!-- Conteúdo Placeholder inicial -->
+                                                <div id="dropzone-placeholder-content" class="image-dropzone-content">
+                                                    <i class="bi bi-cloud-arrow-up image-dropzone-icon"></i>
+                                                    <p class="image-dropzone-title">Arraste uma foto ou clique</p>
+                                                    <span class="image-dropzone-sub">PNG, JPG ou WEBP (Proporção 1:1, até 5MB)</span>
+                                                </div>
+
+                                                <!-- Imagem quando carregada -->
+                                                <img id="image-preview-img" src="" alt="Prévia do Produto" class="image-preview-img d-none">
+                                                
+                                                <!-- Overlay para troca rápida -->
+                                                <div id="image-preview-overlay" class="image-preview-overlay d-none">
+                                                    <button type="button" id="btn-trocar-foto" class="btn btn-sm btn-light fw-bold text-dark px-3">
+                                                        <i class="bi bi-arrow-repeat me-1"></i> Trocar Foto
+                                                    </button>
+                                                    <button type="button" id="btn-remover-foto" class="btn btn-sm btn-danger px-3">
+                                                        <i class="bi bi-trash3 me-1"></i> Remover
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- CAIXA CONTEXTUAL DE DICAS -->
+                                        <div class="tips-contextual-card">
+                                            <div class="tips-header">
+                                                <div class="tips-icon-badge">
+                                                    <i class="bi bi-lightbulb-fill"></i>
+                                                </div>
+                                                <h3 class="tips-title">Dicas de Cadastro Docisis</h3>
+                                            </div>
+
+                                            <ul class="tips-list">
+                                                <li class="tips-list-item">
+                                                    <i class="bi bi-check2-circle"></i>
+                                                    <div>
+                                                        <strong>Fotografia gastronômica:</strong> Prefira luz natural difusa e fundos claros para valorizar as camadas e textura dos doces.
+                                                    </div>
+                                                </li>
+                                                <li class="tips-list-item">
+                                                    <i class="bi bi-check2-circle"></i>
+                                                    <div>
+                                                        <strong>Código SKU padronizado:</strong> Use a estrutura <em>DCS-CAT-ANO</em> para facilitar a etiquetagem e busca no PDV.
+                                                    </div>
+                                                </li>
+                                                <li class="tips-list-item">
+                                                    <i class="bi bi-check2-circle"></i>
+                                                    <div>
+                                                        <strong>Controle de perecíveis:</strong> Doces com frutas frescas e chantilly possuem validade reduzida (24h a 72h em refrigeração).
+                                                    </div>
+                                                </li>
+                                                <li class="tips-list-item">
+                                                    <i class="bi bi-check2-circle"></i>
+                                                    <div>
+                                                        <strong>Rastreabilidade sanitária:</strong> O preenchimento rigoroso de lote e alérgenos assegura conformidade com a fiscalização.
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- RODAPÉ DE AÇÕES DO FORMULÁRIO -->
+                                <div class="form-action-footer">
+                                    <div>
+                                        <a href="funcionario.html" class="btn btn-docisis-outline text-decoration-none">
+                                            <i class="bi bi-x-lg me-1"></i> Descartar
+                                        </a>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button type="button" id="btn-salvar-continuar" class="btn btn-docisis-outline">
+                                            <i class="bi bi-plus-circle me-1"></i> Salvar e Novo
+                                        </button>
+                                        <button type="submit" id="btn-salvar-produto" class="btn btn-docisis-terracotta">
+                                            <i class="bi bi-check2-circle fs-5"></i> Cadastrar Produto
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div> <!-- /docisis-main-card -->
+
+                        <!-- ==========================================================================
+                             3. CARDS INFERIORES COM RESUMO DE MÉTRICAS DO DIA
+                             ========================================================================== -->
+                        <section class="metrics-section">
+                            <h2 class="metrics-title">
+                                <i class="bi bi-speedometer2" style="color: var(--docisis-terracotta);"></i> Resumo de Métricas do Dia
+                            </h2>
+
+                            <div class="metrics-grid">
+                                
+                                <!-- CARD 1: ÚLTIMO REGISTRO -->
+                                <div class="metric-card card-registro">
+                                    <div class="metric-card-header">
+                                        <span class="metric-label">Último Registro</span>
+                                        <div class="metric-icon-box">
+                                            <i class="bi bi-clock-history"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="metric-main-value" id="metrica-ultimo-nome">Torta Holandesa 850g</div>
+                                        <div class="metric-sub-info" id="metrica-ultimo-detalhe">
+                                            SKU: DCS-TOR-2604 • Estoque: 14 un
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between mt-3 pt-2 border-top">
+                                        <span class="small text-muted" id="metrica-ultimo-tempo">
+                                            <i class="bi bi-clock"></i> Há 24 min • Chef Juliana M.
+                                        </span>
+                                        <span class="metric-badge-pill badge-terracotta">Catálogo Ativo</span>
+                                    </div>
+                                </div>
+
+                                <!-- CARD 2: ALERTAS DO DIA -->
+                                <div class="metric-card card-alertas">
+                                    <div class="metric-card-header">
+                                        <span class="metric-label">Alertas do Catálogo</span>
+                                        <div class="metric-icon-box">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="metric-main-value">3 Itens em Atenção</div>
+                                        <div class="metric-sub-info">
+                                            1 validade próxima • 2 com estoque crítico
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between mt-3 pt-2 border-top">
+                                        <span class="small text-muted">
+                                            <i class="bi bi-bell"></i> Monitoramento automático
+                                        </span>
+                                        <span class="metric-badge-pill badge-amber">Requer Ação</span>
+                                    </div>
+                                </div>
+
+                                <!-- CARD 3: INTEGRIDADE DOS DADOS -->
+                                <div class="metric-card card-integridade">
+                                    <div class="metric-card-header">
+                                        <span class="metric-label">Integridade do Catálogo</span>
+                                        <div class="metric-icon-box">
+                                            <i class="bi bi-shield-check"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="metric-main-value">98.6% Conforme</div>
+                                        <div class="metric-sub-info">
+                                            142 de 144 fichas com foto e compliance 100%
+                                        </div>
+                                        <div class="metric-progress-wrapper">
+                                            <div class="metric-progress-bar-bg">
+                                                <div class="metric-progress-bar-fill" style="width: 98.6%;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between mt-3 pt-2 border-top">
+                                        <span class="small text-muted">
+                                            <i class="bi bi-check-all text-success"></i> Padrão ANVISA
+                                        </span>
+                                        <span class="metric-badge-pill badge-green">Excelente</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </section>
+
+                    </div> <!-- /products-container -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- TOAST DE NOTIFICAÇÃO FLUTUANTE -->
+    <div class="docisis-toast-container">
+        <div id="docisis-toast" class="docisis-toast">
+            <i class="bi bi-check-circle-fill text-success fs-5 toast-icon"></i>
+            <div>
+                <strong class="d-block text-dark fw-bold" style="font-size: 0.9rem;">Sistema Docisis</strong>
+                <span id="toast-mensagem" class="text-muted" style="font-size: 0.85rem;">Operação realizada com sucesso.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script de Produtos -->
+    <script src="src/js/produtos.js"></script>
+</body>
+
+</html>

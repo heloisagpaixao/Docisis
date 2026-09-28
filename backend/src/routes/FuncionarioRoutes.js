@@ -4,6 +4,8 @@ const upload = require("../config/FuncionarioMulter");
 const FuncionarioController = require("../controllers/FuncionarioController");
 const permissaoMiddleware = require("../middlewares/PermissaoMiddleware");
 
+
+
 router.get("/", FuncionarioController.listar);
 router.get("/:id", FuncionarioController.buscarPorId);
 router.post(

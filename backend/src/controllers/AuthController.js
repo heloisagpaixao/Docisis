@@ -1,4 +1,4 @@
-const FuncionarioService = require("../services/FuncionarioService");
+const AuthService = require("../services/AuthService");
 
 class AuthController {
   async login(req, res) {
@@ -10,9 +10,10 @@ class AuthController {
       return res.status(erro.status || 500).json({
         sucesso: false,
         mensagem: erro.mensagem || "Erro interno do servidor",
+        erro: erro.mensagem || erro,
       });
     }
   }
 }
 
-module.exports = new AuthController();
+module.exports = new AuthController();

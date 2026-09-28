@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const CargosController = require('../controllers/CargoController');
-permissaoMiddleware =  require("../middlewares/PermissaoMiddleware")
+const permissaoMiddleware = require("../middlewares/PermissaoMiddleware");
+
 
 const cargosRoutes = Router();
 
@@ -11,3 +12,4 @@ cargosRoutes.put('/:id', permissaoMiddleware, CargosController.atualizarCargos);
 cargosRoutes.delete('/:id', permissaoMiddleware, CargosController.deletarCargos); 
 
 module.exports = cargosRoutes;
+

@@ -39,6 +39,7 @@ module.exports = (req, res, next) => {
     }
 
     req.funcionario = decoded;
+    req.user = decoded;
     return next();
   });
 };

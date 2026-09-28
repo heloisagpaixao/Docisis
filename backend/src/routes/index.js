@@ -13,9 +13,6 @@ const ProdutosRoutes = require("./ProdutoRoutes");
 const SaidasRoutes = require("./SaidaRoutes");
 
 const AuthMiddleware = require("../middlewares/AuthMiddleware");
-const Auth = require("../middlewares/Auth");
-const AuthPermissao = require("../middlewares/PermissaoMiddleware");
-const authMiddleware = require("../middlewares/AuthMiddleware");
 
 // Rota base (Root endpoint)
 router.get("/docisis", (req, res) => {
@@ -26,12 +23,16 @@ router.get("/docisis", (req, res) => {
   });
 });
 
+// Autenticação (disponível em /auth/login e /login)
+router.use("/auth", AuthsRoutes);
+router.use("/", AuthsRoutes);
+
 // Registrar domínios de rotas
 router.use("/ajustes", AjustesRoutes);
-router.use("/cargos", Auth, authMiddleware, CargosRoutes);
+router.use("/cargos", AuthMiddleware, CargosRoutes);
 router.use("/entradas", EntradasRoutes);
 router.use("/estoque", EstoqueRoutes);
-router.use("/funcionarios", Auth, authMiddleware, FuncionariosRoutes);
+router.use("/funcionarios", AuthMiddleware, FuncionariosRoutes);
 router.use("/lotes", LotesRoutes);
 router.use("/notasfiscais", NotasFiscaisRoutes);
 router.use("/produtos", ProdutosRoutes);

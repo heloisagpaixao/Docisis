@@ -3,7 +3,8 @@ const ajusteService = require("../services/AjusteService");
 class AjusteController {
   async criar(req, res) {
     try {
-      const { id_lote, id_funcionario, quantidade_nova, motivo } = req.body;
+      const { id_lote, quantidade_nova, motivo } = req.body;
+      const id_funcionario = req.body.id_funcionario || req.user?.id || req.funcionario?.id;
 
       const ajuste = await ajusteService.criarAjuste({
         id_lote,

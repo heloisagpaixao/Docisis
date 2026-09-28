@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../middlewares/Auth");
-const permissaoMiddleware = require("../middlewares/PermissaoMiddleware");
+const authMiddleware = require("../middlewares/AuthMiddleware");
 const EstoqueController = require("../controllers/EstoqueController");
+
+
 
 // Autenticação obrigatória
 router.use(authMiddleware);

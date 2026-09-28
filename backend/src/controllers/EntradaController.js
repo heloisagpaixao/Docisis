@@ -29,7 +29,11 @@ class EntradaController {
 
   async cadastrar(req, res) {
     try {
-      const resultado = await EntradaService.cadastrarEntrada(req.body);
+      const dados = {
+        ...req.body,
+        id_funcionario: req.body.id_funcionario || req.user?.id || req.funcionario?.id,
+      };
+      const resultado = await EntradaService.cadastrarEntrada(dados);
       res.status(201).json(resultado);
     } catch (erro) {
       res.status(erro.status || 500).json({

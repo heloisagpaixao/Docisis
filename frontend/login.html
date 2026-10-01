@@ -1,249 +1,376 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Docisis - Autenticação & Segurança</title>
 
     <!-- Bootstrap 5 + Bootstrap Icons + Global Docisis CSS + Login CSS -->
-    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="src/css/global.css">
-    <link rel="stylesheet" href="src/css/login.css">
-</head>
+    <link
+      rel="stylesheet"
+      href="node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link rel="stylesheet" href="src/css/global.css" />
+    <link rel="stylesheet" href="src/css/login.css" />
+  </head>
 
-<body>
+  <body>
     <div class="container py-4 my-auto">
-        <!-- Logo Oficial do Sistema -->
-        <div class="text-center mb-4">
-            <div class="brand-logo-wrapper mb-2">
-                <img src="src/assets/logo-docisis.svg" alt="Docisis" class="img-fluid" style="max-height: 65px;">
-            </div>
-            <p class="brand-subtitle mt-1">Gestão Profissional de Confeitaria</p>
+      <!-- Logo Oficial do Sistema -->
+      <div class="text-center mb-4">
+        <div class="brand-logo-wrapper mb-2">
+          <img
+            src="src/assets/logo-docisis.svg"
+            alt="Docisis"
+            class="img-fluid"
+            style="max-height: 65px"
+          />
         </div>
+        <p class="brand-subtitle mt-1">Gestão Profissional de Confeitaria</p>
+      </div>
 
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6 col-xl-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 col-xl-5">
+          <!-- Alerta Global de Feedback -->
+          <div id="aviso-login" class="alert d-none mb-3" role="alert"></div>
 
-                <!-- Alerta Global de Feedback -->
-                <div id="aviso-login" class="alert d-none mb-3" role="alert"></div>
-
-                <!-- ==========================================================================
+          <!-- ==========================================================================
                      PASSO 1: TELA DE LOGIN CENTRALIZADA
                      ========================================================================== -->
-                <div id="step-login" class="docisis-card auth-step">
-                    <form id="form-login" novalidate>
-                        <!-- E-mail Corporativo -->
-                        <div class="mb-3">
-                            <label for="login-email" class="form-label-uppercase">E-mail Corporativo</label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-envelope input-icon"></i>
-                                <input type="email" class="form-control" id="login-email"
-                                    placeholder="nome@docisis.com.br" required>
-                            </div>
-                        </div>
-
-                        <!-- Senha -->
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <label for="login-senha" class="form-label-uppercase mb-0">Senha</label>
-                                <a href="#" id="link-esqueci-senha"
-                                    class="small link-terracotta text-decoration-none fw-semibold">Esqueci minha
-                                    senha</a>
-                            </div>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-lock input-icon"></i>
-                                <input type="password" class="form-control" id="login-senha" placeholder="••••••••"
-                                    required>
-                            </div>
-                        </div>
-
-                        <!-- Botão Entrar -->
-                        <button type="submit" id="btn-entrar" class="btn btn-docisis-navy mb-3">
-                            Entrar <i class="bi bi-box-arrow-in-right fs-5 ms-1"></i>
-                        </button>
-
-                        <!-- Link para Cadastro de Novo Operador -->
-                        <div class="text-center pt-2 border-top">
-                            <span class="small text-muted">Novo operador na equipe? </span>
-                            <a href="cadastro.html"
-                                class="small text-decoration-none fw-bold text-navy-docisis">Solicitar Cadastro</a>
-                        </div>
-                    </form>
+          <div id="step-login" class="docisis-card auth-step">
+            <form id="form-login" novalidate>
+              <!-- E-mail Corporativo -->
+              <div class="mb-3">
+                <label for="login-email" class="form-label-uppercase"
+                  >E-mail Corporativo</label
+                >
+                <div class="input-group-docisis">
+                  <i class="bi bi-envelope input-icon"></i>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="login-email"
+                    placeholder="nome@docisis.com.br"
+                    required
+                  />
                 </div>
+              </div>
 
-                <!-- ==========================================================================
+              <!-- Senha -->
+              <div class="mb-4">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-1"
+                >
+                  <label for="login-senha" class="form-label-uppercase mb-0"
+                    >Senha</label
+                  >
+                  <a
+                    href="#"
+                    id="link-esqueci-senha"
+                    class="small link-terracotta text-decoration-none fw-semibold"
+                    >Esqueci minha senha</a
+                  >
+                </div>
+                <div class="input-group-docisis">
+                  <i class="bi bi-lock input-icon"></i>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="login-senha"
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Botão Entrar -->
+              <button
+                type="submit"
+                id="btn-entrar"
+                class="btn btn-docisis-navy mb-3"
+              >
+                Entrar <i class="bi bi-box-arrow-in-right fs-5 ms-1"></i>
+              </button>
+
+              <!-- Link para Cadastro de Novo Operador -->
+              <div class="text-center pt-2 border-top">
+                <span class="small text-muted">Novo operador na equipe? </span>
+                <a
+                  href="cadastro.html"
+                  class="small text-decoration-none fw-bold text-navy-docisis"
+                  >Solicitar Cadastro</a
+                >
+              </div>
+            </form>
+          </div>
+
+          <!-- ==========================================================================
                      PASSO 2: AUTENTICAÇÃO EM DUAS ETAPAS (2FA)
                      ========================================================================== -->
-                <div id="step-2fa" class="docisis-card auth-step d-none">
-                    <div class="text-center mb-4">
-                        <div class="icon-circle bg-terracotta-light text-terracotta mx-auto mb-2">
-                            <i class="bi bi-shield-check fs-3"></i>
-                        </div>
-                        <h2 class="h5 fw-bold text-navy-docisis mb-1">Verificação em Duas Etapas (2FA)</h2>
-                        <p class="text-muted small">Insira o código numérico de 6 dígitos para autorizar o acesso.</p>
-                    </div>
+          <div id="step-2fa" class="docisis-card auth-step d-none">
+            <div class="text-center mb-4">
+              <div
+                class="icon-circle bg-terracotta-light text-terracotta mx-auto mb-2"
+              >
+                <i class="bi bi-shield-check fs-3"></i>
+              </div>
+              <h2 class="h5 fw-bold text-navy-docisis mb-1">
+                Verificação em Duas Etapas (2FA)
+              </h2>
+              <p class="text-muted small">
+                Insira o código numérico de 6 dígitos para autorizar o acesso.
+              </p>
+            </div>
 
-                    <form id="form-2fa" novalidate>
-                        <!-- Seletor do Método de 2FA -->
-                        <div class="mb-4">
-                            <label for="metodo-2fa" class="form-label-uppercase">Método de Envio</label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-phone input-icon"></i>
-                                <select class="form-select" id="metodo-2fa">
-                                    <option value="email" selected>E-mail Corporativo (admin@docisis.com.br)</option>
-                                    <option value="app">Aplicativo Autenticador (Google/Microsoft Authenticator)
-                                    </option>
-                                    <option value="sms">SMS / WhatsApp (11) 9****-9999</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Entrada do Código de 6 Dígitos -->
-                        <div class="mb-4">
-                            <label class="form-label-uppercase text-center d-block mb-2">Código de Verificação de 6
-                                Dígitos</label>
-                            <div class="d-flex justify-content-between gap-2 pin-container">
-                                <input type="text" maxlength="1" class="form-control pin-box text-center fw-bold fs-4"
-                                    required>
-                                <input type="text" maxlength="1" class="form-control pin-box text-center fw-bold fs-4"
-                                    required>
-                                <input type="text" maxlength="1" class="form-control pin-box text-center fw-bold fs-4"
-                                    required>
-                                <input type="text" maxlength="1" class="form-control pin-box text-center fw-bold fs-4"
-                                    required>
-                                <input type="text" maxlength="1" class="form-control pin-box text-center fw-bold fs-4"
-                                    required>
-                                <input type="text" maxlength="1" class="form-control pin-box text-center fw-bold fs-4"
-                                    required>
-                            </div>
-                        </div>
-
-                        <!-- Reenviar Código com Timer -->
-                        <div class="text-center mb-4">
-                            <button type="button" id="btn-reenviar-2fa"
-                                class="btn btn-link p-0 small text-decoration-none text-muted" disabled>
-                                Reenviar código em <span id="timer-2fa" class="fw-bold">00:45</span>
-                            </button>
-                        </div>
-
-                        <!-- Botão Confirmar 2FA -->
-                        <button type="submit" id="btn-validar-2fa" class="btn btn-docisis-navy mb-3">
-                            Confirmar Acesso 2FA <i class="bi bi-arrow-right-short fs-5"></i>
-                        </button>
-
-                        <button type="button" class="btn btn-outline-secondary w-100 btn-voltar-login">
-                            <i class="bi bi-arrow-left me-1"></i> Voltar ao Login
-                        </button>
-                    </form>
+            <form id="form-2fa" novalidate>
+              <!-- Seletor do Método de 2FA -->
+              <div class="mb-4">
+                <label for="metodo-2fa" class="form-label-uppercase"
+                  >Método de Envio</label
+                >
+                <div class="input-group-docisis">
+                  <i class="bi bi-phone input-icon"></i>
+                  <select class="form-select" id="metodo-2fa">
+                    <option value="email" selected>
+                      E-mail Corporativo (admin@docisis.com.br)
+                    </option>
+                    <option value="app">
+                      Aplicativo Autenticador (Google/Microsoft Authenticator)
+                    </option>
+                    <option value="sms">SMS / WhatsApp (11) 9****-9999</option>
+                  </select>
                 </div>
+              </div>
 
-                <!-- ==========================================================================
+              <!-- Entrada do Código de 6 Dígitos -->
+              <div class="mb-4">
+                <label class="form-label-uppercase text-center d-block mb-2"
+                  >Código de Verificação de 6 Dígitos</label
+                >
+                <div class="d-flex justify-content-between gap-2 pin-container">
+                  <input
+                    type="text"
+                    maxlength="1"
+                    class="form-control pin-box text-center fw-bold fs-4"
+                    required
+                  />
+                  <input
+                    type="text"
+                    maxlength="1"
+                    class="form-control pin-box text-center fw-bold fs-4"
+                    required
+                  />
+                  <input
+                    type="text"
+                    maxlength="1"
+                    class="form-control pin-box text-center fw-bold fs-4"
+                    required
+                  />
+                  <input
+                    type="text"
+                    maxlength="1"
+                    class="form-control pin-box text-center fw-bold fs-4"
+                    required
+                  />
+                  <input
+                    type="text"
+                    maxlength="1"
+                    class="form-control pin-box text-center fw-bold fs-4"
+                    required
+                  />
+                  <input
+                    type="text"
+                    maxlength="1"
+                    class="form-control pin-box text-center fw-bold fs-4"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Reenviar Código com Timer -->
+              <div class="text-center mb-4">
+                <button
+                  type="button"
+                  id="btn-reenviar-2fa"
+                  class="btn btn-link p-0 small text-decoration-none text-muted"
+                  disabled
+                >
+                  Reenviar código em
+                  <span id="timer-2fa" class="fw-bold">00:45</span>
+                </button>
+              </div>
+
+              <!-- Botão Confirmar 2FA -->
+              <button
+                type="submit"
+                id="btn-validar-2fa"
+                class="btn btn-docisis-navy mb-3"
+              >
+                Confirmar Acesso 2FA
+                <i class="bi bi-arrow-right-short fs-5"></i>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-secondary w-100 btn-voltar-login"
+              >
+                <i class="bi bi-arrow-left me-1"></i> Voltar ao Login
+              </button>
+            </form>
+          </div>
+
+          <!-- ==========================================================================
                      PASSO 3: SOLICITAR REDEFINIÇÃO DE SENHA (ESQUECI SENHA)
                      ========================================================================== -->
-                <div id="step-esqueci-senha" class="docisis-card auth-step d-none">
-                    <div class="text-center mb-4">
-                        <div class="icon-circle bg-navy-light text-navy mx-auto mb-2">
-                            <i class="bi bi-key fs-3"></i>
-                        </div>
-                        <h2 class="h5 fw-bold text-navy-docisis mb-1">Recuperar Senha</h2>
-                        <p class="text-muted small">Informe seu e-mail corporativo cadastrado para receber o link de
-                            recuperação.</p>
-                    </div>
+          <div id="step-esqueci-senha" class="docisis-card auth-step d-none">
+            <div class="text-center mb-4">
+              <div class="icon-circle bg-navy-light text-navy mx-auto mb-2">
+                <i class="bi bi-key fs-3"></i>
+              </div>
+              <h2 class="h5 fw-bold text-navy-docisis mb-1">Recuperar Senha</h2>
+              <p class="text-muted small">
+                Informe seu e-mail corporativo cadastrado para receber o link de
+                recuperação.
+              </p>
+            </div>
 
-                    <form id="form-esqueci-senha" novalidate>
-                        <div class="mb-4">
-                            <label for="recuperar-email" class="form-label-uppercase">E-mail Corporativo</label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-envelope input-icon"></i>
-                                <input type="email" class="form-control" id="recuperar-email"
-                                    placeholder="nome@docisis.com.br" required>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-docisis-navy mb-3">
-                            Enviar Instruções de Recuperação <i class="bi bi-send ms-1"></i>
-                        </button>
-
-                        <button type="button" class="btn btn-outline-secondary w-100 btn-voltar-login">
-                            <i class="bi bi-arrow-left me-1"></i> Voltar ao Login
-                        </button>
-                    </form>
+            <form id="form-esqueci-senha" novalidate>
+              <div class="mb-4">
+                <label for="recuperar-email" class="form-label-uppercase"
+                  >E-mail Corporativo</label
+                >
+                <div class="input-group-docisis">
+                  <i class="bi bi-envelope input-icon"></i>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="recuperar-email"
+                    placeholder="nome@docisis.com.br"
+                    required
+                  />
                 </div>
+              </div>
 
-                <!-- ==========================================================================
+              <button type="submit" class="btn btn-docisis-navy mb-3">
+                Enviar Instruções de Recuperação <i class="bi bi-send ms-1"></i>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-secondary w-100 btn-voltar-login"
+              >
+                <i class="bi bi-arrow-left me-1"></i> Voltar ao Login
+              </button>
+            </form>
+          </div>
+
+          <!-- ==========================================================================
                      PASSO 4: REDEFINIR NOVA SENHA + CHECKLIST DINÂMICO DE FORÇA
                      ========================================================================== -->
-                <div id="step-redefinir-senha" class="docisis-card auth-step d-none">
-                    <div class="text-center mb-4">
-                        <div class="icon-circle bg-success-light text-success mx-auto mb-2">
-                            <i class="bi bi-lock-fill fs-3"></i>
-                        </div>
-                        <h2 class="h5 fw-bold text-navy-docisis mb-1">Criar Nova Senha</h2>
-                        <p class="text-muted small">Defina uma nova senha forte para acessar o sistema Docisis.</p>
-                    </div>
-
-                    <form id="form-redefinir-senha" novalidate>
-                        <!-- Nova Senha -->
-                        <div class="mb-3">
-                            <label for="nova-senha" class="form-label-uppercase">Nova Senha</label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-shield-lock input-icon"></i>
-                                <input type="password" class="form-control" id="nova-senha"
-                                    placeholder="Digite sua nova senha" required>
-                            </div>
-                        </div>
-
-                        <!-- Confirmar Nova Senha -->
-                        <div class="mb-3">
-                            <label for="confirma-senha" class="form-label-uppercase">Confirmar Nova Senha</label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-check2-circle input-icon"></i>
-                                <input type="password" class="form-control" id="confirma-senha"
-                                    placeholder="Repita a nova senha" required>
-                            </div>
-                        </div>
-
-                        <!-- Checklist Dinâmico de Requisitos de Força de Senha -->
-                        <div class="password-checklist p-3 mb-4 rounded bg-light border">
-                            <small class="fw-bold d-block text-secondary mb-2">Requisitos de Segurança da Senha:</small>
-                            <ul class="list-unstyled mb-0 small">
-                                <li id="check-length" class="checklist-item invalid">
-                                    <i class="bi bi-x-circle me-1"></i> Mínimo de 8 caracteres
-                                </li>
-                                <li id="check-uppercase" class="checklist-item invalid">
-                                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 letra maiúscula (A-Z)
-                                </li>
-                                <li id="check-lowercase" class="checklist-item invalid">
-                                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 letra minúscula (a-z)
-                                </li>
-                                <li id="check-number" class="checklist-item invalid">
-                                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 número (0-9)
-                                </li>
-                                <li id="check-special" class="checklist-item invalid">
-                                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 caractere especial (!@#$%^&*)
-                                </li>
-                                <li id="check-match" class="checklist-item invalid">
-                                    <i class="bi bi-x-circle me-1"></i> As senhas devem coincidir
-                                </li>
-                            </ul>
-                        </div>
-
-                        <button type="submit" id="btn-salvar-nova-senha" class="btn btn-docisis-navy mb-3">
-                            Salvar Nova Senha & Entrar <i class="bi bi-check-circle ms-1"></i>
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Rodapé de Suporte Técnico -->
-                <div class="support-footer">
-                    <i class="bi bi-headset fs-6"></i>
-                    <span>Suporte Técnico Administrativo</span>
-                </div>
-
+          <div id="step-redefinir-senha" class="docisis-card auth-step d-none">
+            <div class="text-center mb-4">
+              <div
+                class="icon-circle bg-success-light text-success mx-auto mb-2"
+              >
+                <i class="bi bi-lock-fill fs-3"></i>
+              </div>
+              <h2 class="h5 fw-bold text-navy-docisis mb-1">
+                Criar Nova Senha
+              </h2>
+              <p class="text-muted small">
+                Defina uma nova senha forte para acessar o sistema Docisis.
+              </p>
             </div>
+
+            <form id="form-redefinir-senha" novalidate>
+              <!-- Nova Senha -->
+              <div class="mb-3">
+                <label for="nova-senha" class="form-label-uppercase"
+                  >Nova Senha</label
+                >
+                <div class="input-group-docisis">
+                  <i class="bi bi-shield-lock input-icon"></i>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="nova-senha"
+                    placeholder="Digite sua nova senha"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Confirmar Nova Senha -->
+              <div class="mb-3">
+                <label for="confirma-senha" class="form-label-uppercase"
+                  >Confirmar Nova Senha</label
+                >
+                <div class="input-group-docisis">
+                  <i class="bi bi-check2-circle input-icon"></i>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="confirma-senha"
+                    placeholder="Repita a nova senha"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Checklist Dinâmico de Requisitos de Força de Senha -->
+              <div class="password-checklist p-3 mb-4 rounded bg-light border">
+                <small class="fw-bold d-block text-secondary mb-2"
+                  >Requisitos de Segurança da Senha:</small
+                >
+                <ul class="list-unstyled mb-0 small">
+                  <li id="check-length" class="checklist-item invalid">
+                    <i class="bi bi-x-circle me-1"></i> Mínimo de 8 caracteres
+                  </li>
+                  <li id="check-uppercase" class="checklist-item invalid">
+                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 letra
+                    maiúscula (A-Z)
+                  </li>
+                  <li id="check-lowercase" class="checklist-item invalid">
+                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 letra
+                    minúscula (a-z)
+                  </li>
+                  <li id="check-number" class="checklist-item invalid">
+                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 número
+                    (0-9)
+                  </li>
+                  <li id="check-special" class="checklist-item invalid">
+                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 caractere
+                    especial (!@#$%^&*)
+                  </li>
+                  <li id="check-match" class="checklist-item invalid">
+                    <i class="bi bi-x-circle me-1"></i> As senhas devem
+                    coincidir
+                  </li>
+                </ul>
+              </div>
+
+              <button
+                type="submit"
+                id="btn-salvar-nova-senha"
+                class="btn btn-docisis-navy mb-3"
+              >
+                Salvar Nova Senha & Entrar
+                <i class="bi bi-check-circle ms-1"></i>
+              </button>
+            </form>
+          </div>
+
+          <!-- Rodapé de Suporte Técnico -->
+          <div class="support-footer">
+            <i class="bi bi-headset fs-6"></i>
+            <span>Suporte Técnico Administrativo</span>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Bootstrap 5 Bundle JS -->
@@ -251,6 +378,5 @@
 
     <!-- Script de Autenticação, 2FA e Redefinição -->
     <script src="src/js/login.js"></script>
-</body>
-
+  </body>
 </html>

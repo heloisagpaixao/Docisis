@@ -1,202 +1,17 @@
 /* ==========================================================================
-   DOCISIS - ESTILOS DA TELA DE PERFIL DO FUNCIONÁRIO (FUNCIONARIO.CSS)
+   DOCISIS - ESTILOS DO MÓDULO DE PERFIL DO FUNCIONÁRIO (FUNCIONARIO.CSS)
+   Contém apenas estilos exclusivos desta tela. Layout e sidebar
+   são gerenciados por layout.css — não duplicar media queries.
    ========================================================================== */
 
-/* Layout Geral de 2 Colunas */
-.app-layout {
-    display: flex;
-    min-height: 100vh;
-    background-color: #eaeaea;
-}
-
-/* --- 1. Sidebar Lateral Terracota Minimalista (Dock Ultra Slim) --- */
-.sidebar-docisis {
-    width: 72px;
-    background-color: var(--docisis-terracotta, #c44918);
-    color: #ffffff;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 100;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-    padding: 1.5rem 0;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-}
-
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 1.35rem;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-}
-
-.sidebar-nav .sidebar-item:last-child {
-    margin-top: auto;
-}
-
-.sidebar-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    color: rgba(255, 255, 255, 0.75);
-    text-decoration: none;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    border-left: none;
-    padding: 0.35rem 0.2rem;
-}
-
-.sidebar-item:hover {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.18);
-    transform: scale(1.05);
-}
-
-.sidebar-item.active {
-    color: #ffffff;
-    background-color: rgba(0, 0, 0, 0.25);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
-}
-
-.sidebar-item span {
-    font-size: 0.62rem;
-    font-weight: 600;
-    margin-top: 0.2rem;
-    line-height: 1;
-    letter-spacing: 0.1px;
-}
-
-/* Espaçamento progressivo em telas maiores (Desktop / Widescreen) */
-@media (min-width: 992px) {
-    .sidebar-docisis {
-        width: 76px;
-        padding: 1.75rem 0;
-    }
-
-    .sidebar-nav {
-        gap: 1.75rem;
-    }
-
-    .sidebar-item {
-        width: 54px;
-        height: 54px;
-    }
-}
-
-@media (min-width: 1400px) {
-    .sidebar-docisis {
-        width: 80px;
-        padding: 2rem 0;
-    }
-
-    .sidebar-nav {
-        gap: 2.25rem;
-    }
-
-    .sidebar-item {
-        width: 58px;
-        height: 58px;
-    }
-
-    .sidebar-item span {
-        font-size: 0.66rem;
-    }
-}
-
-/* --- 2. Main Wrapper & Topbar Responsiva --- */
-.main-content-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.topbar-docisis {
-    min-height: 65px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 1.5rem;
-    gap: 1rem;
-    position: relative;
-    z-index: 10;
-}
-
-.topbar-brand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    min-width: 0;
-}
-
-.topbar-logo {
-    max-height: 44px;
-    max-width: 100%;
-    height: auto;
-    object-fit: contain;
-}
-
-.topbar-user {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.user-profile-badge {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 0.9rem;
-    color: var(--docisis-navy, #08172e);
-    white-space: nowrap;
-}
-
-.user-name-text {
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.avatar-sm {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: #cbd5e1;
-    border: 2px solid var(--docisis-terracotta, #c44918);
-    flex-shrink: 0;
-}
-
-/* --- 3. Área de Trabalho (Workspace Cinza) --- */
-.workspace-docisis {
-    flex: 1;
-    background-color: #eaeaea;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1rem;
-}
-
-/* Card Principal de Personalização (Branco) */
+/* Card Principal de Personalização */
 .profile-card {
     background-color: #ffffff;
     border-radius: 14px;
     padding: 3.5rem 4rem;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
     width: 100%;
+    max-width: 900px;
 }
 
 .profile-title {
@@ -206,7 +21,7 @@
     margin-bottom: 1.5rem;
 }
 
-/* Sub-navegação por Abas Lado a Lado Alinhada à Esquerda */
+/* Sub-navegação por Abas */
 .nav-tabs-wrapper {
     display: flex;
     justify-content: flex-start;
@@ -253,7 +68,7 @@
     border-bottom: 3px solid var(--docisis-terracotta, #c44918);
 }
 
-/* --- Avatar Circular com Upload --- */
+/* Avatar Circular com Upload */
 .avatar-upload-wrapper {
     width: 140px;
     height: 140px;
@@ -297,11 +112,18 @@
     transition: opacity 0.25s ease;
 }
 
-.avatar-circle:hover .avatar-overlay {
+.avatar-circle:hover .avatar-overlay,
+.avatar-circle:focus-within .avatar-overlay {
     opacity: 1;
 }
 
-/* --- Form Inputs Cinza Alinhado à Esquerda --- */
+@media (hover: none) {
+    .avatar-overlay {
+        opacity: 1;
+    }
+}
+
+/* Inputs do Perfil */
 .form-label-simple {
     font-size: 0.88rem;
     font-weight: 600;
@@ -326,6 +148,12 @@
     outline: none !important;
 }
 
+.form-control-gray:focus-visible {
+    outline: 2px solid var(--docisis-terracotta, #c44918) !important;
+    outline-offset: 2px !important;
+}
+
+/* Largura máxima dos formulários internos */
 .max-w-460,
 .max-w-500,
 .max-w-550 {
@@ -335,58 +163,8 @@
     margin-right: auto;
 }
 
-/* Responsividade para telas menores (Tablets e Celulares) */
-@media (max-width: 992px) {
-    .topbar-logo {
-        max-height: 36px;
-    }
-
-    .user-name-text {
-        max-width: 100px;
-    }
-}
-
+/* Responsividade do card de perfil */
 @media (max-width: 768px) {
-    .app-layout {
-        flex-direction: column;
-    }
-
-    .sidebar-docisis {
-        width: 100%;
-        height: auto;
-        min-height: unset;
-        position: static;
-        box-shadow: none;
-        padding: 0.5rem 0;
-    }
-
-    .sidebar-nav {
-        flex-direction: row;
-        justify-content: space-around;
-        height: auto;
-        padding-top: 0;
-        overflow-x: auto;
-    }
-
-    .sidebar-nav .sidebar-item:last-child {
-        margin-top: 0;
-    }
-
-    .sidebar-item {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
-        flex-shrink: 0;
-    }
-
-    .user-name-text {
-        display: none;
-    }
-
-    .topbar-docisis {
-        padding: 0.5rem 1rem;
-    }
-
     .profile-card {
         padding: 2rem 1.25rem;
     }

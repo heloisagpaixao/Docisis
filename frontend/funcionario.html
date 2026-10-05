@@ -1,95 +1,128 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">  
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Docisis - Personalizar Perfil do Funcionário</title>
+    <title>Docisis — Personalizar Perfil do Funcionário</title>
+    <meta name="description" content="Gerencie seus dados pessoais, segurança e preferências de notificação no sistema Docisis.">
 
-    <!-- Bootstrap 5 + Bootstrap Icons + Global CSS + Funcionario CSS -->
+    <!-- Bootstrap 5 + Bootstrap Icons -->
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS Docisis: global → layout → componentes → módulo -->
     <link rel="stylesheet" href="src/css/global.css">
+    <link rel="stylesheet" href="src/css/layout.css">
+    <link rel="stylesheet" href="src/css/components.css">
     <link rel="stylesheet" href="src/css/funcionario.css">
 </head>
 
 <body>
     <div class="app-layout">
-        <!-- ==========================================================================
-             1. BARRA LATERAL (SIDEBAR TERRACOTA MINIMALISTA DOCK)
-             ========================================================================== -->
-        <aside class="sidebar-docisis">
-            <nav class="sidebar-nav">
-                <a href="cadastro.html" class="sidebar-item" title="Administração">
-                    <i class="bi bi-clipboard-data fs-4"></i>
+
+        <!-- ==================================================================
+             BARRA LATERAL (SIDEBAR)
+             ================================================================== -->
+        <aside class="sidebar-docisis" aria-label="Barra de navegação lateral">
+            <nav class="sidebar-nav" aria-label="Navegação principal">
+                <a href="usuarios.html" class="sidebar-item" title="Administração &amp; Usuários" aria-label="Gestão de Usuários e Permissões">
+                    <i class="bi bi-shield-lock-fill fs-4" aria-hidden="true"></i>
                     <span>Admin</span>
                 </a>
-                <a href="produtos.html" class="sidebar-item" title="Cadastro de Produtos">
-                    <i class="bi bi-plus-square fs-4"></i>
+                <a href="produtos.html" class="sidebar-item" title="Cadastro de Produtos" aria-label="Cadastro de Produtos">
+                    <i class="bi bi-plus-square fs-4" aria-hidden="true"></i>
                     <span>Produtos</span>
                 </a>
-                <a href="#" class="sidebar-item" title="Histórico">
-                    <i class="bi bi-clock-history fs-4"></i>
+                <a href="historico.html" class="sidebar-item" title="Histórico" aria-label="Histórico de pedidos e auditoria">
+                    <i class="bi bi-clock-history fs-4" aria-hidden="true"></i>
                     <span>Histórico</span>
                 </a>
-                <a href="estoque.html" class="sidebar-item" title="Estoque">
-                    <i class="bi bi-box-seam fs-4"></i>
+                <a href="estoque.html" class="sidebar-item" title="Estoque" aria-label="Gestão de estoque">
+                    <i class="bi bi-box-seam fs-4" aria-hidden="true"></i>
                     <span>Estoque</span>
                 </a>
-                <a href="funcionario.html" class="sidebar-item active" title="Configurações">
-                    <i class="bi bi-gear fs-4"></i>
+                <a href="funcionario.html" class="sidebar-item active" title="Configurações" aria-label="Ajustes de perfil" aria-current="page">
+                    <i class="bi bi-gear fs-4" aria-hidden="true"></i>
                     <span>Ajustes</span>
                 </a>
             </nav>
         </aside>
 
-        <!-- ==========================================================================
-             PAINEL PRINCIPAL (TOPBAR + ÁREA DE CONTEÚDO)
-             ========================================================================== -->
+        <!-- ==================================================================
+             PAINEL PRINCIPAL (TOPBAR + WORKSPACE)
+             ================================================================== -->
         <div class="main-content-wrapper">
-            <!-- Barra Superior (Topbar Responsiva) -->
+
+            <!-- Barra Superior -->
             <header class="topbar-docisis">
                 <div class="topbar-brand">
-                    <img src="src/assets/logo-docisis.svg" alt="Docisis" class="topbar-logo">
+                    <img src="src/assets/logo-docisis.svg" alt="Docisis — Gestão Profissional de Confeitaria" class="topbar-logo">
                 </div>
                 <div class="topbar-user">
                     <div class="user-profile-badge">
                         <span id="topbar-username" class="fw-semibold user-name-text">Nome de Usuário</span>
-                        <img id="topbar-avatar" src="https://via.placeholder.com/40" alt="Avatar" class="avatar-sm">
+                        <div class="avatar-sm d-flex align-items-center justify-content-center bg-light fw-bold border rounded-circle"
+                             id="topbar-avatar-initials"
+                             aria-label="Iniciais do usuário"
+                             style="width:38px;height:38px;font-size:.85rem;color:var(--docisis-navy);">
+                        </div>
                     </div>
                 </div>
             </header>
 
-            <!-- Área de Trabalho (Workspace Cinza) -->
-            <main class="workspace-docisis">
+            <!-- Workspace -->
+            <main class="workspace-docisis" id="conteudo-principal">
                 <div class="container-fluid py-5">
                     <div class="row justify-content-center">
                         <div class="col-lg-10 col-xl-9">
 
                             <!-- Alerta de Feedback -->
-                            <div id="aviso-perfil" class="alert d-none mb-4" role="alert"></div>
+                            <div id="aviso-perfil" class="alert d-none mb-4" role="alert" aria-live="polite"></div>
 
                             <!-- Card de Personalização -->
                             <div class="profile-card shadow-sm">
-                                <!-- Título Principal Alinhado à Esquerda -->
-                                <h2 class="profile-title text-start mb-4">Personalizar</h2>
 
-                                <!-- Abas de Navegação Internas Lado a Lado -->
+                                <!-- h1 da página (WCAG 2.4.6) -->
+                                <h1 class="profile-title text-start mb-4">Personalizar Perfil</h1>
+
+                                <!-- Abas de Navegação -->
                                 <div class="nav-tabs-wrapper text-start mb-4">
-                                    <ul class="nav nav-tabs nav-tabs-docisis flex-nowrap" id="perfilTabs" role="tablist">
+                                    <ul class="nav nav-tabs nav-tabs-docisis flex-nowrap" id="perfilTabs" role="tablist" aria-label="Seções do perfil">
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="tab-dados-link" data-bs-toggle="tab" data-bs-target="#tab-dados" type="button" role="tab">
-                                                <i class="bi bi-person-vcard me-1"></i> Dados Pessoais
+                                            <button class="nav-link active"
+                                                    id="tab-dados-link"
+                                                    data-bs-toggle="tab"
+                                                    data-bs-target="#tab-dados"
+                                                    type="button"
+                                                    role="tab"
+                                                    aria-controls="tab-dados"
+                                                    aria-selected="true">
+                                                <i class="bi bi-person-vcard me-1" aria-hidden="true"></i> Dados Pessoais
                                             </button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="tab-seguranca-link" data-bs-toggle="tab" data-bs-target="#tab-seguranca" type="button" role="tab">
-                                                <i class="bi bi-shield-lock me-1"></i> Segurança (Senha)
+                                            <button class="nav-link"
+                                                    id="tab-seguranca-link"
+                                                    data-bs-toggle="tab"
+                                                    data-bs-target="#tab-seguranca"
+                                                    type="button"
+                                                    role="tab"
+                                                    aria-controls="tab-seguranca"
+                                                    aria-selected="false">
+                                                <i class="bi bi-shield-lock me-1" aria-hidden="true"></i> Segurança (Senha)
                                             </button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="tab-notificacoes-link" data-bs-toggle="tab" data-bs-target="#tab-notificacoes" type="button" role="tab">
-                                                <i class="bi bi-bell me-1"></i> Preferências de Notificação
+                                            <button class="nav-link"
+                                                    id="tab-notificacoes-link"
+                                                    data-bs-toggle="tab"
+                                                    data-bs-target="#tab-notificacoes"
+                                                    type="button"
+                                                    role="tab"
+                                                    aria-controls="tab-notificacoes"
+                                                    aria-selected="false">
+                                                <i class="bi bi-bell me-1" aria-hidden="true"></i> Preferências de Notificação
                                             </button>
                                         </li>
                                     </ul>
@@ -97,95 +130,167 @@
 
                                 <!-- Conteúdo das Abas -->
                                 <div class="tab-content" id="perfilTabsContent">
-                                    
-                                    <!-- ABA 1: DADOS PESSOAIS (ALINHADO À ESQUERDA) -->
-                                    <div class="tab-pane fade show active" id="tab-dados" role="tabpanel">
-                                        <form id="form-perfil-funcionario" class="max-w-550 ms-0 me-auto" novalidate>
-                                            
-                                            <!-- Foto de Perfil Alinhada à Esquerda com Upload -->
+
+                                    <!-- ABA 1: DADOS PESSOAIS -->
+                                    <div class="tab-pane fade show active"
+                                         id="tab-dados"
+                                         role="tabpanel"
+                                         aria-labelledby="tab-dados-link">
+
+                                        <form id="form-perfil-funcionario" class="max-w-550 ms-0 me-auto" novalidate aria-label="Formulário de dados pessoais">
+
+                                            <!-- Foto de Perfil -->
                                             <div class="text-start mb-4 pb-2">
                                                 <div class="avatar-upload-wrapper ms-0 mb-2">
-                                                    <div class="avatar-circle" id="avatar-preview-box">
-                                                        <i class="bi bi-person-circle default-avatar-icon"></i>
-                                                        <img id="avatar-img-preview" src="" alt="Foto de Perfil" class="d-none">
-                                                        <div class="avatar-overlay" id="btn-trigger-upload">
-                                                            <i class="bi bi-camera-fill fs-4 text-white"></i>
+                                                    <div class="avatar-circle"
+                                                         id="avatar-preview-box"
+                                                         role="button"
+                                                         tabindex="0"
+                                                         aria-label="Área de foto de perfil. Pressione Enter para alterar a foto."
+                                                         title="Clique para alterar a foto de perfil">
+                                                        <i class="bi bi-person-circle default-avatar-icon" aria-hidden="true"></i>
+                                                        <img id="avatar-img-preview" src="" alt="Foto de perfil atual" class="d-none">
+                                                        <div class="avatar-overlay" aria-hidden="true">
+                                                            <i class="bi bi-camera-fill fs-4 text-white" aria-hidden="true"></i>
                                                         </div>
                                                     </div>
-                                                    <input type="file" id="foto-input" accept="image/*" class="d-none">
                                                 </div>
-                                                <button type="button" id="btn-alterar-foto" class="btn btn-link btn-sm text-decoration-none text-muted fw-semibold p-0 ms-1">
-                                                    Alterar
+                                                <!-- Input oculto ativado pelo JS -->
+                                                <input type="file" id="foto-input" accept="image/*" class="d-none" aria-label="Selecionar foto de perfil">
+                                                <button type="button" id="btn-alterar-foto"
+                                                        class="btn btn-link btn-sm text-decoration-none text-muted fw-semibold p-0 ms-1"
+                                                        aria-controls="foto-input">
+                                                    Alterar foto
                                                 </button>
                                             </div>
 
-                                            <!-- Campos de Dados Pessoais Espaçados -->
                                             <!-- Nome -->
                                             <div class="mb-4 pb-2">
                                                 <label for="perfil-nome" class="form-label-simple">Nome</label>
-                                                <input type="text" class="form-control form-control-gray" id="perfil-nome" placeholder="Digite seu nome completo" required>
+                                                <input type="text"
+                                                       class="form-control form-control-gray"
+                                                       id="perfil-nome"
+                                                       name="nome"
+                                                       placeholder="Digite seu nome completo"
+                                                       autocomplete="name"
+                                                       required
+                                                       aria-required="true">
+                                                <div class="invalid-feedback">Informe seu nome completo.</div>
                                             </div>
 
                                             <!-- E-mail -->
                                             <div class="mb-4 pb-2">
                                                 <label for="perfil-email" class="form-label-simple">E-mail</label>
-                                                <input type="email" class="form-control form-control-gray" id="perfil-email" placeholder="nome@docisis.com.br" required>
+                                                <input type="email"
+                                                       class="form-control form-control-gray"
+                                                       id="perfil-email"
+                                                       name="email"
+                                                       placeholder="nome@docisis.com.br"
+                                                       autocomplete="email"
+                                                       required
+                                                       aria-required="true">
+                                                <div class="invalid-feedback">Informe um e-mail válido.</div>
                                             </div>
 
                                             <!-- Telefone -->
                                             <div class="mb-4 pb-2">
                                                 <label for="perfil-telefone" class="form-label-simple">Telefone</label>
-                                                <input type="tel" class="form-control form-control-gray" id="perfil-telefone" placeholder="(11) 99999-9999">
+                                                <input type="tel"
+                                                       class="form-control form-control-gray"
+                                                       id="perfil-telefone"
+                                                       name="telefone"
+                                                       placeholder="(11) 99999-9999"
+                                                       autocomplete="tel">
                                             </div>
 
                                             <!-- Cargo -->
                                             <div class="mb-4 pb-2">
                                                 <label for="perfil-cargo" class="form-label-simple">Cargo</label>
-                                                <input type="text" class="form-control form-control-gray" id="perfil-cargo" placeholder="Ex: Chef Confeiteiro / Líder de Equipe">
+                                                <input type="text"
+                                                       class="form-control form-control-gray"
+                                                       id="perfil-cargo"
+                                                       name="cargo"
+                                                       placeholder="Ex: Chef Confeiteiro / Líder de Equipe"
+                                                       autocomplete="organization-title">
                                             </div>
 
-                                            <!-- Botão Salvar Alterações Alinhado à Esquerda -->
+                                            <!-- Salvar -->
                                             <div class="text-start mt-4 pt-2">
                                                 <button type="submit" id="btn-salvar-perfil" class="btn btn-docisis-navy px-5 py-2 fw-semibold">
                                                     Salvar alterações
                                                 </button>
                                             </div>
                                         </form>
-                                    </div>
+                                    </div><!-- /tab-dados -->
 
                                     <!-- ABA 2: SEGURANÇA E SENHA -->
-                                    <div class="tab-pane fade" id="tab-seguranca" role="tabpanel">
-                                        <form id="form-seguranca-senha" class="max-w-550 ms-0 me-auto py-2" novalidate>
-                                            <h3 class="h6 fw-bold text-navy-docisis mb-3">Alterar Senha de Acesso</h3>
+                                    <div class="tab-pane fade"
+                                         id="tab-seguranca"
+                                         role="tabpanel"
+                                         aria-labelledby="tab-seguranca-link">
+
+                                        <form id="form-seguranca-senha" class="max-w-550 ms-0 me-auto py-2" novalidate aria-label="Formulário de alteração de senha">
+                                            <h2 class="h6 fw-bold text-navy-docisis mb-3">Alterar Senha de Acesso</h2>
 
                                             <div class="mb-3">
                                                 <label for="senha-atual" class="form-label-simple">Senha Atual</label>
-                                                <input type="password" class="form-control form-control-gray" id="senha-atual" required>
+                                                <input type="password"
+                                                       class="form-control form-control-gray"
+                                                       id="senha-atual"
+                                                       name="senha-atual"
+                                                       autocomplete="current-password"
+                                                       required
+                                                       aria-required="true">
+                                                <div class="invalid-feedback">Informe sua senha atual.</div>
                                             </div>
 
                                             <div class="mb-3">
                                                 <label for="senha-nova" class="form-label-simple">Nova Senha</label>
-                                                <input type="password" class="form-control form-control-gray" id="senha-nova" minlength="6" required>
+                                                <input type="password"
+                                                       class="form-control form-control-gray"
+                                                       id="senha-nova"
+                                                       name="senha-nova"
+                                                       minlength="6"
+                                                       autocomplete="new-password"
+                                                       required
+                                                       aria-required="true">
+                                                <div class="invalid-feedback">A senha deve ter no mínimo 6 caracteres.</div>
                                             </div>
 
                                             <div class="mb-4">
                                                 <label for="senha-confirma" class="form-label-simple">Confirmar Nova Senha</label>
-                                                <input type="password" class="form-control form-control-gray" id="senha-confirma" required>
+                                                <input type="password"
+                                                       class="form-control form-control-gray"
+                                                       id="senha-confirma"
+                                                       name="senha-confirma"
+                                                       autocomplete="new-password"
+                                                       required
+                                                       aria-required="true">
+                                                <div class="invalid-feedback">As senhas não coincidem.</div>
                                             </div>
 
                                             <button type="submit" class="btn btn-docisis-navy py-2 px-4">
                                                 Atualizar Senha
                                             </button>
                                         </form>
-                                    </div>
+                                    </div><!-- /tab-seguranca -->
 
                                     <!-- ABA 3: PREFERÊNCIAS DE NOTIFICAÇÃO -->
-                                    <div class="tab-pane fade" id="tab-notificacoes" role="tabpanel">
+                                    <div class="tab-pane fade"
+                                         id="tab-notificacoes"
+                                         role="tabpanel"
+                                         aria-labelledby="tab-notificacoes-link">
+
                                         <div class="max-w-550 ms-0 me-auto py-2">
-                                            <h3 class="h6 fw-bold text-navy-docisis mb-3">Notificações do Sistema</h3>
-                                            
+                                            <h2 class="h6 fw-bold text-navy-docisis mb-3">Notificações do Sistema</h2>
+
                                             <div class="form-check form-switch mb-3 p-3 bg-light rounded border">
-                                                <input class="form-check-input ms-0 me-3" type="checkbox" id="notif-email" checked>
+                                                <input class="form-check-input ms-0 me-3" type="checkbox"
+                                                       id="notif-email"
+                                                       name="notif-email"
+                                                       role="switch"
+                                                       aria-checked="true"
+                                                       checked>
                                                 <label class="form-check-label fw-semibold" for="notif-email">
                                                     Receber Notificações por E-mail
                                                     <span class="d-block small text-muted fw-normal">Avisos sobre novos produtos e alertas de estoque.</span>
@@ -193,7 +298,11 @@
                                             </div>
 
                                             <div class="form-check form-switch mb-3 p-3 bg-light rounded border">
-                                                <input class="form-check-input ms-0 me-3" type="checkbox" id="notif-sms">
+                                                <input class="form-check-input ms-0 me-3" type="checkbox"
+                                                       id="notif-sms"
+                                                       name="notif-sms"
+                                                       role="switch"
+                                                       aria-checked="false">
                                                 <label class="form-check-label fw-semibold" for="notif-sms">
                                                     Notificações por SMS / WhatsApp
                                                     <span class="d-block small text-muted fw-normal">Alertas de segurança e login em 2FA.</span>
@@ -201,7 +310,12 @@
                                             </div>
 
                                             <div class="form-check form-switch mb-4 p-3 bg-light rounded border">
-                                                <input class="form-check-input ms-0 me-3" type="checkbox" id="notif-relatorio" checked>
+                                                <input class="form-check-input ms-0 me-3" type="checkbox"
+                                                       id="notif-relatorio"
+                                                       name="notif-relatorio"
+                                                       role="switch"
+                                                       aria-checked="true"
+                                                       checked>
                                                 <label class="form-check-label fw-semibold" for="notif-relatorio">
                                                     Resumo Semanal de Desempenho
                                                     <span class="d-block small text-muted fw-normal">Relatório consolidado de vendas e movimentações.</span>
@@ -212,11 +326,11 @@
                                                 Salvar Preferências
                                             </button>
                                         </div>
-                                    </div>
+                                    </div><!-- /tab-notificacoes -->
 
-                                </div> <!-- /tab-content -->
+                                </div><!-- /tab-content -->
 
-                            </div> <!-- /profile-card -->
+                            </div><!-- /profile-card -->
 
                         </div>
                     </div>
@@ -227,7 +341,6 @@
 
     <!-- Bootstrap 5 Bundle JS -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
     <!-- Script da Página do Funcionário -->
     <script src="src/js/funcionario.js"></script>
 </body>

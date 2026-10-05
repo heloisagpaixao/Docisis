@@ -1,0 +1,620 @@
+/* ==========================================================================
+   DOCISIS - COMPONENTES COMPARTILHADOS
+   Componentes usados por mais de uma tela
+   ========================================================================== */
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.kpi-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.35rem 1.5rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 18px rgba(8, 23, 46, 0.03);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(8, 23, 46, 0.08);
+}
+
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3.5px;
+}
+
+.kpi-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--docisis-text-muted, #64748b);
+}
+
+.kpi-icon-box {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.kpi-value-box {
+    margin-bottom: 0.5rem;
+}
+
+.kpi-main-number {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+}
+
+.kpi-sub-text {
+    font-size: 0.82rem;
+    color: var(--docisis-text-muted, #64748b);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+}
+
+.kpi-footer-badge {
+    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+    border-top: 1px dashed #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+}
+
+.toolbar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.toolbar-secondary-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.select-filter-custom {
+    padding: 0.65rem 2rem 0.65rem 1rem;
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    background-color: #f8fafc;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.select-filter-custom:focus {
+    outline: none;
+    border-color: var(--docisis-terracotta, #c44918);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.15);
+}
+
+.select-filter-custom:focus-visible {
+    outline: 2px solid var(--docisis-terracotta, #c44918) !important;
+    outline-offset: 2px;
+}
+
+.filter-pills-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+    scrollbar-width: thin;
+}
+
+.filter-pills-bar::-webkit-scrollbar {
+    height: 4px;
+}
+
+.filter-pills-bar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+}
+
+.pill-filter-btn {
+    border: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.45rem 0.95rem;
+    border-radius: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pill-filter-btn .pill-counter {
+    background-color: #e2e8f0;
+    color: #334155;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.1rem 0.45rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.pill-filter-btn:hover {
+    border-color: var(--docisis-terracotta, #c44918);
+    color: var(--docisis-terracotta, #c44918);
+    background-color: var(--docisis-terracotta-light, #fdf2ed);
+}
+
+.pill-filter-btn.active {
+    background-color: var(--docisis-navy, #08172e);
+    border-color: var(--docisis-navy, #08172e);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(8, 23, 46, 0.18);
+}
+
+.pill-filter-btn.active .pill-counter {
+    background-color: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+.table-responsive-docisis {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.docisis-toast-container {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1055;
+}
+
+.docisis-toast {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(8, 23, 46, 0.15);
+    border-left: 4px solid var(--docisis-terracotta, #c44918);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 320px;
+    max-width: 420px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.docisis-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+/* ==========================================================================
+   CORES E TIPOGRAFIA
+   ========================================================================== */
+
+.text-navy-docisis {
+    color: var(--docisis-navy) !important;
+}
+
+.text-navy {
+    color: var(--docisis-navy) !important;
+}
+
+.text-terracotta {
+    color: var(--docisis-terracotta) !important;
+}
+
+.fw-extrabold {
+    font-weight: 800 !important;
+}
+
+/* ==========================================================================
+   BOTÕES DOCISIS
+   ========================================================================== */
+
+.btn-docisis-outline {
+    background-color: #ffffff;
+    color: var(--docisis-navy);
+    border: 1px solid #cbd5e1;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.65rem 1.15rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-docisis-outline:hover,
+.btn-docisis-outline:focus-visible {
+    background-color: #f8fafc;
+    border-color: var(--docisis-navy);
+    color: var(--docisis-navy);
+    transform: translateY(-1px);
+}
+
+.btn-docisis-primary,
+.btn-docisis-terracotta {
+    background-color: var(--docisis-terracotta);
+    color: #ffffff;
+    border: 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-docisis-primary:hover,
+.btn-docisis-primary:focus-visible,
+.btn-docisis-terracotta:hover,
+.btn-docisis-terracotta:focus-visible {
+    background-color: var(--docisis-terracotta-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn-docisis-navy {
+    background-color: var(--docisis-navy);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.85rem 1.5rem;
+    border-radius: 6px;
+    border: 0;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-docisis-navy:hover,
+.btn-docisis-navy:focus-visible {
+    background-color: var(--docisis-navy-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(8, 23, 46, 0.2);
+}
+
+.btn-block-docisis {
+    width: 100%;
+}
+
+.btn-docisis-secondary {
+    background-color: #f8fafc;
+    color: var(--docisis-navy);
+    border: 1px solid #cbd5e1;
+    font-weight: 600;
+}
+
+.btn-docisis-secondary:hover,
+.btn-docisis-secondary:focus-visible {
+    background-color: #e2e8f0;
+    color: var(--docisis-navy);
+}
+
+/* ==========================================================================
+   FILTROS E ESTADOS
+   ========================================================================== */
+
+.pill-filter-btn.pill-danger {
+    color: #991b1b;
+}
+
+.pill-filter-btn.pill-warning {
+    color: #92400e;
+}
+
+.pill-filter-btn.pill-danger.active {
+    background-color: #991b1b;
+    border-color: #991b1b;
+    color: #ffffff;
+}
+
+.pill-filter-btn.pill-warning.active {
+    background-color: #b45309;
+    border-color: #b45309;
+    color: #ffffff;
+}
+
+.badge-docisis-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b !important;
+}
+
+.badge-docisis-neutral {
+    background-color: #f8fafc;
+    color: var(--docisis-navy);
+    border: 1px solid #cbd5e1 !important;
+}
+
+/* ==========================================================================
+   AUTENTICAÇÃO E ELEMENTOS DE MARCA
+   ========================================================================== */
+
+.brand-logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 65px;
+}
+
+.link-terracotta {
+    color: var(--docisis-terracotta);
+    transition: color 0.2s ease;
+}
+
+.link-terracotta:hover {
+    color: var(--docisis-terracotta-hover);
+}
+
+/* ==========================================================================
+   FORMULÁRIOS E ACESSIBILIDADE
+   ========================================================================== */
+
+.form-control-docisis:focus-visible,
+.form-select-docisis:focus-visible,
+.pin-box:focus-visible,
+.search-input:focus-visible {
+    outline: 3px solid rgba(196, 73, 24, 0.25) !important;
+    outline-offset: 2px;
+}
+
+.form-label-custom small,
+.form-label-custom .form-text {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+.unit-value {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+.form-control-docisis.is-invalid,
+.form-select-docisis.is-invalid,
+.was-validated .form-control:invalid,
+.was-validated .form-select:invalid {
+    border-color: #dc3545 !important;
+    background-image: none !important;
+}
+
+.form-control-docisis.is-valid,
+.form-select-docisis.is-valid,
+.was-validated .form-control:required:valid,
+.was-validated .form-select:required:valid {
+    border-color: #198754 !important;
+    background-image: none !important;
+}
+
+.invalid-feedback {
+    display: none;
+    color: #b42318;
+    font-size: 0.78rem;
+    margin-top: 0.35rem;
+}
+
+.was-validated .invalid-feedback,
+.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE E CONTROLES TOUCH
+   ========================================================================== */
+
+.image-dropzone:focus-within .image-preview-overlay,
+.avatar-circle:focus-within .avatar-overlay {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .image-preview-overlay,
+    .avatar-overlay {
+        opacity: 1;
+    }
+}
+
+/* ==========================================================================
+   IMPRESSÃO
+   ========================================================================== */
+
+.print-area {
+    display: none;
+}
+
+@media print {
+    body {
+        background: #ffffff !important;
+    }
+
+    body > * {
+        display: none !important;
+    }
+
+    .modal-auditoria,
+    .modal-auditoria .modal-dialog,
+    .modal-auditoria .modal-content {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+    }
+
+    .modal-auditoria .modal-header,
+    .modal-auditoria .modal-footer,
+    .modal-auditoria .btn-close {
+        display: none !important;
+    }
+
+    .modal-auditoria .modal-body {
+        padding: 0 !important;
+    }
+
+    .modal-auditoria .print-area {
+        display: block !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+}
+
+/* Toast em telas menores */
+@media (max-width: 576px) {
+    .docisis-toast-container {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+    }
+
+    .docisis-toast {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+/* Paginação e títulos de modais compartilhados */
+
+.modal-mov-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.stock-footer-bar {
+    padding: 1.15rem 1.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background-color: #ffffff;
+    border-top: 1px solid #edf2f7;
+}
+
+.stock-pagination-info {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.stock-pagination-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.page-btn {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #475569;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.page-btn.active {
+    background-color: var(--docisis-terracotta, #c44918);
+    border-color: var(--docisis-terracotta, #c44918);
+    color: #ffffff;
+}
+
+.page-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+
+.modal-auditoria .modal-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.modal-auditoria .modal-title {
+    color: var(--docisis-navy);
+}
+
+
+.toast-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--docisis-terracotta-light);
+    color: var(--docisis-terracotta);
+    flex-shrink: 0;
+}

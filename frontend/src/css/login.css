@@ -1,5 +1,6 @@
 /* ==========================================================================
-   ESTILOS ESPECÍFICOS DE LOGIN, 2FA E REDEFINIÇÃO DE SENHA (LOGIN.CSS)
+   DOCISIS - ESTILOS DE LOGIN, 2FA E REDEFINIÇÃO DE SENHA (LOGIN.CSS)
+   Design System e Acessibilidade do Fluxo de Autenticação
    ========================================================================== */
 
 /* Círculos de Ícone dos Passos */
@@ -13,7 +14,7 @@
 }
 
 .bg-terracotta-light {
-    background-color: #fdf2ed;
+    background-color: var(--docisis-terracotta-light, #fdf2ed);
     color: var(--docisis-terracotta, #c44918);
 }
 
@@ -25,19 +26,6 @@
 .bg-success-light {
     background-color: #e6f4ea;
     color: #198754;
-}
-
-.text-navy-docisis {
-    color: var(--docisis-navy, #08172e);
-}
-
-.link-terracotta {
-    color: var(--docisis-terracotta, #c44918);
-    transition: color 0.2s ease;
-}
-
-.link-terracotta:hover {
-    color: var(--docisis-terracotta-hover, #a63b11);
 }
 
 /* --- Caixas de Código PIN 2FA (6 dígitos) --- */
@@ -54,14 +42,21 @@
     background-color: #f8fafc;
     color: var(--docisis-navy, #08172e);
     padding: 0;
-    transition: all 0.2s ease;
+    font-weight: 700;
+    font-size: 1.25rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .pin-box:focus {
     background-color: #ffffff;
     border-color: var(--docisis-terracotta, #c44918);
-    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.15);
+    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.2);
     outline: none;
+}
+
+.pin-box:focus-visible {
+    outline: 2px solid var(--docisis-terracotta, #c44918) !important;
+    outline-offset: 2px;
 }
 
 /* --- Checklist Dinâmico de Força de Senha --- */
@@ -75,10 +70,11 @@
     transition: color 0.25s ease;
     display: flex;
     align-items: center;
+    font-size: 0.85rem;
 }
 
 .checklist-item.invalid {
-    color: #94a3b8;
+    color: #475569;
 }
 
 .checklist-item.invalid i {
@@ -86,15 +82,15 @@
 }
 
 .checklist-item.valid {
-    color: #198754;
+    color: #15803d;
     font-weight: 600;
 }
 
 .checklist-item.valid i {
-    color: #198754;
+    color: #15803d;
 }
 
-/* Transições de Animação */
+/* Transições de Animação de Entrada dos Passos */
 .auth-step {
     animation: fadeInStep 0.3s ease-out;
 }

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docisis — Gestão de Usuários &amp; Permissões</title>
+    <meta name="description" content="Painel administrativo de controle de usuários, atribuição de cargos, níveis de permissão e auditoria de acessos do sistema Docisis.">
+
+    <!-- Bootstrap 5 + Bootstrap Icons -->
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS Docisis: global → layout → componentes → módulo usuários -->
+    <link rel="stylesheet" href="src/css/global.css">
+    <link rel="stylesheet" href="src/css/layout.css">
+    <link rel="stylesheet" href="src/css/components.css">
+    <link rel="stylesheet" href="src/css/usuarios.css">
+</head>
+
+<body>
+    <div class="app-layout">
+
+        <!-- ==================================================================
+             BARRA LATERAL (SIDEBAR)
+             ================================================================== -->
+        <aside class="sidebar-docisis" aria-label="Barra de navegação lateral">
+            <nav class="sidebar-nav" aria-label="Navegação principal">
+                <a href="usuarios.html" class="sidebar-item active" title="Administração e Usuários" aria-label="Administração e Gestão de Usuários" aria-current="page">
+                    <i class="bi bi-shield-lock-fill fs-4" aria-hidden="true"></i>
+                    <span>Admin</span>
+                </a>
+                <a href="produtos.html" class="sidebar-item" title="Cadastro de Produtos" aria-label="Cadastro de Produtos">
+                    <i class="bi bi-plus-square fs-4" aria-hidden="true"></i>
+                    <span>Produtos</span>
+                </a>
+                <a href="historico.html" class="sidebar-item" title="Histórico" aria-label="Histórico de transações e auditoria">
+                    <i class="bi bi-clock-history fs-4" aria-hidden="true"></i>
+                    <span>Histórico</span>
+                </a>
+                <a href="estoque.html" class="sidebar-item" title="Estoque" aria-label="Gestão de estoque">
+                    <i class="bi bi-box-seam fs-4" aria-hidden="true"></i>
+                    <span>Estoque</span>
+                </a>
+                <a href="funcionario.html" class="sidebar-item" title="Configurações de Perfil" aria-label="Ajustes e perfil do usuário">
+                    <i class="bi bi-gear fs-4" aria-hidden="true"></i>
+                    <span>Ajustes</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ==================================================================
+             PAINEL PRINCIPAL (TOPBAR + WORKSPACE)
+             ================================================================== -->
+        <div class="main-content-wrapper">
+
+            <!-- Barra Superior (Topbar) -->
+            <header class="topbar-docisis">
+                <div class="topbar-brand">
+                    <img src="src/assets/logo-docisis.svg" alt="Docisis — Gestão Profissional de Confeitaria" class="topbar-logo">
+                </div>
+                <div class="topbar-user">
+                    <div class="user-profile-badge">
+                        <span id="topbar-username" class="fw-semibold user-name-text">Nome de Usuário</span>
+                        <div class="avatar-sm d-flex align-items-center justify-content-center bg-light fw-bold border rounded-circle"
+                            id="topbar-avatar-initials"
+                            aria-label="Iniciais do usuário"
+                            style="width: 38px; height: 38px; font-size:.85rem; color:var(--docisis-navy);">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Workspace com Conteúdo Principal -->
+            <main class="workspace-docisis" id="conteudo-principal">
+                <div class="users-container w-100">
+
+                    <!-- ==========================================================
+                         1. CABEÇALHO DA PÁGINA
+                         ========================================================== -->
+                    <header class="users-header-wrapper">
+                        <div class="users-title-area">
+                            <h1 class="users-title">
+                                <i class="bi bi-people-fill" aria-hidden="true"></i> Gestão de Usuários &amp; Permissões
+                            </h1>
+                            <p class="users-subtitle">
+                                Controle centralizado de operadores, atribuição de privilégios de acesso e conformidade de segurança.
+                            </p>
+                        </div>
+                        <div class="users-actions-group">
+                            <button type="button" class="btn btn-docisis-outline" aria-label="Exportar relatório de acessos em PDF">
+                                <i class="bi bi-file-earmark-lock me-1" aria-hidden="true"></i> Relatório de Acessos
+                            </button>
+                            <a href="#painel-cadastro-usuario" class="btn btn-docisis-primary d-lg-none" aria-label="Ir para formulário de novo usuário">
+                                <i class="bi bi-person-plus me-1" aria-hidden="true"></i> Novo Operador
+                            </a>
+                        </div>
+                    </header>
+
+                    <!-- ==========================================================
+                         2. CARDS DE MÉTRICAS SUPERIORES (KPIS)
+                         ========================================================== -->
+                    <section class="kpi-grid mb-4" aria-label="Indicadores gerais de usuários e segurança">
+                        <!-- KPI 1: Total de Operadores -->
+                        <div class="kpi-card kpi-card-operadores">
+                            <div class="kpi-header">
+                                <span class="kpi-label">Equipe Cadastrada</span>
+                                <div class="kpi-icon-box" aria-hidden="true">
+                                    <i class="bi bi-person-check-fill"></i>
+                                </div>
+                            </div>
+                            <div class="kpi-value-box">
+                                <span class="kpi-main-number">0</span>
+                                <span class="kpi-sub-text">
+                                    <i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                            <div class="kpi-footer-badge">
+                                <span class="text-muted">Capacidade máxima</span>
+                                <span class="fw-bold text-dark">50 licenças</span>
+                            </div>
+                        </div>
+
+                        <!-- KPI 2: Sessões Ativas -->
+                        <div class="kpi-card kpi-card-sessoes">
+                            <div class="kpi-header">
+                                <span class="kpi-label">Sessões Ativas</span>
+                                <div class="kpi-icon-box" aria-hidden="true">
+                                    <i class="bi bi-broadcast"></i>
+                                </div>
+                            </div>
+                            <div class="kpi-value-box">
+                                <span class="kpi-main-number">0</span>
+                                <span class="kpi-sub-text">
+                                    <span class="pulse-indicator" aria-hidden="true"></span>
+                                    Conectados agora no turno
+                                </span>
+                            </div>
+                            <div class="kpi-footer-badge">
+                                <span class="text-muted">Turno atual</span>
+                                <span class="badge-status-turno">Manhã / Produção</span>
+                            </div>
+                        </div>
+
+                        <!-- KPI 3: Conformidade 2FA -->
+                        <div class="kpi-card kpi-card-seguranca">
+                            <div class="kpi-header">
+                                <span class="kpi-label">Segurança &amp; 2FA</span>
+                                <div class="kpi-icon-box" aria-hidden="true">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                            </div>
+                            <div class="kpi-value-box">
+                                <span class="kpi-main-number">0%</span>
+                                <span class="kpi-sub-text text-success">
+                                    <i class="bi bi-patch-check-fill" aria-hidden="true"></i>
+                                    0 com 2FA ativo.
+                                </span>
+                            </div>
+                            <div class="kpi-footer-badge">
+                                <span class="text-muted">Pendências</span>
+                                <span class="text-warning fw-bold">1 em configuração</span>
+                            </div>
+                        </div>
+
+                        <!-- KPI 4: Contas com Privilégio Admin -->
+                        <div class="kpi-card kpi-card-admins">
+                            <div class="kpi-header">
+                                <span class="kpi-label">Administradores</span>
+                                <div class="kpi-icon-box" aria-hidden="true">
+                                    <i class="bi bi-key-fill"></i>
+                                </div>
+                            </div>
+                            <div class="kpi-value-box">
+                                <span class="kpi-main-number">0</span>
+                                <span class="kpi-sub-text">
+                                    <i class="bi bi-info-circle text-primary" aria-hidden="true"></i>
+                                    Acesso restrito &amp; auditado
+                                </span>
+                            </div>
+                            <div class="kpi-footer-badge">
+                                <span class="text-muted">Última auditoria</span>
+                                <span class="fw-bold text-dark">Hoje, 07:30</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ==========================================================
+                         3. LAYOUT PRINCIPAL EM 2 COLUNAS
+                         ========================================================== -->
+                    <div class="row g-4">
+
+                        <!-- COLUNA 1: TABELA DE USUÁRIOS E FILTROS (8 colunas em telas grandes) -->
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="users-main-card">
+
+                                <!-- Toolbar: Busca e Filtros -->
+                                <div class="users-toolbar">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                                        <!-- Busca de Usuário -->
+                                        <div class="users-search-group">
+                                            <i class="bi bi-search search-icon" aria-hidden="true"></i>
+                                            <input type="search"
+                                                   class="search-input"
+                                                   id="busca-usuario"
+                                                   placeholder="Buscar por nome, e-mail ou CPF..."
+                                                   aria-label="Buscar operadores cadastrados">
+                                        </div>
+
+                                        <!-- Filtro por Cargo -->
+                                        <div class="d-flex align-items-center gap-2">
+                                            <label for="filtro-cargo" class="visually-hidden">Filtrar por Cargo</label>
+                                            <select id="filtro-cargo" class="select-filter-custom" aria-label="Filtrar por cargo ou nível de acesso">
+                                                <option value="todos">Todos os Cargos</option>
+                                                <option value="ADMIN">Administradores</option>
+                                                <option value="LIDER">Líderes de Equipe</option>
+                                                <option value="OPERADOR">Estagiários / Operadores</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Pills de Filtro por Status -->
+                                    <div class="filter-pills-bar" role="group" aria-label="Filtrar por status da conta">
+                                        <button type="button" class="pill-filter-btn active" aria-pressed="true">
+                                            <span>Todos</span>
+                                            <span class="pill-counter"></span>
+                                        </button>
+                                        <button type="button" class="pill-filter-btn" aria-pressed="false">
+                                            <span class="status-dot dot-ativo" aria-hidden="true"></span>
+                                            <span>Ativos</span>
+                                            <span class="pill-counter">21</span>
+                                        </button>
+                                        <button type="button" class="pill-filter-btn pill-warning" aria-pressed="false">
+                                            <span class="status-dot dot-inativo" aria-hidden="true"></span>
+                                            <span>Inativos</span>
+                                            <span class="pill-counter">2</span>
+                                        </button>
+                                        <button type="button" class="pill-filter-btn pill-danger" aria-pressed="false">
+                                            <span class="status-dot dot-suspenso" aria-hidden="true"></span>
+                                            <span>Suspensos</span>
+                                            <span class="pill-counter">1</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Tabela de Usuários -->
+                                <div class="table-responsive-docisis">
+                                    <table class="users-table" aria-label="Tabela de gestão de usuários da Docisis">
+                                        <caption class="visually-hidden">Lista de operadores, funções, níveis de permissão, status de segurança e ações</caption>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" style="min-width: 240px;">Operador</th>
+                                                <th scope="col">Cargo &amp; Nível</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">2FA</th>
+                                                <th scope="col">Último Acesso</th>
+                                                <th scope="col" class="text-end" style="min-width: 110px;">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Usuário 1: Administrador -->
+                                            <tr>
+                                                <td>
+                                                    <div class="user-cell">
+                                                        <div class="user-avatar-badge avatar-admin" aria-hidden="true">AB</div>
+                                                        <div class="user-meta">
+                                                            <span class="user-name">Ana Beatriz Rocha</span>
+                                                            <span class="user-email">ana.rocha@docisis.com.br</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="role-badge role-admin">
+                                                        <i class="bi bi-shield-fill-check" aria-hidden="true"></i> Administrador
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="status-tag status-ativo">
+                                                        <span class="status-dot dot-ativo" aria-hidden="true"></span> Ativo
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge-security-2fa" title="Autenticação 2FA ativada">
+                                                        <i class="bi bi-shield-check text-success" aria-hidden="true"></i> Ativo
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="timestamp-main">Hoje, 07:42</span>
+                                                    <span class="timestamp-sub">Há 15 min</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <div class="action-buttons-group justify-content-end">
+                                                        <button type="button" class="btn-table-action" title="Editar Permissões" aria-label="Editar permissões de Ana Beatriz Rocha">
+                                                            <i class="bi bi-sliders" aria-hidden="true"></i>
+                                                        </button>
+                                                        <button type="button" class="btn-table-action" title="Redefinir Senha" aria-label="Redefinir senha de Ana Beatriz Rocha">
+                                                            <i class="bi bi-key" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Usuário 2: Líder de Equipe -->
+                                            <tr>
+                                                <td>
+                                                    <div class="user-cell">
+                                                        <div class="user-avatar-badge avatar-lider" aria-hidden="true">CE</div>
+                                                        <div class="user-meta">
+                                                            <span class="user-name">Carlos Eduardo Mendes</span>
+                                                            <span class="user-email">carlos.mendes@docisis.com.br</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="role-badge role-lider">
+                                                        <i class="bi bi-award-fill" aria-hidden="true"></i> Líder de Equipe
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="status-tag status-ativo">
+                                                        <span class="status-dot dot-ativo" aria-hidden="true"></span> Ativo
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge-security-2fa" title="Autenticação 2FA ativada">
+                                                        <i class="bi bi-shield-check text-success" aria-hidden="true"></i> Ativo
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="timestamp-main">Hoje, 07:15</span>
+                                                    <span class="timestamp-sub">Há 42 min</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <div class="action-buttons-group justify-content-end">
+                                                        <button type="button" class="btn-table-action" title="Editar Permissões" aria-label="Editar permissões de Carlos Eduardo Mendes">
+                                                            <i class="bi bi-sliders" aria-hidden="true"></i>
+                                                        </button>
+                                                        <button type="button" class="btn-table-action" title="Redefinir Senha" aria-label="Redefinir senha de Carlos Eduardo Mendes">
+                                                            <i class="bi bi-key" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Usuário 3: Estagiário / Operador -->
+                                            <tr>
+                                                <td>
+                                                    <div class="user-cell">
+                                                        <div class="user-avatar-badge avatar-operador" aria-hidden="true">MS</div>
+                                                        <div class="user-meta">
+                                                            <span class="user-name">Marina Souza Silveira</span>
+                                                            <span class="user-email">marina.souza@docisis.com.br</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="role-badge role-operador">
+                                                        <i class="bi bi-person-badge-fill" aria-hidden="true"></i> Operador
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="status-tag status-ativo">
+                                                        <span class="status-dot dot-ativo" aria-hidden="true"></span> Ativo
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge-security-2fa" title="Autenticação 2FA ativada">
+                                                        <i class="bi bi-shield-check text-success" aria-hidden="true"></i> Ativo
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="timestamp-main">Ontem, 17:50</span>
+                                                    <span class="timestamp-sub">Turno encerrado</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <div class="action-buttons-group justify-content-end">
+                                                        <button type="button" class="btn-table-action" title="Editar Permissões" aria-label="Editar permissões de Marina Souza Silveira">
+                                                            <i class="bi bi-sliders" aria-hidden="true"></i>
+                                                        </button>
+                                                        <button type="button" class="btn-table-action" title="Redefinir Senha" aria-label="Redefinir senha de Marina Souza Silveira">
+                                                            <i class="bi bi-key" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Usuário 4: Inativo -->
+                                            <tr>
+                                                <td>
+                                                    <div class="user-cell">
+                                                        <div class="user-avatar-badge avatar-inativo" aria-hidden="true">LF</div>
+                                                        <div class="user-meta">
+                                                            <span class="user-name">Lucas Fernando Silva</span>
+                                                            <span class="user-email">lucas.silva@docisis.com.br</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="role-badge role-operador">
+                                                        <i class="bi bi-person-badge-fill" aria-hidden="true"></i> Operador
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="status-tag status-inativo">
+                                                        <span class="status-dot dot-inativo" aria-hidden="true"></span> Inativo
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge-security-2fa" title="Autenticação 2FA configurada">
+                                                        <i class="bi bi-shield-check text-success" aria-hidden="true"></i> Ativo
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="timestamp-main">18/09/2026</span>
+                                                    <span class="timestamp-sub">Sem login recente</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <div class="action-buttons-group justify-content-end">
+                                                        <button type="button" class="btn-table-action" title="Reativar Conta" aria-label="Reativar conta de Lucas Fernando Silva">
+                                                            <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                                                        </button>
+                                                        <button type="button" class="btn-table-action" title="Redefinir Senha" aria-label="Redefinir senha de Lucas Fernando Silva">
+                                                            <i class="bi bi-key" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Usuário 5: Suspenso -->
+                                            <tr>
+                                                <td>
+                                                    <div class="user-cell">
+                                                        <div class="user-avatar-badge avatar-suspenso" aria-hidden="true">RV</div>
+                                                        <div class="user-meta">
+                                                            <span class="user-name">Renata Vasconcelos</span>
+                                                            <span class="user-email">renata.v@docisis.com.br</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="role-badge role-lider">
+                                                        <i class="bi bi-award-fill" aria-hidden="true"></i> Líder de Equipe
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="status-tag status-suspenso">
+                                                        <span class="status-dot dot-suspenso" aria-hidden="true"></span> Suspenso
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge-security-pendente" title="2FA pendente de configuração">
+                                                        <i class="bi bi-exclamation-triangle-fill text-warning" aria-hidden="true"></i> Pendente
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="timestamp-main">02/09/2026</span>
+                                                    <span class="timestamp-sub text-danger">Acesso bloqueado</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <div class="action-buttons-group justify-content-end">
+                                                        <button type="button" class="btn-table-action text-success" title="Desbloquear Acesso" aria-label="Desbloquear acesso de Renata Vasconcelos">
+                                                            <i class="bi bi-unlock-fill" aria-hidden="true"></i>
+                                                        </button>
+                                                        <button type="button" class="btn-table-action" title="Histórico de Auditoria" aria-label="Ver histórico de auditoria de Renata Vasconcelos">
+                                                            <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Rodapé da Tabela: Paginação -->
+                                <div class="users-footer-bar">
+                                    <div class="users-pagination-info" aria-live="polite">
+                                        Exibindo <strong>1-5</strong> de <strong></strong> operadores cadastrados
+                                    </div>
+                                    <div class="stock-pagination-wrapper" role="navigation" aria-label="Paginação da lista de usuários">
+                                        <button type="button" class="page-btn" disabled aria-label="Página anterior">
+                                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" class="page-btn active" aria-current="page">1</button>
+                                        <button type="button" class="page-btn">2</button>
+                                        <button type="button" class="page-btn">3</button>
+                                        <button type="button" class="page-btn">4</button>
+                                        <button type="button" class="page-btn">5</button>
+                                        <button type="button" class="page-btn" aria-label="Próxima página">
+                                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- COLUNA 2: PAINEL LATERAL "CADASTRAR NOVO USUÁRIO" & PERMISSÕES (4 colunas) -->
+                        <div class="col-xl-4 col-lg-5">
+                            <aside class="panel-create-user" id="painel-cadastro-usuario" aria-labelledby="titulo-painel-cadastro">
+                                <div class="panel-header-sticky">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="panel-icon-circle" aria-hidden="true">
+                                            <i class="bi bi-person-plus-fill"></i>
+                                        </span>
+                                        <h2 class="panel-title mb-0" id="titulo-painel-cadastro">Cadastrar Novo Usuário</h2>
+                                    </div>
+                                    <p class="panel-subtitle">Atribuição de credenciais, nível de cargo e concessão de privilégios.</p>
+                                </div>
+
+                                <form id="form-cadastro-usuario" class="panel-form" novalidate aria-label="Formulário de cadastro de novo usuário e permissões">
+
+                                    <!-- Nome Completo -->
+                                    <div class="mb-3">
+                                        <label for="novo-nome" class="form-label-uppercase">Nome Completo <span class="text-danger" aria-hidden="true">*</span></label>
+                                        <div class="input-group-docisis">
+                                            <i class="bi bi-person input-icon" aria-hidden="true"></i>
+                                            <input type="text"
+                                                   class="form-control"
+                                                   id="novo-nome"
+                                                   name="nome"
+                                                   placeholder="Ex: Roberto Albuquerque"
+                                                   autocomplete="name"
+                                                   required
+                                                   aria-required="true">
+                                        </div>
+                                    </div>
+
+                                    <!-- E-mail Corporativo -->
+                                    <div class="mb-3">
+                                        <label for="novo-email" class="form-label-uppercase">E-mail Corporativo <span class="text-danger" aria-hidden="true">*</span></label>
+                                        <div class="input-group-docisis">
+                                            <i class="bi bi-envelope input-icon" aria-hidden="true"></i>
+                                            <input type="email"
+                                                   class="form-control"
+                                                   id="novo-email"
+                                                   name="email"
+                                                   placeholder="roberto@docisis.com.br"
+                                                   autocomplete="email"
+                                                   required
+                                                   aria-required="true">
+                                        </div>
+                                    </div>
+
+                                    <!-- CPF e Telefone (Linha dupla) -->
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-sm-6">
+                                            <label for="novo-cpf" class="form-label-uppercase">CPF <span class="text-danger" aria-hidden="true">*</span></label>
+                                            <div class="input-group-docisis">
+                                                <i class="bi bi-card-heading input-icon" aria-hidden="true"></i>
+                                                <input type="text"
+                                                       class="form-control"
+                                                       id="novo-cpf"
+                                                       name="cpf"
+                                                       placeholder="000.000.000-00"
+                                                       maxlength="14"
+                                                       inputmode="numeric"
+                                                       required
+                                                       aria-required="true">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="novo-telefone" class="form-label-uppercase">Telefone</label>
+                                            <div class="input-group-docisis">
+                                                <i class="bi bi-telephone input-icon" aria-hidden="true"></i>
+                                                <input type="tel"
+                                                       class="form-control"
+                                                       id="novo-telefone"
+                                                       name="telefone"
+                                                       placeholder="(11) 99999-9999"
+                                                       autocomplete="tel">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Senha Inicial e Políticas -->
+                                    <div class="mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label for="novo-senha" class="form-label-uppercase mb-0">Senha Provisória <span class="text-danger" aria-hidden="true">*</span></label>
+                                            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none link-terracotta small fw-semibold" aria-label="Gerar senha segura aleatória">
+                                                <i class="bi bi-magic me-1" aria-hidden="true"></i> Gerar senha
+                                            </button>
+                                        </div>
+                                        <div class="input-group-docisis">
+                                            <i class="bi bi-lock input-icon" aria-hidden="true"></i>
+                                            <input type="password"
+                                                   class="form-control"
+                                                   id="novo-senha"
+                                                   name="senha"
+                                                   placeholder="••••••••••••"
+                                                   minlength="8"
+                                                   autocomplete="new-password"
+                                                   required
+                                                   aria-required="true">
+                                        </div>
+                                        
+                                        <!-- Switches de Segurança -->
+                                        <div class="security-switches-box mt-2 p-2 rounded bg-light border">
+                                            <div class="form-check form-switch mb-1">
+                                                <input class="form-check-input" type="checkbox" id="check-forcar-troca" checked>
+                                                <label class="form-check-label small text-muted" for="check-forcar-troca">
+                                                    Exigir troca de senha no 1º acesso
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="check-exigir-2fa" checked>
+                                                <label class="form-check-label small text-muted" for="check-exigir-2fa">
+                                                    Exigir autenticação em duas etapas (2FA)
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- ======================================================
+                                         BLOCO DE SELEÇÃO DE PERMISSÕES DE CARGO
+                                         ====================================================== -->
+                                    <fieldset class="roles-fieldset mb-4">
+                                        <legend class="form-label-uppercase d-flex align-items-center justify-content-between w-100 mb-2">
+                                            <span>Nível de Acesso &amp; Cargo <span class="text-danger" aria-hidden="true">*</span></span>
+                                            <span class="badge-role-required">Selecione 1</span>
+                                        </legend>
+
+                                        <!-- Opção 1: Administrador -->
+                                        <label class="role-selector-card" for="role-admin">
+                                            <input type="radio" name="cargoPermissao" id="role-admin" value="ADMIN" class="role-radio-input">
+                                            <div class="role-card-content">
+                                                <div class="role-card-header">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="role-icon-box role-icon-admin" aria-hidden="true">
+                                                            <i class="bi bi-shield-lock-fill"></i>
+                                                        </span>
+                                                        <span class="role-card-name">Administrador</span>
+                                                    </div>
+                                                    <span class="role-level-pill level-full">Acesso Total</span>
+                                                </div>
+                                                <p class="role-card-desc">Controle irrestrito: gestão de equipe, parametrização global, auditoria ANVISA e finanças.</p>
+                                            </div>
+                                        </label>
+
+                                        <!-- Opção 2: Líder de Equipe (Selecionado por padrão) -->
+                                        <label class="role-selector-card" for="role-lider">
+                                            <input type="radio" name="cargoPermissao" id="role-lider" value="LIDER" class="role-radio-input" checked>
+                                            <div class="role-card-content">
+                                                <div class="role-card-header">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="role-icon-box role-icon-lider" aria-hidden="true">
+                                                            <i class="bi bi-award-fill"></i>
+                                                        </span>
+                                                        <span class="role-card-name">Líder de Equipe</span>
+                                                    </div>
+                                                    <span class="role-level-pill level-mid">Gestão &amp; Produção</span>
+                                                </div>
+                                                <p class="role-card-desc">Supervisão: cadastro de receitas, ajuste de estoque, aprovação de lotes e relatórios.</p>
+                                            </div>
+                                        </label>
+
+                                        <!-- Opção 3: Estagiário / Operador -->
+                                        <label class="role-selector-card" for="role-operador">
+                                            <input type="radio" name="cargoPermissao" id="role-operador" value="OPERADOR" class="role-radio-input">
+                                            <div class="role-card-content">
+                                                <div class="role-card-header">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="role-icon-box role-icon-operador" aria-hidden="true">
+                                                            <i class="bi bi-person-badge-fill"></i>
+                                                        </span>
+                                                        <span class="role-card-name">Estagiário / Operador</span>
+                                                    </div>
+                                                    <span class="role-level-pill level-basic">Operacional</span>
+                                                </div>
+                                                <p class="role-card-desc">Execução: lançamento diário de consumo de insumos, conferência e consulta de receitas.</p>
+                                            </div>
+                                        </label>
+                                    </fieldset>
+
+                                    <!-- Matriz Resumo de Privilégios Concedidos -->
+                                    <div class="permissions-matrix-box p-3 mb-4 rounded bg-light border" aria-label="Resumo dos privilégios de acesso">
+                                        <span class="small fw-bold text-dark d-block mb-2">
+                                            <i class="bi bi-check2-all text-success me-1" aria-hidden="true"></i> Matriz de Privilégios Ativos:
+                                        </span>
+                                        <ul class="privileges-checklist list-unstyled mb-0 small">
+                                            <li><i class="bi bi-check-circle-fill text-success me-1" aria-hidden="true"></i> Consulta de Catálogo &amp; Fichas Técnicas</li>
+                                            <li><i class="bi bi-check-circle-fill text-success me-1" aria-hidden="true"></i> Registro de Baixa &amp; Movimentações de Insumos</li>
+                                            <li><i class="bi bi-check-circle-fill text-success me-1" aria-hidden="true"></i> Entrada de Lotes e Controle de Validade</li>
+                                            <li><i class="bi bi-check-circle-fill text-success me-1" aria-hidden="true"></i> Exportação de Relatórios de Estoque</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Botão de Cadastro -->
+                                    <button type="submit" id="btn-cadastrar-usuario" class="btn btn-docisis-primary w-100 py-2 fs-6 fw-bold">
+                                        <i class="bi bi-person-plus-fill me-1" aria-hidden="true"></i> Cadastrar Operador &amp; Ativar
+                                    </button>
+
+                                    <p class="text-center text-muted small mt-2 mb-0">
+                                        As instruções de login e credenciais temporárias serão enviadas automaticamente para o e-mail corporativo.
+                                    </p>
+                                </form>
+                            </aside>
+                        </div>
+
+                    </div> <!-- /row -->
+                </div> <!-- /users-container -->
+            </main>
+        </div> <!-- /main-content-wrapper -->
+    </div> <!-- /app-layout -->
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Docisis - Cadastro de Produtos e Estoque</title>
+    <title>Docisis — Cadastro de Produtos e Estoque</title>
+    <meta name="description" content="Cadastre produtos da confeitaria, gerencie níveis de estoque, precificação e regras de compliance sanitário no sistema Docisis.">
 
-    <!-- Bootstrap 5 + Bootstrap Icons + Global CSS + Funcionario CSS + Produtos CSS -->
+    <!-- Bootstrap 5 + Bootstrap Icons + CSS Global, Layout, Componentes e Produtos -->
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="src/css/global.css">
-    <link rel="stylesheet" href="src/css/funcionario.css">
+    <link rel="stylesheet" href="src/css/layout.css">
+    <link rel="stylesheet" href="src/css/components.css">
     <link rel="stylesheet" href="src/css/produtos.css">
 </head>
 
@@ -20,25 +22,25 @@
              1. BARRA LATERAL (SIDEBAR TERRACOTA MINIMALISTA DOCK)
              ========================================================================== -->
         <aside class="sidebar-docisis">
-            <nav class="sidebar-nav">
-                <a href="cadastro.html" class="sidebar-item" title="Administração">
-                    <i class="bi bi-clipboard-data fs-4"></i>
+            <nav class="sidebar-nav" aria-label="Navegação principal">
+                <a href="usuarios.html" class="sidebar-item" title="Administração &amp; Usuários" aria-label="Gestão de Usuários e Permissões">
+                    <i class="bi bi-shield-lock-fill fs-4" aria-hidden="true"></i>
                     <span>Admin</span>
                 </a>
-                <a href="produtos.html" class="sidebar-item active" title="Cadastro de Produtos">
-                    <i class="bi bi-plus-square fs-4"></i>
+                <a href="produtos.html" class="sidebar-item active" title="Cadastro de Produtos" aria-current="page">
+                    <i class="bi bi-plus-square fs-4" aria-hidden="true"></i>
                     <span>Produtos</span>
                 </a>
-                <a href="#" class="sidebar-item" title="Histórico">
-                    <i class="bi bi-clock-history fs-4"></i>
+                <a href="historico.html" class="sidebar-item" title="Histórico">
+                    <i class="bi bi-clock-history fs-4" aria-hidden="true"></i>
                     <span>Histórico</span>
                 </a>
                 <a href="estoque.html" class="sidebar-item" title="Estoque">
-                    <i class="bi bi-box-seam fs-4"></i>
+                    <i class="bi bi-box-seam fs-4" aria-hidden="true"></i>
                     <span>Estoque</span>
                 </a>
                 <a href="funcionario.html" class="sidebar-item" title="Configurações">
-                    <i class="bi bi-gear fs-4"></i>
+                    <i class="bi bi-gear fs-4" aria-hidden="true"></i>
                     <span>Ajustes</span>
                 </a>
             </nav>
@@ -51,12 +53,16 @@
             <!-- Barra Superior (Topbar Responsiva) -->
             <header class="topbar-docisis">
                 <div class="topbar-brand">
-                    <img src="src/assets/logo-docisis.svg" alt="Docisis" class="topbar-logo">
+                    <img src="src/assets/logo-docisis.svg" alt="Docisis - Gestão Profissional de Confeitaria" class="topbar-logo">
                 </div>
                 <div class="topbar-user">
                     <div class="user-profile-badge">
                         <span id="topbar-username" class="fw-semibold user-name-text">Nome de Usuário</span>
-                        <img id="topbar-avatar" src="" alt="Avatar" class="avatar-sm">
+                        <div class="avatar-sm d-flex align-items-center justify-content-center bg-light fw-bold border rounded-circle"
+                            id="topbar-avatar-initials"
+                            aria-label="Iniciais do usuário"
+                            style="width: 38px; height: 38px; font-size:.85rem; color:var(--docisis-navy);">
+                        </div>
                     </div>
                 </div>
             </header>
@@ -420,7 +426,7 @@
                                                 </div>
 
                                                 <!-- Imagem quando carregada -->
-                                                <img id="image-preview-img" src="" alt="Prévia do Produto" class="image-preview-img d-none">
+                                                <img id="image-preview-img" src="#" alt="Prévia do Produto" class="image-preview-img d-none">
                                                 
                                                 <!-- Overlay para troca rápida -->
                                                 <div id="image-preview-overlay" class="image-preview-overlay d-none">
@@ -585,9 +591,9 @@
     </div>
 
     <!-- TOAST DE NOTIFICAÇÃO FLUTUANTE -->
-    <div class="docisis-toast-container">
-        <div id="docisis-toast" class="docisis-toast">
-            <i class="bi bi-check-circle-fill text-success fs-5 toast-icon"></i>
+    <div class="docisis-toast-container" aria-live="polite" aria-atomic="true">
+        <div id="docisis-toast" class="docisis-toast" role="status">
+            <i class="bi bi-check-circle-fill text-success fs-5 toast-icon" aria-hidden="true"></i>
             <div>
                 <strong class="d-block text-dark fw-bold" style="font-size: 0.9rem;">Sistema Docisis</strong>
                 <span id="toast-mensagem" class="text-muted" style="font-size: 0.85rem;">Operação realizada com sucesso.</span>
@@ -597,9 +603,6 @@
 
     <!-- Bootstrap 5 Bundle JS -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Script de Produtos -->
-    <script src="src/js/produtos.js"></script>
 </body>
 
 </html>

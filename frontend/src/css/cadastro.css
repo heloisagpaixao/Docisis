@@ -1,20 +1,10 @@
-/* Estilos de Validação e Ajustes Específicos para a Tela de Cadastro */
+/* ==========================================================================
+   DOCISIS - ESTILOS DA TELA DE CADASTRO (CADASTRO.CSS)
+   Animações de entrada e overrides específicos do formulário de solicitação.
+   ========================================================================== */
 
-/* Indicador visual de erros de validação nos inputs */
-.was-validated .form-control:invalid,
-.was-validated .form-select:invalid {
-    border-color: #dc3545 !important;
-    background-image: none !important;
-}
-
-.was-validated .form-control:valid,
-.was-validated .form-select:valid {
-    border-color: #198754 !important;
-    background-image: none !important;
-}
-
-/* Animação suave para exibição do formulário */
-.docisis-card {
+/* Animação de entrada do card */
+.auth-step {
     animation: fadeInCard 0.35s ease-out;
 }
 
@@ -27,4 +17,13 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Campo de telefone é opcional: preserva borda neutra quando não preenchido */
+#telefone:valid {
+    border-color: var(--docisis-border);
+}
+
+#telefone:focus {
+    border-color: var(--docisis-terracotta);
 }

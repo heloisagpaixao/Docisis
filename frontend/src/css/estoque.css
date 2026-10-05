@@ -55,92 +55,6 @@
     flex-wrap: wrap;
 }
 
-/* Botões do Topo */
-.btn-docisis-outline {
-    background-color: #ffffff;
-    color: var(--docisis-navy, #08172e);
-    border: 1.5px solid #cbd5e1;
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: 0.65rem 1.15rem;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
-
-.btn-docisis-outline:hover {
-    background-color: #f8fafc;
-    border-color: var(--docisis-navy, #08172e);
-    color: var(--docisis-navy, #08172e);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(8, 23, 46, 0.06);
-}
-
-.btn-docisis-primary {
-    background-color: var(--docisis-terracotta, #c44918);
-    color: #ffffff;
-    border: none;
-    font-weight: 700;
-    font-size: 0.9rem;
-    padding: 0.65rem 1.25rem;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 14px rgba(196, 73, 24, 0.25);
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.btn-docisis-primary:hover {
-    background-color: var(--docisis-terracotta-hover, #a63b11);
-    color: #ffffff;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(196, 73, 24, 0.35);
-}
-
-/* ==========================================================================
-   2. KPI CARDS SUPERIORES
-   ========================================================================== */
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-}
-
-.kpi-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 1.35rem 1.5rem;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 18px rgba(8, 23, 46, 0.03);
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.kpi-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(8, 23, 46, 0.08);
-}
-
-.kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3.5px;
-}
-
 .kpi-card.kpi-total::before {
     background: linear-gradient(90deg, #08172e, #1e3a8a);
 }
@@ -155,32 +69,6 @@
 
 .kpi-card.kpi-valor::before {
     background: linear-gradient(90deg, #059669, #10b981);
-}
-
-.kpi-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.75rem;
-}
-
-.kpi-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: var(--docisis-text-muted, #64748b);
-}
-
-.kpi-icon-box {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    flex-shrink: 0;
 }
 
 .kpi-card.kpi-total .kpi-icon-box {
@@ -203,37 +91,6 @@
     color: #059669;
 }
 
-.kpi-value-box {
-    margin-bottom: 0.5rem;
-}
-
-.kpi-main-number {
-    font-size: 1.85rem;
-    font-weight: 800;
-    color: var(--docisis-navy, #08172e);
-    line-height: 1.15;
-    letter-spacing: -0.5px;
-}
-
-.kpi-sub-text {
-    font-size: 0.82rem;
-    color: var(--docisis-text-muted, #64748b);
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-top: 0.35rem;
-}
-
-.kpi-footer-badge {
-    padding-top: 0.75rem;
-    margin-top: 0.5rem;
-    border-top: 1px dashed #f1f5f9;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.78rem;
-}
-
 /* ==========================================================================
    3. CARD PRINCIPAL DA TABELA DE ESTOQUE
    ========================================================================== */
@@ -250,15 +107,6 @@
     padding: 1.5rem 1.75rem;
     border-bottom: 1px solid #edf2f7;
     background-color: #ffffff;
-}
-
-.toolbar-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
 }
 
 /* Busca Rápida */
@@ -291,98 +139,9 @@
 }
 
 .stock-search-group .search-input:focus {
-    outline: none;
     border-color: var(--docisis-terracotta, #c44918);
     background-color: #ffffff;
     box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.12);
-}
-
-.toolbar-secondary-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    flex-wrap: wrap;
-}
-
-.select-filter-custom {
-    padding: 0.65rem 2rem 0.65rem 1rem;
-    border-radius: 8px;
-    border: 1.5px solid #e2e8f0;
-    background-color: #f8fafc;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #475569;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.select-filter-custom:focus {
-    outline: none;
-    border-color: var(--docisis-terracotta, #c44918);
-    background-color: #ffffff;
-}
-
-/* Filtros por Pílulas (Pills) */
-.filter-pills-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding-bottom: 0.35rem;
-    scrollbar-width: thin;
-}
-
-.filter-pills-bar::-webkit-scrollbar {
-    height: 4px;
-}
-
-.filter-pills-bar::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    border-radius: 4px;
-}
-
-.pill-filter-btn {
-    border: 1px solid #e2e8f0;
-    background-color: #f8fafc;
-    color: #475569;
-    font-size: 0.82rem;
-    font-weight: 600;
-    padding: 0.45rem 0.95rem;
-    border-radius: 30px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.pill-filter-btn .pill-counter {
-    background-color: #e2e8f0;
-    color: #334155;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 0.1rem 0.45rem;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-}
-
-.pill-filter-btn:hover {
-    border-color: var(--docisis-terracotta, #c44918);
-    color: var(--docisis-terracotta, #c44918);
-    background-color: var(--docisis-terracotta-light, #fdf2ed);
-}
-
-.pill-filter-btn.active {
-    background-color: var(--docisis-navy, #08172e);
-    border-color: var(--docisis-navy, #08172e);
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(8, 23, 46, 0.18);
-}
-
-.pill-filter-btn.active .pill-counter {
-    background-color: rgba(255, 255, 255, 0.22);
-    color: #ffffff;
 }
 
 /* Pílula especial de Alerta/Crítico */
@@ -394,14 +153,6 @@
 .pill-filter-btn.pill-danger.active {
     background-color: var(--docisis-terracotta, #c44918);
     border-color: var(--docisis-terracotta, #c44918);
-}
-
-/* ==========================================================================
-   4. TABELA DE ESTOQUE PROFISSIONAL
-   ========================================================================== */
-.table-responsive-docisis {
-    width: 100%;
-    overflow-x: auto;
 }
 
 .stock-table {
@@ -660,63 +411,10 @@
     border-color: var(--docisis-terracotta, #c44918);
 }
 
-/* ==========================================================================
-   5. RODAPÉ DA TABELA E PAGINAÇÃO
-   ========================================================================== */
-.stock-footer-bar {
-    padding: 1.15rem 1.75rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    background-color: #ffffff;
-    border-top: 1px solid #edf2f7;
-}
-
-.stock-pagination-info {
-    font-size: 0.85rem;
-    color: #64748b;
-}
-
-.stock-pagination-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-}
-
-.page-btn {
-    min-width: 34px;
-    height: 34px;
-    padding: 0 0.5rem;
-    border-radius: 6px;
-    border: 1px solid #e2e8f0;
-    background-color: #ffffff;
-    color: #475569;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
 .page-btn:hover:not(:disabled) {
     background-color: #f1f5f9;
     border-color: #cbd5e1;
     color: var(--docisis-navy, #08172e);
-}
-
-.page-btn.active {
-    background-color: var(--docisis-terracotta, #c44918);
-    border-color: var(--docisis-terracotta, #c44918);
-    color: #ffffff;
-}
-
-.page-btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
 }
 
 /* ==========================================================================
@@ -733,15 +431,6 @@
     background-color: #ffffff;
     border-bottom: 1px solid #edf2f7;
     padding: 1.25rem 1.75rem;
-}
-
-.modal-mov-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--docisis-navy, #08172e);
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
 }
 
 .modal-mov-title i {
@@ -863,7 +552,7 @@
     }
 
     .stock-actions-group {
-        justify-content: stretch;
+        justify-content: flex-start;
     }
 
     .stock-actions-group .btn-docisis-outline,
@@ -894,33 +583,4 @@
     }
 }
 
-/* Toast de Notificação Estilizado */
-.docisis-toast-container {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    z-index: 1055;
-}
-
-.docisis-toast {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(8, 23, 46, 0.15);
-    border-left: 4px solid var(--docisis-terracotta, #c44918);
-    padding: 1rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    min-width: 320px;
-    max-width: 420px;
-    transform: translateY(20px);
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-}
-
-.docisis-toast.show {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-}
+/* Fim de estoque.css */

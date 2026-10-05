@@ -1,0 +1,452 @@
+/* ==========================================================================
+   DOCISIS - ESTILOS DO MÓDULO DE HISTÓRICO & AUDITORIA (HISTORICO.CSS)
+   Design System, KPIs, Tabela e Modal de Comprovante de Auditoria
+   ========================================================================== */
+
+/* Container Principal de Histórico */
+.history-container {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   1. CABEÇALHO DO MÓDULO
+   ========================================================================== */
+.history-header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+.history-title-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.history-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+    letter-spacing: -0.5px;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.history-title i {
+    color: var(--docisis-terracotta, #c44918);
+}
+
+.history-subtitle {
+    font-size: 0.92rem;
+    color: var(--docisis-text-muted, #64748b);
+    margin-bottom: 0;
+}
+
+.history-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.kpi-card.kpi-operacoes::before {
+    background: linear-gradient(90deg, #08172e, #1e3a8a);
+}
+
+.kpi-card.kpi-financeiro::before {
+    background: linear-gradient(90deg, #059669, #10b981);
+}
+
+.kpi-card.kpi-conformidade::before {
+    background: linear-gradient(90deg, #c44918, #f97316);
+}
+
+.kpi-card.kpi-alertas::before {
+    background: linear-gradient(90deg, #d97706, #f59e0b);
+}
+
+.kpi-card.kpi-operacoes .kpi-icon-box {
+    background-color: rgba(8, 23, 46, 0.07);
+    color: var(--docisis-navy, #08172e);
+}
+
+.kpi-card.kpi-financeiro .kpi-icon-box {
+    background-color: rgba(5, 150, 105, 0.12);
+    color: #059669;
+}
+
+.kpi-card.kpi-conformidade .kpi-icon-box {
+    background-color: rgba(196, 73, 24, 0.12);
+    color: var(--docisis-terracotta, #c44918);
+}
+
+.kpi-card.kpi-alertas .kpi-icon-box {
+    background-color: rgba(217, 119, 6, 0.12);
+    color: #b45309;
+}
+
+/* ==========================================================================
+   3. CARD PRINCIPAL DA TABELA DE HISTÓRICO
+   ========================================================================== */
+.history-main-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 6px 22px rgba(8, 23, 46, 0.04);
+    overflow: hidden;
+}
+
+/* Barra Superior de Filtros e Busca */
+.history-toolbar {
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid #edf2f7;
+    background-color: #ffffff;
+}
+
+/* Busca Rápida */
+.history-search-group {
+    position: relative;
+    flex: 1;
+    min-width: 280px;
+    max-width: 440px;
+}
+
+.history-search-group .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.history-search-group .search-input {
+    width: 100%;
+    padding: 0.65rem 1rem 0.65rem 2.6rem;
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    background-color: #f8fafc;
+    font-size: 0.9rem;
+    color: var(--docisis-text-dark, #0f172a);
+    transition: all 0.2s ease;
+}
+
+.history-search-group .search-input:focus {
+    border-color: var(--docisis-terracotta, #c44918);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.12);
+}
+
+.history-table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.88rem;
+}
+
+.history-table thead th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 0.95rem 1.15rem;
+    border-top: none;
+    border-bottom: 1.5px solid #e2e8f0;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.history-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.history-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.history-table tbody td {
+    padding: 1.1rem 1.15rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+}
+
+/* Coluna de Data & Hora */
+.date-time-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.date-main {
+    font-weight: 700;
+    color: var(--docisis-navy, #08172e);
+    font-size: 0.88rem;
+}
+
+.time-sub {
+    font-size: 0.76rem;
+    color: #64748b;
+}
+
+/* Badges de Tipo de Evento */
+.event-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+
+.event-entrada {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.event-saida {
+    background-color: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+
+.event-venda {
+    background-color: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.event-descarte {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.event-ajuste {
+    background-color: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.event-cadastro {
+    background-color: #f5f3ff;
+    color: #5b21b6;
+    border: 1px solid #ddd6fe;
+}
+
+.event-producao {
+    background-color: #eef2ff;
+    color: var(--docisis-navy, #08172e);
+    border: 1px solid #c7d2fe;
+}
+
+/* Coluna de Descrição e Produto */
+.history-desc-cell {
+    display: flex;
+    flex-direction: column;
+    max-width: 320px;
+}
+
+.history-desc-title {
+    font-weight: 700;
+    color: var(--docisis-navy, #08172e);
+    font-size: 0.9rem;
+    line-height: 1.25;
+}
+
+.history-desc-meta {
+    font-size: 0.78rem;
+    color: #64748b;
+    margin-top: 0.2rem;
+}
+
+/* Documento / Referência */
+.doc-reference-tag {
+    font-family: monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #334155;
+    background-color: #f1f5f9;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* Badge do Operador */
+.operator-badge-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.operator-avatar-mini {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--docisis-terracotta-light, #fdf2ed);
+    color: var(--docisis-terracotta, #c44918);
+    font-weight: 700;
+    font-size: 0.72rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(196, 73, 24, 0.2);
+}
+
+.operator-name {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--docisis-text-dark, #0f172a);
+}
+
+/* Status de Auditoria */
+.audit-status {
+    font-size: 0.76rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.audit-verified {
+    color: #059669;
+}
+
+.audit-warning {
+    color: #d97706;
+}
+
+/* ==========================================================================
+   5. MODAL DE COMPROVANTE DE AUDITORIA EMPRESARIAL
+   ========================================================================== */
+.modal-auditoria .modal-content {
+    border-radius: 14px;
+    border: 1.5px solid var(--docisis-terracotta, #c44918);
+    box-shadow: 0 16px 40px rgba(8, 23, 46, 0.18);
+    overflow: hidden;
+}
+
+.audit-receipt-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.receipt-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 2px dashed #e2e8f0;
+    margin-bottom: 1.25rem;
+}
+
+.receipt-id-tag {
+    font-family: monospace;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+    background-color: #f1f5f9;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+}
+
+.receipt-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.receipt-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.receipt-item-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.receipt-item-val {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--docisis-navy, #08172e);
+}
+
+.anvisa-signature-box {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    font-size: 0.76rem;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.25rem;
+}
+
+.anvisa-hash {
+    font-family: monospace;
+    font-size: 0.72rem;
+    color: #64748b;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .history-header-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .history-actions-group {
+        justify-content: flex-start;
+    }
+
+    .history-actions-group .btn-docisis-outline,
+    .history-actions-group .btn-docisis-primary {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .toolbar-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .history-search-group {
+        max-width: 100%;
+    }
+
+    .toolbar-secondary-actions {
+        width: 100%;
+    }
+
+    .select-filter-custom {
+        flex: 1;
+    }
+
+    .receipt-data-grid {
+        grid-template-columns: 1fr;
+    }
+}

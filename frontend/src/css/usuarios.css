@@ -1,0 +1,711 @@
+/* ==========================================================================
+   DOCISIS - GESTÃO DE USUÁRIOS & PERMISSÕES (USUARIOS.CSS)
+   Design System, KPIs de Equipe, Tabela de Operadores e Painel de Permissões
+   ========================================================================== */
+
+/* Container Principal */
+.users-container {
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   1. CABEÇALHO DO MÓDULO
+   ========================================================================== */
+.users-header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+.users-title-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.users-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+    letter-spacing: -0.5px;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.users-title i {
+    color: var(--docisis-terracotta, #c44918);
+}
+
+.users-subtitle {
+    font-size: 0.92rem;
+    color: var(--docisis-text-muted, #526071);
+    margin-bottom: 0;
+}
+
+.users-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   2. CARDS DE MÉTRICAS SUPERIORES (KPIS)
+   ========================================================================== */
+.kpi-card-operadores::before {
+    background: linear-gradient(90deg, #08172e, #1e3a8a);
+}
+
+.kpi-card-sessoes::before {
+    background: linear-gradient(90deg, #059669, #10b981);
+}
+
+.kpi-card-seguranca::before {
+    background: linear-gradient(90deg, #c44918, #f97316);
+}
+
+.kpi-card-admins::before {
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+}
+
+.kpi-card-operadores .kpi-icon-box {
+    background-color: rgba(8, 23, 46, 0.08);
+    color: var(--docisis-navy, #08172e);
+}
+
+.kpi-card-sessoes .kpi-icon-box {
+    background-color: rgba(5, 150, 105, 0.12);
+    color: #059669;
+}
+
+.kpi-card-seguranca .kpi-icon-box {
+    background-color: rgba(196, 73, 24, 0.12);
+    color: var(--docisis-terracotta, #c44918);
+}
+
+.kpi-card-admins .kpi-icon-box {
+    background-color: rgba(79, 70, 229, 0.12);
+    color: #4f46e5;
+}
+
+/* Indicador de pulso para sessões em tempo real */
+.pulse-indicator {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: pulseGlow 1.8s infinite;
+}
+
+@keyframes pulseGlow {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.badge-status-turno {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    background-color: #ecfdf5;
+    color: #065f46;
+    border-radius: 6px;
+    border: 1px solid #a7f3d0;
+}
+
+/* ==========================================================================
+   3. COLUNA 1: CARD PRINCIPAL DA TABELA DE USUÁRIOS
+   ========================================================================== */
+.users-main-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 6px 22px rgba(8, 23, 46, 0.04);
+    overflow: hidden;
+}
+
+.users-toolbar {
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid #edf2f7;
+    background-color: #ffffff;
+}
+
+.users-search-group {
+    position: relative;
+    flex: 1;
+    min-width: 260px;
+    max-width: 440px;
+}
+
+.users-search-group .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.users-search-group .search-input {
+    width: 100%;
+    padding: 0.65rem 1rem 0.65rem 2.6rem;
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    background-color: #f8fafc;
+    font-size: 0.9rem;
+    color: var(--docisis-text-dark, #0f172a);
+    transition: all 0.2s ease;
+}
+
+.users-search-group .search-input:focus {
+    border-color: var(--docisis-terracotta, #c44918);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.12);
+    outline: none;
+}
+
+.users-search-group .search-input:focus-visible {
+    outline: 2px solid var(--docisis-terracotta, #c44918) !important;
+    outline-offset: 2px;
+}
+
+/* Indicadores de Status em Pílulas */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.dot-ativo {
+    background-color: #10b981;
+}
+
+.dot-inativo {
+    background-color: #94a3b8;
+}
+
+.dot-suspenso {
+    background-color: #ef4444;
+}
+
+/* Tabela de Usuários */
+.users-table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.88rem;
+}
+
+.users-table thead th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 0.95rem 1.15rem;
+    border-top: none;
+    border-bottom: 1.5px solid #e2e8f0;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.users-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.users-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.users-table tbody td {
+    padding: 1.05rem 1.15rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+}
+
+/* Célula do Operador */
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.user-avatar-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.82rem;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+}
+
+.avatar-admin {
+    background-color: #08172e;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(8, 23, 46, 0.2);
+}
+
+.avatar-lider {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1.5px solid #fde68a;
+}
+
+.avatar-operador {
+    background-color: #f1f5f9;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+}
+
+.avatar-inativo {
+    background-color: #e2e8f0;
+    color: #64748b;
+}
+
+.avatar-suspenso {
+    background-color: #fef2f2;
+    color: #b91c1c;
+    border: 1.5px solid #fecaca;
+}
+
+.user-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 700;
+    color: var(--docisis-navy, #08172e);
+    font-size: 0.92rem;
+    line-height: 1.25;
+}
+
+.user-email {
+    font-size: 0.78rem;
+    color: var(--docisis-text-muted, #526071);
+    margin-top: 0.15rem;
+}
+
+/* ==========================================================================
+   PALETAS DE CORES DAS TAGS DE STATUS (WCAG AAA Compliant)
+   ========================================================================== */
+.status-tag {
+    padding: 0.32rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    white-space: nowrap;
+}
+
+/* Status: Ativo */
+.status-ativo {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+/* Status: Inativo */
+.status-inativo {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+/* Status: Suspenso */
+.status-suspenso {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* Badges de Cargo */
+.role-badge {
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+}
+
+.role-admin {
+    background-color: #08172e;
+    color: #ffffff;
+}
+
+.role-admin i {
+    color: #f59e0b;
+}
+
+.role-lider {
+    background-color: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.role-lider i {
+    color: #d97706;
+}
+
+.role-operador {
+    background-color: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.role-operador i {
+    color: #16a34a;
+}
+
+/* Badges de 2FA e Segurança */
+.badge-security-2fa {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #15803d;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.badge-security-pendente {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #92400e;
+    background-color: #fef3c7;
+    border: 1px solid #fde68a;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.timestamp-main {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--docisis-navy, #08172e);
+}
+
+.timestamp-sub {
+    display: block;
+    font-size: 0.74rem;
+    color: var(--docisis-text-muted, #526071);
+}
+
+/* Botões de Ação na Tabela */
+.action-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-table-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.btn-table-action:hover {
+    border-color: var(--docisis-navy, #08172e);
+    color: var(--docisis-navy, #08172e);
+    background-color: #f8fafc;
+}
+
+.btn-table-action:focus-visible {
+    outline: 2px solid var(--docisis-terracotta, #c44918) !important;
+    outline-offset: 2px;
+}
+
+/* Rodapé da Tabela */
+.users-footer-bar {
+    padding: 1.15rem 1.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background-color: #ffffff;
+    border-top: 1px solid #edf2f7;
+}
+
+.users-pagination-info {
+    font-size: 0.85rem;
+    color: var(--docisis-text-muted, #526071);
+}
+
+/* ==========================================================================
+   4. COLUNA 2: PAINEL LATERAL "CADASTRAR NOVO USUÁRIO" & PERMISSÕES
+   ========================================================================== */
+.panel-create-user {
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1.5px solid var(--docisis-terracotta, #c44918);
+    box-shadow: 0 8px 30px rgba(8, 23, 46, 0.06);
+    padding: 1.75rem 1.6rem;
+    position: sticky;
+    top: 85px;
+}
+
+.panel-header-sticky {
+    padding-bottom: 1.1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.panel-icon-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background-color: var(--docisis-terracotta-light, #fdf2ed);
+    color: var(--docisis-terracotta, #c44918);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.panel-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+    letter-spacing: -0.3px;
+}
+
+.panel-subtitle {
+    font-size: 0.82rem;
+    color: var(--docisis-text-muted, #526071);
+    margin-bottom: 0;
+    margin-top: 0.2rem;
+}
+
+.security-switches-box {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+/* ==========================================================================
+   5. BLOCO DE SELEÇÃO DE PERMISSÕES DE CARGO (RADIO CARDS)
+   ========================================================================== */
+.roles-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.badge-role-required {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--docisis-terracotta, #c44918);
+    background-color: var(--docisis-terracotta-light, #fdf2ed);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+
+.role-selector-card {
+    display: block;
+    position: relative;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.65rem;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.role-selector-card:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(8, 23, 46, 0.04);
+}
+
+.role-radio-input {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    accent-color: var(--docisis-terracotta, #c44918);
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+}
+
+/* Estado Ativo/Checked do Card de Permissão */
+.role-selector-card:has(.role-radio-input:checked) {
+    border-color: var(--docisis-terracotta, #c44918);
+    background-color: var(--docisis-terracotta-light, #fdf2ed);
+    box-shadow: 0 4px 14px rgba(196, 73, 24, 0.1);
+}
+
+.role-selector-card:focus-within {
+    outline: 2px solid var(--docisis-terracotta, #c44918);
+    outline-offset: 2px;
+}
+
+.role-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+    padding-right: 1.8rem;
+}
+
+.role-icon-box {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.role-icon-admin {
+    background-color: #08172e;
+    color: #ffffff;
+}
+
+.role-icon-lider {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.role-icon-operador {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.role-card-name {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: var(--docisis-navy, #08172e);
+}
+
+.role-level-pill {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.level-full {
+    background-color: #fef2f2;
+    color: #991b1b;
+}
+
+.level-mid {
+    background-color: #fffbeb;
+    color: #92400e;
+}
+
+.level-basic {
+    background-color: #f0fdf4;
+    color: #166534;
+}
+
+.role-card-desc {
+    font-size: 0.77rem;
+    color: var(--docisis-text-muted, #526071);
+    margin-bottom: 0;
+    line-height: 1.4;
+    padding-right: 0.5rem;
+}
+
+/* Matriz de Privilégios */
+.permissions-matrix-box {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+.privileges-checklist li {
+    padding: 0.2rem 0;
+    color: #334155;
+    font-size: 0.78rem;
+}
+
+/* ==========================================================================
+   6. RESPONSIVIDADE
+   ========================================================================== */
+@media (max-width: 992px) {
+    .panel-create-user {
+        position: static;
+        margin-top: 1.5rem;
+    }
+
+    .users-toolbar {
+        padding: 1.25rem 1rem;
+    }
+
+    .users-table thead th,
+    .users-table tbody td {
+        padding: 0.85rem 0.85rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .users-header-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .users-actions-group {
+        justify-content: flex-start;
+    }
+
+    .users-actions-group .btn-docisis-outline,
+    .users-actions-group .btn-docisis-primary {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .users-search-group {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .panel-create-user {
+        padding: 1.25rem 1rem;
+    }
+}

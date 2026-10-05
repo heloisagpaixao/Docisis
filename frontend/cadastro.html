@@ -17,9 +17,8 @@
     <link rel="stylesheet" href="src/css/cadastro.css">
 </head>
 
-<body>
+  <body>
     <div class="container py-4 my-auto">
-
         <!-- Logo e Cabeçalho -->
         <div class="text-center mb-4">
             <div class="brand-logo-wrapper mb-2">
@@ -30,155 +29,300 @@
             </div>
             <p class="brand-subtitle mt-1">Gestão Profissional de Confeitaria</p>
         </div>
+        <p class="brand-subtitle mt-1">Gestão Profissional de Confeitaria</p>
+      </div>
 
-        <!-- Formulário Principal de Cadastro -->
-        <div id="area-cadastro" class="row justify-content-center">
-            <div class="col-md-8 col-lg-6 col-xl-5">
-                <div class="docisis-card auth-step">
+<!-- Tela de Acesso Negado (Exibida caso o usuário não seja Admin) -->
+      <div id="acesso-negado" class="row justify-content-center escondido">
+        <div class="col-md-6 col-lg-5">
+          <div class="docisis-card text-center p-4">
+            <i
+              class="bi bi-shield-slash text-danger display-4 d-block mb-3"
+            ></i>
+            <h2 class="h5 fw-bold text-danger mb-2">
+              Acesso Restrito ao Administrador
+            </h2>
+            <p class="text-muted small mb-4">
+              A inclusão de novos operadores é permitida apenas para contas com
+              nível de acesso <strong>Administrador</strong>.
+            </p>
+            <a href="login.html" class="btn btn-docisis-navy"
+              >Retornar ao Login</a
+            >
+          </div>
+        </div>
+      </div>
 
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <div class="icon-circle bg-terracotta-light text-terracotta" style="width: 44px; height: 44px;" aria-hidden="true">
-                            <i class="bi bi-person-plus-fill fs-5"></i>
-                        </div>
-                        <div>
-                            <h1 class="h5 fw-bold text-navy-docisis mb-0">Cadastrar Novo Operador</h1>
-                            <small class="text-muted">Preencha os dados da equipe para solicitar o acesso.</small>
-                        </div>
-                    </div>
+      <!-- Formulário Principal de Cadastro -->
+      <div id="area-cadastro" class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 col-xl-5">
+          <div class="docisis-card auth-step">
 
-                    <!-- Alerta de Feedback -->
-                    <div id="aviso-cadastro" class="alert d-none mb-3" role="alert" aria-live="polite"></div>
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <div class="icon-circle bg-terracotta-light text-terracotta" style="width: 44px; height: 44px;" aria-hidden="true">
+                <i class="bi bi-person-plus-fill fs-5"></i>
+              </div>
+              <div>
+                <h1 class="h5 fw-bold text-navy-docisis mb-0">Cadastrar Novo Operador</h1>
+                <small class="text-muted">Preencha os dados da equipe para solicitar o acesso.</small>
+              </div>
+            </div>
 
-                    <form id="formulario-cadastro" novalidate aria-label="Formulário de cadastro de novo operador">
+            <!-- Alerta de Feedback -->
+            <div id="aviso-cadastro" class="alert d-none mb-3" role="alert" aria-live="polite"></div>
 
-                        <!-- Nome Completo -->
-                        <div class="mb-3">
-                            <label for="nome" class="form-label-uppercase">Nome Completo <span class="text-danger" aria-hidden="true">*</span></label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-person input-icon" aria-hidden="true"></i>
-                                <input type="text"
-                                       class="form-control"
-                                       id="nome"
-                                       name="nome"
-                                       placeholder="Digite seu nome completo"
-                                       autocomplete="name"
-                                       required
-                                       aria-required="true">
-                            </div>
-                            <div class="invalid-feedback">Informe o nome completo.</div>
-                        </div>
+            <form id="formulario-cadastro" novalidate aria-label="Formulário de cadastro de novo operador">
 
-                        <!-- E-mail Corporativo -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label-uppercase">E-mail Corporativo <span class="text-danger" aria-hidden="true">*</span></label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-envelope input-icon" aria-hidden="true"></i>
-                                <input type="email"
-                                       class="form-control"
-                                       id="email"
-                                       name="email"
-                                       placeholder="nome@docisis.com.br"
-                                       autocomplete="email"
-                                       required
-                                       aria-required="true">
-                            </div>
-                            <div class="invalid-feedback">Informe um e-mail corporativo válido.</div>
-                        </div>
-
-                        <!-- CPF -->
-                        <div class="mb-3">
-                            <label for="cpf" class="form-label-uppercase">CPF <span class="text-danger" aria-hidden="true">*</span></label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-card-heading input-icon" aria-hidden="true"></i>
-                                <input type="text"
-                                       class="form-control"
-                                       id="cpf"
-                                       name="cpf"
-                                       placeholder="000.000.000-00"
-                                       maxlength="14"
-                                       inputmode="numeric"
-                                       autocomplete="off"
-                                       required
-                                       aria-required="true">
-                            </div>
-                            <div class="invalid-feedback">Informe o CPF.</div>
-                        </div>
-
-                        <!-- Telefone -->
-                        <div class="mb-3">
-                            <label for="telefone" class="form-label-uppercase">Telefone / WhatsApp</label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-telephone input-icon" aria-hidden="true"></i>
-                                <input type="tel"
-                                       class="form-control"
-                                       id="telefone"
-                                       name="telefone"
-                                       placeholder="(00) 00000-0000"
-                                       autocomplete="tel">
-                            </div>
-                        </div>
-
-                        <!-- Senha Inicial -->
-                        <div class="mb-3">
-                            <label for="senha" class="form-label-uppercase">Senha Inicial <span class="text-danger" aria-hidden="true">*</span></label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-lock input-icon" aria-hidden="true"></i>
-                                <input type="password"
-                                       class="form-control"
-                                       id="senha"
-                                       name="senha"
-                                       placeholder="••••••••"
-                                       minlength="6"
-                                       autocomplete="new-password"
-                                       required
-                                       aria-required="true">
-                            </div>
-                            <div class="invalid-feedback">A senha deve ter pelo menos 6 caracteres.</div>
-                        </div>
-
-                        <!-- Nível de Acesso Pretendido -->
-                        <div class="mb-4">
-                            <label for="nivelAcesso" class="form-label-uppercase">Função / Cargo Pretendido <span class="text-danger" aria-hidden="true">*</span></label>
-                            <div class="input-group-docisis">
-                                <i class="bi bi-shield-lock input-icon" aria-hidden="true"></i>
-                                <select class="form-select"
-                                        id="nivelAcesso"
-                                        name="nivelAcesso"
-                                        required
-                                        aria-required="true">
-                                    <option value="" selected disabled>Selecione a permissão...</option>
-                                    <option value="OPERADOR">Estagiário / Operador</option>
-                                    <option value="LIDER">Líder de Equipe</option>
-                                    <option value="ADMIN">Administrador</option>
-                                </select>
-                            </div>
-                            <div class="invalid-feedback">Selecione uma função.</div>
-                        </div>
-
-                        <!-- Enviar -->
-                        <button type="submit" id="btn-cadastrar" class="btn btn-docisis-navy w-100 mb-3">
-                            Solicitar Cadastro <i class="bi bi-arrow-right-short fs-5" aria-hidden="true"></i>
-                        </button>
-
-                        <!-- Link Retorno ao Login -->
-                        <div class="text-center pt-2 border-top">
-                            <span class="small text-muted">Já possui conta cadastrada? </span>
-                            <a href="login.html" class="small text-decoration-none fw-bold text-navy-docisis">Acessar Login</a>
-                        </div>
-                    </form>
+              <!-- Nome Completo -->
+              <div class="mb-3">
+                <label for="nome" class="form-label-uppercase">Nome Completo <span class="text-danger" aria-hidden="true">*</span></label>
+                <div class="input-group-docisis">
+                  <i class="bi bi-person input-icon" aria-hidden="true"></i>
+                  <input type="text"
+                         class="form-control"
+                         id="nome"
+                         name="nome"
+                         placeholder="Digite seu nome completo"
+                         autocomplete="name"
+                         required
+                         aria-required="true">
                 </div>
+                <div class="invalid-feedback">Informe o nome completo.</div>
+              </div>
+
+              <!-- E-mail Corporativo -->
+              <div class="mb-3">
+                <label for="email" class="form-label-uppercase">E-mail Corporativo <span class="text-danger" aria-hidden="true">*</span></label>
+                <div class="input-group-docisis">
+                  <i class="bi bi-envelope input-icon" aria-hidden="true"></i>
+                  <input type="email"
+                         class="form-control"
+                         id="email"
+                         name="email"
+                         placeholder="nome@docisis.com.br"
+                         autocomplete="email"
+                         required
+                         aria-required="true">
+                </div>
+                <div class="invalid-feedback">Informe um e-mail corporativo válido.</div>
+              </div>
+
+              <!-- CPF -->
+              <div class="mb-3">
+                <label for="cpf" class="form-label-uppercase">CPF <span class="text-danger" aria-hidden="true">*</span></label>
+                <div class="input-group-docisis">
+                  <i class="bi bi-card-heading input-icon" aria-hidden="true"></i>
+                  <input type="text"
+                         class="form-control"
+                         id="cpf"
+                         name="cpf"
+                         placeholder="000.000.000-00"
+                         maxlength="14"
+                         inputmode="numeric"
+                         autocomplete="off"
+                         required
+                         aria-required="true">
+                </div>
+                <div class="invalid-feedback">Informe o CPF.</div>
+              </div>
+
+              <!-- Telefone -->
+              <div class="mb-3">
+                <label for="telefone" class="form-label-uppercase">Telefone / WhatsApp</label>
+                <div class="input-group-docisis">
+                  <i class="bi bi-telephone input-icon" aria-hidden="true"></i>
+                  <input type="tel"
+                         class="form-control"
+                         id="telefone"
+                         name="telefone"
+                         placeholder="(00) 00000-0000"
+                         autocomplete="tel">
+                </div>
+              </div>
+
+              <!-- Senha Inicial -->
+              <div class="mb-3">
+                <label for="senha" class="form-label-uppercase">Senha Inicial <span class="text-danger" aria-hidden="true">*</span></label>
+                <div class="input-group-docisis">
+                  <i class="bi bi-lock input-icon" aria-hidden="true"></i>
+                  <input type="password"
+                         class="form-control"
+                         id="senha"
+                         name="senha"
+                         placeholder="••••••••"
+                         minlength="6"
+                         autocomplete="new-password"
+                         required
+                         aria-required="true">
+                </div>
+                <div class="invalid-feedback">A senha deve ter pelo menos 6 caracteres.</div>
+              </div>
+
+              <!-- Nível de Acesso Pretendido -->
+              <div class="mb-4">
+                <label for="nivelAcesso" class="form-label-uppercase">Função / Cargo Pretendido <span class="text-danger" aria-hidden="true">*</span></label>
+                <div class="input-group-docisis">
+                  <i class="bi bi-shield-lock input-icon" aria-hidden="true"></i>
+                  <select class="form-select"
+                          id="nivelAcesso"
+                          name="nivelAcesso"
+                          required
+                          aria-required="true">
+                    <option value="" selected disabled>Selecione a permissão...</option>
+                    <option value="OPERADOR">Estagiário / Operador</option>
+                    <option value="LIDER">Líder de Equipe</option>
+                    <option value="ADMIN">Administrador</option>
+                  </select>
+                </div>
+                <div class="invalid-feedback">Selecione uma função.</div>
+              </div>
+
+              <!-- Enviar -->
+              <button type="submit" id="btn-cadastrar" class="btn btn-docisis-navy w-100 mb-3">
+                Solicitar Cadastro <i class="bi bi-arrow-right-short fs-5" aria-hidden="true"></i>
+              </button>
+
+              <!-- Link Retorno ao Login -->
+              <div class="text-center pt-2 border-top">
+                <span class="small text-muted">Já possui conta cadastrada? </span>
+                <a href="login.html" class="small text-decoration-none fw-bold text-navy-docisis">Acessar Login</a>
+              </div>
+            </form>
+
+            <div class="support-footer" role="contentinfo">
+              <i class="bi bi-headset fs-6" aria-hidden="true"></i>
+              <span>Suporte Técnico Administrativo</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="support-footer" role="contentinfo">
+        <i class="bi bi-headset fs-6" aria-hidden="true"></i>
+        <span>Suporte Técnico Administrativo</span>
+      </div>
+                </div>
+              </div>
 
                 <!-- Rodapé de Suporte -->
                 <div class="support-footer" role="contentinfo">
                     <i class="bi bi-headset fs-6" aria-hidden="true"></i>
                     <span>Suporte Técnico Administrativo</span>
                 </div>
-            </div>
+              </div>
+
+              <!-- CPF -->
+              <div class="mb-3">
+                <label for="cpf" class="form-label-uppercase">CPF</label>
+                <div class="input-group-docisis">
+                  <i class="bi bi-card-heading input-icon"></i>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="cpf"
+                    name="cpf"
+                    placeholder="000.000.000-00"
+                    maxlength="14"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Telefone -->
+              <div class="mb-3">
+                <label for="telefone" class="form-label-uppercase"
+                  >Telefone</label
+                >
+                <div class="input-group-docisis">
+                  <i class="bi bi-telephone input-icon"></i>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="telefone"
+                    name="telefone"
+                    placeholder="(00) 00000-0000"
+                  />
+                </div>
+              </div>
+
+              <!-- Senha Inicial -->
+              <div class="mb-3">
+                <label for="senha" class="form-label-uppercase"
+                  >Senha Inicial</label
+                >
+                <div class="input-group-docisis">
+                  <i class="bi bi-lock input-icon"></i>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="senha"
+                    name="senha"
+                    placeholder="••••••••"
+                    minlength="6"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Nível de Acesso -->
+              <div class="mb-4">
+                <label for="nivelAcesso" class="form-label-uppercase"
+                  >Nível de Acesso</label
+                >
+                <div class="input-group-docisis">
+                  <i class="bi bi-shield-lock input-icon"></i>
+                  <select
+                    class="form-select"
+                    id="nivelAcesso"
+                    name="nivelAcesso"
+                    required
+                  >
+                    <option value="" selected disabled>
+                      Selecione a permissão...
+                    </option>
+                    <option value="OPERADOR">Estagiário / Operador</option>
+                    <option value="LIDER">Líder de Equipe</option>
+                    <option value="ADMIN">Administrador</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Resumo da Permissão Selecionada -->
+              <div
+                id="painel-info-permissao"
+                class="p-3 mb-4 rounded bg-light border border-warning-subtle d-none"
+              >
+                <small
+                  id="texto-permissao"
+                  class="d-block text-muted small mb-0"
+                ></small>
+              </div>
+
+              <!-- Botão de Envio (Dark Navy) -->
+              <button
+                type="submit"
+                id="btn-cadastrar"
+                class="btn btn-docisis-navy"
+              >
+                Cadastrar Operador <i class="bi bi-arrow-right-short fs-5"></i>
+              </button>
+            </form>
+          </div>
+
+          <!-- Rodapé de Suporte Técnico -->
+          <div class="support-footer">
+            <i class="bi bi-headset fs-6"></i>
+            <span>Suporte Técnico Administrativo</span>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Bootstrap 5 Bundle JS -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script de Cadastro e Proteção de Rota -->
+    <script src="src/js/cadastro.js"></script>
+  </body>
 </html>

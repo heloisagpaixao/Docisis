@@ -18,9 +18,8 @@
     <link rel="stylesheet" href="src/css/funcionario.css">
 </head>
 
-<body>
+  <body>
     <div class="app-layout">
-
         <!-- ==================================================================
              BARRA LATERAL (SIDEBAR)
              ================================================================== -->
@@ -155,7 +154,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!-- Input oculto ativado pelo JS -->
                                                 <input type="file" id="foto-input" accept="image/*" class="d-none" aria-label="Selecionar foto de perfil">
                                                 <button type="button" id="btn-alterar-foto"
                                                         class="btn btn-link btn-sm text-decoration-none text-muted fw-semibold p-0 ms-1"
@@ -331,18 +329,287 @@
                                 </div><!-- /tab-content -->
 
                             </div><!-- /profile-card -->
-
                         </div>
                     </div>
                 </div>
             </main>
         </div>
+
+                  <!-- Conteúdo das Abas -->
+                  <div class="tab-content" id="perfilTabsContent">
+                    <!-- ABA 1: DADOS PESSOAIS (ALINHADO À ESQUERDA) -->
+                    <div
+                      class="tab-pane fade show active"
+                      id="tab-dados"
+                      role="tabpanel"
+                    >
+                      <form
+                        id="form-perfil-funcionario"
+                        class="max-w-550 ms-0 me-auto"
+                        novalidate
+                      >
+                        <!-- Foto de Perfil Alinhada à Esquerda com Upload -->
+                        <div class="text-start mb-4 pb-2">
+                          <div class="avatar-upload-wrapper ms-0 mb-2">
+                            <div class="avatar-circle" id="avatar-preview-box">
+                              <i
+                                class="bi bi-person-circle default-avatar-icon"
+                              ></i>
+                              <img
+                                id="avatar-img-preview"
+                                src=""
+                                alt="Foto de Perfil"
+                                class="d-none"
+                              />
+                              <div
+                                class="avatar-overlay"
+                                id="btn-trigger-upload"
+                              >
+                                <i
+                                  class="bi bi-camera-fill fs-4 text-white"
+                                ></i>
+                              </div>
+                            </div>
+                            <input
+                              type="file"
+                              id="foto-input"
+                              accept="image/*"
+                              class="d-none"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            id="btn-alterar-foto"
+                            class="btn btn-link btn-sm text-decoration-none text-muted fw-semibold p-0 ms-1"
+                          >
+                            Alterar
+                          </button>
+                        </div>
+
+                        <!-- Campos de Dados Pessoais Espaçados -->
+                        <!-- Nome -->
+                        <div class="mb-4 pb-2">
+                          <label for="perfil-nome" class="form-label-simple"
+                            >Nome</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control form-control-gray"
+                            id="perfil-nome"
+                            placeholder="Digite seu nome completo"
+                            required
+                          />
+                        </div>
+
+                        <!-- E-mail -->
+                        <div class="mb-4 pb-2">
+                          <label for="perfil-email" class="form-label-simple"
+                            >E-mail</label
+                          >
+                          <input
+                            type="email"
+                            class="form-control form-control-gray"
+                            id="perfil-email"
+                            placeholder="nome@docisis.com.br"
+                            required
+                          />
+                        </div>
+
+                        <!-- Telefone -->
+                        <div class="mb-4 pb-2">
+                          <label for="perfil-telefone" class="form-label-simple"
+                            >Telefone</label
+                          >
+                          <input
+                            type="tel"
+                            class="form-control form-control-gray"
+                            id="perfil-telefone"
+                            placeholder="(11) 99999-9999"
+                          />
+                        </div>
+
+                        <!-- Cargo -->
+                        <div class="mb-4 pb-2">
+                          <label for="perfil-cargo" class="form-label-simple"
+                            >Cargo</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control form-control-gray"
+                            id="perfil-cargo"
+                            placeholder="Ex: Chef Confeiteiro / Líder de Equipe"
+                          />
+                        </div>
+
+                        <!-- Botão Salvar Alterações Alinhado à Esquerda -->
+                        <div class="text-start mt-4 pt-2">
+                          <button
+                            type="submit"
+                            id="btn-salvar-perfil"
+                            class="btn btn-docisis-navy px-5 py-2 fw-semibold"
+                          >
+                            Salvar alterações
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    <!-- ABA 2: SEGURANÇA E SENHA -->
+                    <div
+                      class="tab-pane fade"
+                      id="tab-seguranca"
+                      role="tabpanel"
+                    >
+                      <form
+                        id="form-seguranca-senha"
+                        class="max-w-550 ms-0 me-auto py-2"
+                        novalidate
+                      >
+                        <h3 class="h6 fw-bold text-navy-docisis mb-3">
+                          Alterar Senha de Acesso
+                        </h3>
+
+                        <div class="mb-3">
+                          <label for="senha-atual" class="form-label-simple"
+                            >Senha Atual</label
+                          >
+                          <input
+                            type="password"
+                            class="form-control form-control-gray"
+                            id="senha-atual"
+                            required
+                          />
+                        </div>
+
+                        <div class="mb-3">
+                          <label for="senha-nova" class="form-label-simple"
+                            >Nova Senha</label
+                          >
+                          <input
+                            type="password"
+                            class="form-control form-control-gray"
+                            id="senha-nova"
+                            minlength="6"
+                            required
+                          />
+                        </div>
+
+                        <div class="mb-4">
+                          <label for="senha-confirma" class="form-label-simple"
+                            >Confirmar Nova Senha</label
+                          >
+                          <input
+                            type="password"
+                            class="form-control form-control-gray"
+                            id="senha-confirma"
+                            required
+                          />
+                        </div>
+
+                        <button
+                          type="submit"
+                          class="btn btn-docisis-navy py-2 px-4"
+                        >
+                          Atualizar Senha
+                        </button>
+                      </form>
+                    </div>
+
+                    <!-- ABA 3: PREFERÊNCIAS DE NOTIFICAÇÃO -->
+                    <div
+                      class="tab-pane fade"
+                      id="tab-notificacoes"
+                      role="tabpanel"
+                    >
+                      <div class="max-w-550 ms-0 me-auto py-2">
+                        <h3 class="h6 fw-bold text-navy-docisis mb-3">
+                          Notificações do Sistema
+                        </h3>
+
+                        <div
+                          class="form-check form-switch mb-3 p-3 bg-light rounded border"
+                        >
+                          <input
+                            class="form-check-input ms-0 me-3"
+                            type="checkbox"
+                            id="notif-email"
+                            checked
+                          />
+                          <label
+                            class="form-check-label fw-semibold"
+                            for="notif-email"
+                          >
+                            Receber Notificações por E-mail
+                            <span class="d-block small text-muted fw-normal"
+                              >Avisos sobre novos produtos e alertas de
+                              estoque.</span
+                            >
+                          </label>
+                        </div>
+
+                        <div
+                          class="form-check form-switch mb-3 p-3 bg-light rounded border"
+                        >
+                          <input
+                            class="form-check-input ms-0 me-3"
+                            type="checkbox"
+                            id="notif-sms"
+                          />
+                          <label
+                            class="form-check-label fw-semibold"
+                            for="notif-sms"
+                          >
+                            Notificações por SMS / WhatsApp
+                            <span class="d-block small text-muted fw-normal"
+                              >Alertas de segurança e login em 2FA.</span
+                            >
+                          </label>
+                        </div>
+
+                        <div
+                          class="form-check form-switch mb-4 p-3 bg-light rounded border"
+                        >
+                          <input
+                            class="form-check-input ms-0 me-3"
+                            type="checkbox"
+                            id="notif-relatorio"
+                            checked
+                          />
+                          <label
+                            class="form-check-label fw-semibold"
+                            for="notif-relatorio"
+                          >
+                            Resumo Semanal de Desempenho
+                            <span class="d-block small text-muted fw-normal"
+                              >Relatório consolidado de vendas e
+                              movimentações.</span
+                            >
+                          </label>
+                        </div>
+
+                        <button
+                          type="button"
+                          id="btn-salvar-notif"
+                          class="btn btn-docisis-navy py-2 px-4"
+                        >
+                          Salvar Preferências
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /tab-content -->
+                </div>
+                <!-- /profile-card -->
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
 
     <!-- Bootstrap 5 Bundle JS -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Script da Página do Funcionário -->
     <script src="src/js/funcionario.js"></script>
-</body>
-
+  </body>
 </html>

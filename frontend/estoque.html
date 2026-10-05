@@ -15,9 +15,9 @@
     <link rel="stylesheet" href="src/css/estoque.css">
 </head>
 
-<body>
+  <body>
     <div class="app-layout">
-        <!-- ==========================================================================
+      <!-- ==========================================================================
              1. BARRA LATERAL (SIDEBAR TERRACOTA MINIMALISTA DOCK)
              ========================================================================== -->
         <aside class="sidebar-docisis">
@@ -45,14 +45,48 @@
             </nav>
         </aside>
 
-        <!-- ==========================================================================
+      <!-- ==========================================================================
              2. PAINEL PRINCIPAL (TOPBAR + ÁREA DE TRABALHO)
              ========================================================================== -->
-        <div class="main-content-wrapper">
-            <!-- Barra Superior (Topbar Responsiva) -->
-            <header class="topbar-docisis">
-                <div class="topbar-brand">
-                    <img src="src/assets/logo-docisis.svg" alt="Docisis" class="topbar-logo">
+      <div class="main-content-wrapper">
+        <!-- Barra Superior (Topbar Responsiva) -->
+        <header class="topbar-docisis">
+          <div class="topbar-brand">
+            <img
+              src="src/assets/logo-docisis.svg"
+              alt="Docisis"
+              class="topbar-logo"
+            />
+          </div>
+          <div class="topbar-user">
+            <div class="user-profile-badge">
+              <span id="topbar-username" class="fw-semibold user-name-text"
+                >Heloisa Paixão</span
+              >
+              <div
+                class="avatar-sm d-flex align-items-center justify-content-center bg-light text-dark fw-bold border rounded-circle"
+                style="width: 38px; height: 38px"
+              >
+                HP
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Área de Trabalho (Workspace Cinza) -->
+        <main class="workspace-docisis">
+          <div class="container-fluid py-4 py-md-5">
+            <div class="stock-container">
+              <!-- CABEÇALHO DO MÓDULO COM BOTÕES DE AÇÃO -->
+              <div class="stock-header-wrapper">
+                <div class="stock-title-area">
+                  <h1 class="stock-title">
+                    <i class="bi bi-boxes"></i> Gestão e Movimentação de Estoque
+                  </h1>
+                  <p class="stock-subtitle">
+                    Controle físico de insumos, matérias-primas e confeitos com
+                    rastreabilidade de lote e padrão PEPS / ANVISA.
+                  </p>
                 </div>
                 <div class="topbar-user">
                     <div class="user-profile-badge">
@@ -63,8 +97,19 @@
                             style="width: 38px; height: 38px; font-size:.85rem; color:var(--docisis-navy);">
                         </div>
                     </div>
+                    <div class="kpi-value-box">
+                      <div class="kpi-main-number" id="kpi-total-itens">0</div>
+                      <div class="kpi-sub-text">
+                        <i class="bi bi-layers text-primary"></i>
+                        <span id="kpi-total-skus">0 SKUs Ativos</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="kpi-footer-badge">
+                    <span class="text-muted">Acurácia de inventário</span>
+                    <span class="badge bg-light text-dark border">99.2%</span>
+                  </div>
                 </div>
-            </header>
 
             <!-- Área de Trabalho (Workspace Cinza) -->
             <main class="workspace-docisis">
@@ -307,10 +352,206 @@
                             </div>
                         </div>
 
-                    </div> <!-- /stock-container -->
+                    </div>
                 </div>
             </main>
         </div>
+                </div>
+
+                <!-- KPI 3: INSUMOS CRÍTICOS / RUPTURA -->
+                <div class="kpi-card kpi-criticos">
+                  <div>
+                    <div class="kpi-header">
+                      <span class="kpi-label">Insumos Críticos</span>
+                      <div class="kpi-icon-box">
+                        <i class="bi bi-shield-exclamation"></i>
+                      </div>
+                    </div>
+                    <div class="kpi-value-box">
+                      <div
+                        class="kpi-main-number text-danger"
+                        id="kpi-criticos"
+                      >
+                        0
+                      </div>
+                      <div class="kpi-sub-text">
+                        <i class="bi bi-arrow-down-circle text-danger"></i>
+                        <span id="kpi-criticos-sub"
+                          >Abaixo do ponto de pedido</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="kpi-footer-badge">
+                    <span class="text-muted">Abaixo do estoque mín.</span>
+                    <span
+                      class="badge bg-danger-subtle text-danger border border-danger-subtle"
+                      >Prioridade</span
+                    >
+                  </div>
+                </div>
+
+                <!-- KPI 4: VALOR TOTAL DO INVENTÁRIO -->
+                <div class="kpi-card kpi-valor">
+                  <div>
+                    <div class="kpi-header">
+                      <span class="kpi-label">Valor Total do Inventário</span>
+                      <div class="kpi-icon-box">
+                        <i class="bi bi-cash-coin"></i>
+                      </div>
+                    </div>
+                    <div class="kpi-value-box">
+                      <div
+                        class="kpi-main-number text-success"
+                        id="kpi-valor-total"
+                      >
+                        R$ 0,00
+                      </div>
+                      <div class="kpi-sub-text">
+                        <i class="bi bi-graph-up-arrow text-success"></i>
+                        <span>Custo Médio Ponderado</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="kpi-footer-badge">
+                    <span class="text-muted">Ativo Circulante</span>
+                    <span
+                      class="badge bg-success-subtle text-success border border-success-subtle"
+                      >Atualizado</span
+                    >
+                  </div>
+                </div>
+              </section>
+
+              <!-- CARD PRINCIPAL: TABELA DE ESTOQUE E FERRAMENTAS -->
+              <div class="stock-main-card">
+                <!-- BARRA DE FERRAMENTAS & FILTROS -->
+                <div class="stock-toolbar">
+                  <div class="toolbar-controls">
+                    <!-- Campo de Busca em Tempo Real -->
+                    <div class="stock-search-group">
+                      <i class="bi bi-search search-icon"></i>
+                      <input
+                        type="text"
+                        id="busca-estoque"
+                        class="search-input"
+                        placeholder="Buscar por produto, SKU, lote ou setor..."
+                      />
+                    </div>
+
+                    <!-- Filtros e Ordenação Secundária -->
+                    <div class="toolbar-secondary-actions">
+                      <select
+                        id="filtro-rapido-categoria"
+                        class="select-filter-custom"
+                      >
+                        <option value="todos">Todas Categorias</option>
+                        <option value="Insumos">
+                          Matérias-Primas / Insumos
+                        </option>
+                        <option value="Produtos Prontos">
+                          Produtos Acabados
+                        </option>
+                        <option value="Embalagens">
+                          Embalagens & Descartáveis
+                        </option>
+                      </select>
+
+                      <select id="ordenar-estoque" class="select-filter-custom">
+                        <option value="nome_asc">Nome (A - Z)</option>
+                        <option value="nome_desc">Nome (Z - A)</option>
+                        <option value="estoque_baixo">
+                          Menor Saldo Primeiro
+                        </option>
+                        <option value="validade_prox">
+                          Próximo do Vencimento
+                        </option>
+                        <option value="valor_maior">
+                          Maior Valor Acumulado
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- FILTROS EM PÍLULAS (PILLS) -->
+                  <div class="filter-pills-bar">
+                    <button class="pill-filter-btn active" data-filter="todos">
+                      <i class="bi bi-grid-fill"></i> Todos os Itens
+                      <span class="pill-counter" id="counter-todos">0</span>
+                    </button>
+                    <button class="pill-filter-btn" data-filter="normal">
+                      <i class="bi bi-check2-circle"></i> Nível Saudável
+                      <span class="pill-counter" id="counter-normal">0</span>
+                    </button>
+                    <button
+                      class="pill-filter-btn pill-danger"
+                      data-filter="critico"
+                    >
+                      <i class="bi bi-shield-slash"></i> Crítico / Ruptura
+                      <span class="pill-counter" id="counter-critico">0</span>
+                    </button>
+                    <button
+                      class="pill-filter-btn pill-warning"
+                      data-filter="vencendo"
+                    >
+                      <i class="bi bi-hourglass-split"></i> Vencendo Próximo
+                      <span class="pill-counter" id="counter-vencendo">0</span>
+                    </button>
+                    <button class="pill-filter-btn" data-filter="insumo">
+                      <i class="bi bi-egg"></i> Matérias-Primas
+                      <span class="pill-counter" id="counter-insumos">0</span>
+                    </button>
+                    <button class="pill-filter-btn" data-filter="acabado">
+                      <i class="bi bi-cake"></i> Produtos Prontos
+                      <span class="pill-counter" id="counter-acabados">0</span>
+                    </button>
+                    <button class="pill-filter-btn" data-filter="embalagem">
+                      <i class="bi bi-box"></i> Embalagens
+                      <span class="pill-counter" id="counter-embalagens"
+                        >0</span
+                      >
+                    </button>
+                  </div>
+                </div>
+
+                <!-- TABELA DINÂMICA DE ITENS -->
+                <div class="table-responsive-docisis">
+                  <table class="stock-table">
+                    <thead>
+                      <tr>
+                        <th style="min-width: 280px">Item / Identificação</th>
+                        <th>Categoria</th>
+                        <th>Lote Principal & Validade</th>
+                        <th style="min-width: 170px">Estoque vs Mínimo</th>
+                        <th>Custo & Valor Total</th>
+                        <th>Status</th>
+                        <th class="text-end" style="min-width: 150px">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabela-estoque-corpo">
+                      <!-- Renderizado via Javascript estoque.js -->
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- RODAPÉ DA TABELA: PAGINAÇÃO DINÂMICA -->
+                <div class="stock-footer-bar">
+                  <div class="stock-pagination-info" id="paginacao-info">
+                    Carregando registros...
+                  </div>
+                  <div
+                    class="stock-pagination-wrapper"
+                    id="paginacao-controles"
+                  >
+                    <!-- Botões de página injetados via JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /stock-container -->
+          </div>
+        </main>
+      </div>
     </div>
 
     <!-- ==========================================================================
@@ -336,7 +577,6 @@
                 <!-- Formulário de Movimentação -->
                 <form id="form-movimentacao">
                     <div class="modal-body p-4">
-
                         <!-- Seletor de Tipo de Movimentação em Abas/Pílulas -->
                         <div class="mov-type-selector">
                             <button type="button" class="mov-type-btn type-entrada active" data-type="entrada">
@@ -481,6 +721,128 @@
             </div>
         </div>
     </div>
+                </div>
+
+                <!-- Motivo / Operação Específica -->
+                <div class="col-md-5">
+                  <label for="mov-tipo-operacao" class="form-label-uppercase"
+                    >Motivo da Operação
+                    <span class="text-danger">*</span></label
+                  >
+                  <div class="input-group-docisis">
+                    <i class="bi bi-clipboard2-check input-icon"></i>
+                    <select id="mov-tipo-operacao" class="form-select" required>
+                      <!-- Preenchido via Javascript conforme Entrada/Saída/Ajuste -->
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Lote -->
+                <div class="col-md-4">
+                  <label for="mov-lote" class="form-label-uppercase"
+                    >Lote / Rastreabilidade
+                    <span class="text-danger">*</span></label
+                  >
+                  <div class="input-group-docisis">
+                    <i class="bi bi-upc-scan input-icon"></i>
+                    <input
+                      type="text"
+                      id="mov-lote"
+                      class="form-control"
+                      placeholder="Ex: LOT-2024-880"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <!-- Validade -->
+                <div class="col-md-4">
+                    <label for="mov-validade" class="form-label-uppercase">Data de Validade</label>
+                    <div class="input-group-docisis">
+                        <i class="bi bi-calendar-event input-icon"></i>
+                        <input type="date" id="mov-validade" class="form-control">
+                    </div>
+                </div>
+
+                <!-- Quantidade -->
+                <div class="col-md-4">
+                    <label for="mov-quantidade" class="form-label-uppercase">Quantidade (<span id="mov-unidade-medida">un</span>) <span class="text-danger">*</span></label>
+                    <div class="input-group-docisis">
+                        <i class="bi bi-calculator input-icon"></i>
+                        <input type="number" step="0.01" min="0.01" id="mov-quantidade" class="form-control" placeholder="0.00" required>
+                    </div>
+                </div>
+
+                <!-- Custo Unitário -->
+                <div class="col-md-4">
+                    <label for="mov-custo-unitario" class="form-label-uppercase">Custo Unitário (R$)</label>
+                    <div class="input-group-docisis">
+                        <i class="bi bi-currency-dollar input-icon"></i>
+                        <input type="number" step="0.01" min="0" id="mov-custo-unitario" class="form-control" placeholder="0.00">
+                    </div>
+                </div>
+
+                <!-- Documento de Referência / Nota Fiscal -->
+                <div class="col-md-8">
+                    <label for="mov-doc-ref" class="form-label-uppercase">Documento de Referência / NF / O.F.</label>
+                    <div class="input-group-docisis">
+                        <i class="bi bi-receipt input-icon"></i>
+                        <input type="text" id="mov-doc-ref" class="form-control" placeholder="Ex: NF-e 45291 ou O.F. 104">
+                    </div>
+                </div>
+
+                <!-- Observações e Justificativa -->
+                <div class="col-12">
+                    <label for="mov-observacoes" class="form-label-uppercase">Observações / Laudo Sanitário</label>
+                    <textarea id="mov-observacoes" class="form-control" rows="2" placeholder="Informações de temperatura no recebimento, laudo técnico de inspeção ou motivo de descarte..."></textarea>
+                </div>
+              </div>
+
+              <!-- Nota de Compliance ANVISA -->
+              <div class="anvisa-notice-box">
+                <i class="bi bi-shield-check fs-5 flex-shrink-0"></i>
+                <div>
+                  <strong>Rastreabilidade ANVISA RDC 216 / Boas Práticas:</strong>
+                  A movimentação será registrada com carimbo de data, hora e operador. O sistema sugere a
+                  saída prioritária de lotes conforme o método PEPS (Primeiro que Entra, Primeiro que
+                  Sai).
+                </div>
+              </div>
+
+              <!-- Nota de Compliance ANVISA -->
+              <div class="anvisa-notice-box">
+                <i class="bi bi-shield-check fs-5 flex-shrink-0"></i>
+                <div>
+                  <strong
+                    >Rastreabilidade ANVISA RDC 216 / Boas Práticas:</strong
+                  >
+                  A movimentação será registrada com carimbo de data, hora e
+                  operador. O sistema sugere a saída prioritária de lotes
+                  conforme o método PEPS (Primeiro que Entra, Primeiro que Sai).
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer bg-light px-4 py-3">
+              <button
+                type="button"
+                class="btn btn-secondary px-3"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="btn btn-docisis-primary px-4"
+                id="btn-confirmar-movimentacao"
+              >
+                <i class="bi bi-check2-circle"></i> Confirmar Movimentação
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
     <!-- ==========================================================================
          TOAST DE NOTIFICAÇÃO FLUTUANTE DOCISIS
@@ -490,14 +852,19 @@
             <i class="bi bi-check-circle-fill text-success fs-5 toast-icon" aria-hidden="true"></i>
             <div>
                 <strong class="d-block text-dark fw-bold" style="font-size: 0.9rem;">Módulo de Estoque</strong>
-                <span id="toast-mensagem" class="text-muted" style="font-size: 0.85rem;">Operação realizada com
-                    sucesso.</span>
+                <span id="toast-mensagem" class="text-muted" style="font-size: 0.85rem;">Operação realizada com sucesso.</span>
             </div>
         </div>
+    </div>
+        </div>
+      </div>
     </div>
 
     <!-- Bootstrap 5 Bundle JS -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script Especializado do Estoque -->
+    <script src="src/js/estoque.js"></script>
+  </body>
 </html>

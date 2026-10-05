@@ -68,6 +68,23 @@ class LoteService {
       };
     }
 
+    if (Number(quantidade) <= 0) {
+      throw {
+        status: 400,
+        mensagem: "A quantidade inicial deve ser maior que zero",
+      };
+    }
+
+    const dataValidade = new Date(dt_validade);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    if (dataValidade < hoje) {
+      throw {
+        status: 400,
+        mensagem: "A data de validade não pode ser no passado",
+      };
+    }
+
     if (!id_nota || isNaN(id_nota)) {
       throw {
         status: 400,

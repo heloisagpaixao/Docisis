@@ -287,6 +287,30 @@ class FuncionarioService {
       mensagem: "Funcionário removido com sucesso",
     };
   }
+
+  async alterarSenha(id, { senhaAtual, novaSenha } = {}) {
+    if (!id || isNaN(id)) {
+      throw { status: 400, mensagem: "ID inválido" };
+    }
+    if (!senhaAtual || !novaSenha) {
+      throw { status: 400, mensagem: "Senha atual e nova senha são obrigatórias" };
+    }
+    const funcionario = await FuncionarioRepository.findById(id);
+    if (!funcionario) {
+      throw { status: 404, mensagem: "Funcionário não encontrado" };
+    }
+    const senhaValida = await bcrypt.compare(senhaAtual, funcionario.senha);
+    if (!senhaValida) {
+      throw { status: 401, mensagem: "Senha atual incorreta" };
+    }
+    const salt = await bcrypt.genSalt(10);
+    const senhaHash = await bcrypt.hash(novaSenha, salt);
+    await FuncionarioRepository.update(id, { senha: senhaHash });
+    return {
+      sucesso: true,
+      mensagem: "Senha alterada com sucesso",
+    };
+  }
 }
 
 module.exports = new FuncionarioService();

@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="src/css/login.css">
 </head>
 
-  <body>
+<body>
     <div class="container py-4 my-auto">
         <!-- Logo -->
         <div class="text-center mb-4">
@@ -25,19 +25,15 @@
                 <img src="src/assets/logo-docisis.svg"
                      alt="Docisis — Gestão Profissional de Confeitaria"
                      class="img-fluid"
-                     style="max-height:65px;">
+                     style="max-height: 65px;">
             </div>
             <p class="brand-subtitle mt-1">Gestão Profissional de Confeitaria</p>
         </div>
-        <p class="brand-subtitle mt-1">Gestão Profissional de Confeitaria</p>
-      </div>
 
-      <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6 col-xl-5">
-          <!-- Alerta Global de Feedback -->
-          <div id="aviso-login" class="alert d-none mb-3" role="alert"></div>
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-5">
 
-<!-- Alerta Global de Feedback -->
+                <!-- Alerta Global de Feedback -->
                 <div id="aviso-login" class="alert d-none mb-3" role="alert" aria-live="polite"></div>
 
                 <!-- ==============================================================
@@ -89,7 +85,7 @@
                         </div>
 
                         <!-- Entrar -->
-                        <button type="submit" id="btn-entrar" class="btn btn-docisis-navy mb-3">
+                        <button type="submit" id="btn-entrar" class="btn btn-docisis-navy w-100 mb-3">
                             Entrar <i class="bi bi-box-arrow-in-right fs-5 ms-1" aria-hidden="true"></i>
                         </button>
 
@@ -173,8 +169,8 @@
                         </div>
 
                         <!-- Confirmar -->
-                        <button type="submit" id="btn-validar-2fa" class="btn btn-docisis-navy mb-3">
-                            Confirmar Acesso 2FA <i class="bi bi-arrow-right-short fs-5" aria-hidden="true"></i>
+                        <button type="submit" id="btn-validar-2fa" class="btn btn-docisis-navy w-100 mb-3">
+                            Confirmar Acesso 2FA <i class="bi bi-arrow-right-short fs-5 ms-1" aria-hidden="true"></i>
                         </button>
 
                         <button type="button" class="btn btn-outline-secondary w-100 btn-voltar-login">
@@ -212,7 +208,7 @@
                             <div class="invalid-feedback">Informe um e-mail válido.</div>
                         </div>
 
-                        <button type="submit" class="btn btn-docisis-navy mb-3">
+                        <button type="submit" class="btn btn-docisis-navy w-100 mb-3">
                             Enviar Instruções de Recuperação <i class="bi bi-send ms-1" aria-hidden="true"></i>
                         </button>
 
@@ -250,6 +246,7 @@
                                        required
                                        aria-required="true">
                             </div>
+                            <div class="invalid-feedback">Informe a nova senha.</div>
                         </div>
 
                         <!-- Confirmar Nova Senha -->
@@ -266,6 +263,7 @@
                                        required
                                        aria-required="true">
                             </div>
+                            <div class="invalid-feedback">As senhas não coincidem.</div>
                         </div>
 
                         <!-- Checklist de Força de Senha -->
@@ -299,8 +297,12 @@
                             </ul>
                         </div>
 
-                        <button type="submit" id="btn-salvar-nova-senha" class="btn btn-docisis-navy mb-3">
+                        <button type="submit" id="btn-salvar-nova-senha" class="btn btn-docisis-navy w-100 mb-3">
                             Salvar Nova Senha &amp; Entrar <i class="bi bi-check-circle ms-1" aria-hidden="true"></i>
+                        </button>
+
+                        <button type="button" class="btn btn-outline-secondary w-100 btn-voltar-login">
+                            <i class="bi bi-arrow-left me-1" aria-hidden="true"></i> Voltar ao Login
                         </button>
                     </form>
                 </section>
@@ -310,100 +312,16 @@
                     <i class="bi bi-headset fs-6" aria-hidden="true"></i>
                     <span>Suporte Técnico Administrativo</span>
                 </div>
+
             </div>
-
-            <form id="form-redefinir-senha" novalidate>
-              <!-- Nova Senha -->
-              <div class="mb-3">
-                <label for="nova-senha" class="form-label-uppercase"
-                  >Nova Senha</label
-                >
-                <div class="input-group-docisis">
-                  <i class="bi bi-shield-lock input-icon"></i>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="nova-senha"
-                    placeholder="Digite sua nova senha"
-                    required
-                  />
-                </div>
-              </div>
-
-              <!-- Confirmar Nova Senha -->
-              <div class="mb-3">
-                <label for="confirma-senha" class="form-label-uppercase"
-                  >Confirmar Nova Senha</label
-                >
-                <div class="input-group-docisis">
-                  <i class="bi bi-check2-circle input-icon"></i>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="confirma-senha"
-                    placeholder="Repita a nova senha"
-                    required
-                  />
-                </div>
-              </div>
-
-              <!-- Checklist Dinâmico de Requisitos de Força de Senha -->
-              <div class="password-checklist p-3 mb-4 rounded bg-light border">
-                <small class="fw-bold d-block text-secondary mb-2"
-                  >Requisitos de Segurança da Senha:</small
-                >
-                <ul class="list-unstyled mb-0 small">
-                  <li id="check-length" class="checklist-item invalid">
-                    <i class="bi bi-x-circle me-1"></i> Mínimo de 8 caracteres
-                  </li>
-                  <li id="check-uppercase" class="checklist-item invalid">
-                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 letra
-                    maiúscula (A-Z)
-                  </li>
-                  <li id="check-lowercase" class="checklist-item invalid">
-                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 letra
-                    minúscula (a-z)
-                  </li>
-                  <li id="check-number" class="checklist-item invalid">
-                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 número
-                    (0-9)
-                  </li>
-                  <li id="check-special" class="checklist-item invalid">
-                    <i class="bi bi-x-circle me-1"></i> Pelo menos 1 caractere
-                    especial (!@#$%^&*)
-                  </li>
-                  <li id="check-match" class="checklist-item invalid">
-                    <i class="bi bi-x-circle me-1"></i> As senhas devem
-                    coincidir
-                  </li>
-                </ul>
-              </div>
-
-              <button
-                type="submit"
-                id="btn-salvar-nova-senha"
-                class="btn btn-docisis-navy mb-3"
-              >
-                Salvar Nova Senha & Entrar
-                <i class="bi bi-check-circle ms-1"></i>
-              </button>
-            </form>
-          </div>
-
-          <!-- Rodapé de Suporte Técnico -->
-          <div class="support-footer">
-            <i class="bi bi-headset fs-6"></i>
-            <span>Suporte Técnico Administrativo</span>
-          </div>
         </div>
-      </div>
     </div>
 
     <!-- Bootstrap 5 Bundle JS -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Bootstrap 5 Bundle JS -->
-    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Script de Autenticação, 2FA e Redefinição -->
+    <!-- Scripts Docisis -->
+    <script src="src/js/app.js"></script>
     <script src="src/js/login.js"></script>
-  </body>
+</body>
+
 </html>

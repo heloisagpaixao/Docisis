@@ -25,8 +25,26 @@
     --docisis-text-muted: #526071;
     --docisis-text-label: #475569;
     
+    /* Bordas, Raios e Sombras */
+    --docisis-radius-sm: 6px;
+    --docisis-radius: 12px;
+    --docisis-radius-lg: 14px;
+    --docisis-shadow-sm: 0 2px 8px rgba(8, 23, 46, 0.04);
+    --docisis-shadow: 0 4px 18px rgba(8, 23, 46, 0.05);
+    --docisis-shadow-lg: 0 10px 30px rgba(8, 23, 46, 0.08);
+    --docisis-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
     --bs-body-font-family: var(--docisis-font);
     --bs-body-bg: var(--docisis-bg);
+}
+
+html {
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
 }
 
 body {

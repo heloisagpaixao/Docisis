@@ -473,7 +473,7 @@
 }
 
 /* ==========================================================================
-   IMPRESSÃO
+   IMPRESSÃO E COMPROVANTES
    ========================================================================== */
 
 .print-area {
@@ -483,19 +483,44 @@
 @media print {
     body {
         background: #ffffff !important;
+        color: #0f172a !important;
+        font-size: 11pt;
     }
 
-    body > * {
+    /* Ocultar navegação, cabeçalhos, barras de ferramentas e botões */
+    .sidebar-docisis,
+    .topbar-docisis,
+    .history-actions-group,
+    .stock-actions-group,
+    .users-actions-group,
+    .page-actions-top,
+    .history-toolbar,
+    .stock-toolbar,
+    .users-toolbar,
+    .stock-footer-bar,
+    .docisis-toast-container,
+    .btn,
+    .dropdown,
+    .modal-backdrop,
+    .modal-header,
+    .modal-footer,
+    .btn-close {
+        display: none !important;
+    }
+
+    /* Quando um comprovante modal está sendo impresso */
+    body.modal-open .app-layout {
         display: none !important;
     }
 
     .modal-auditoria,
     .modal-auditoria .modal-dialog,
-    .modal-auditoria .modal-content {
+    .modal-auditoria .modal-content,
+    .modal-auditoria .modal-body {
         display: block !important;
         position: static !important;
         width: 100% !important;
-        max-width: none !important;
+        max-width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
         border: 0 !important;
@@ -503,21 +528,82 @@
         background: #ffffff !important;
     }
 
-    .modal-auditoria .modal-header,
-    .modal-auditoria .modal-footer,
-    .modal-auditoria .btn-close {
-        display: none !important;
-    }
-
-    .modal-auditoria .modal-body {
-        padding: 0 !important;
-    }
-
     .modal-auditoria .print-area {
         display: block !important;
         width: 100% !important;
         box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        padding: 1.5rem !important;
+        page-break-inside: avoid;
+    }
+
+    /* Impressão normal de relatórios de página inteira */
+    .app-layout {
+        display: block !important;
+        background: #ffffff !important;
+        min-height: auto !important;
+    }
+
+    .main-content-wrapper {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .workspace-docisis {
+        background: #ffffff !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+
+    .stock-container,
+    .history-container,
+    .users-container,
+    .products-container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .stock-main-card,
+    .history-main-card,
+    .users-main-card,
+    .docisis-main-card {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    .stock-table,
+    .history-table,
+    .users-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    .stock-table th,
+    .stock-table td,
+    .history-table th,
+    .history-table td,
+    .users-table th,
+    .users-table td {
         border: 1px solid #e2e8f0 !important;
+        padding: 0.5rem !important;
+        font-size: 9pt !important;
+    }
+
+    .stock-table th:last-child,
+    .stock-table td:last-child,
+    .history-table th:last-child,
+    .history-table td:last-child,
+    .users-table th:last-child,
+    .users-table td:last-child {
+        display: none !important;
+    }
+
+    tr {
+        page-break-inside: avoid !important;
     }
 }
 

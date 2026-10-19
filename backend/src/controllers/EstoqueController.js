@@ -3,13 +3,13 @@ const EstoqueService = require("../services/EstoqueService");
 class EstoqueController {
   async listar(req, res) {
     try {
-      const resultado = await EstoqueService.listarEstoque();
+      const resultado = await EstoqueService.listarEstoque(req.query);
       res.json(resultado);
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
-        mensagem: erro.mensagem || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -21,8 +21,8 @@ class EstoqueController {
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
-        mensagem: erro.mensagem || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -37,7 +37,7 @@ class EstoqueController {
       res.status(erro.status || 500).json({
         sucesso: false,
         mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        erro: erro.mensagem || erro.message,
       });
     }
   }

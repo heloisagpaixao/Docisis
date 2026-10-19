@@ -110,9 +110,10 @@
                                 </div>
                             </div>
                             <div class="kpi-value-box">
-                                <span class="kpi-main-number">0</span>
+                                <span class="kpi-main-number" id="kpi-total-equipe">0</span>
                                 <span class="kpi-sub-text">
                                     <i class="bi bi-check-circle-fill text-success" aria-hidden="true"></i>
+                                    <span id="kpi-total-equipe-sub">Operadores cadastrados</span>
                                 </span>
                             </div>
                             <div class="kpi-footer-badge">
@@ -130,7 +131,7 @@
                                 </div>
                             </div>
                             <div class="kpi-value-box">
-                                <span class="kpi-main-number">0</span>
+                                <span class="kpi-main-number" id="kpi-sessoes-ativas">0</span>
                                 <span class="kpi-sub-text">
                                     <span class="pulse-indicator" aria-hidden="true"></span>
                                     Conectados agora no turno
@@ -151,15 +152,15 @@
                                 </div>
                             </div>
                             <div class="kpi-value-box">
-                                <span class="kpi-main-number">0%</span>
+                                <span class="kpi-main-number" id="kpi-seguranca-2fa">0%</span>
                                 <span class="kpi-sub-text text-success">
                                     <i class="bi bi-patch-check-fill" aria-hidden="true"></i>
-                                    0 com 2FA ativo.
+                                    <span id="kpi-seguranca-2fa-sub">0 com 2FA ativo</span>
                                 </span>
                             </div>
                             <div class="kpi-footer-badge">
                                 <span class="text-muted">Pendências</span>
-                                <span class="text-warning fw-bold">1 em configuração</span>
+                                <span class="text-warning fw-bold" id="kpi-seguranca-pendentes">0 em configuração</span>
                             </div>
                         </div>
 
@@ -172,7 +173,7 @@
                                 </div>
                             </div>
                             <div class="kpi-value-box">
-                                <span class="kpi-main-number">0</span>
+                                <span class="kpi-main-number" id="kpi-total-admins">0</span>
                                 <span class="kpi-sub-text">
                                     <i class="bi bi-info-circle text-primary" aria-hidden="true"></i>
                                     Acesso restrito &amp; auditado
@@ -221,24 +222,24 @@
 
                                     <!-- Pills de Filtro por Status -->
                                     <div class="filter-pills-bar" role="group" aria-label="Filtrar por status da conta">
-                                        <button type="button" class="pill-filter-btn active" aria-pressed="true">
+                                        <button type="button" class="pill-filter-btn active" data-status="todos" aria-pressed="true">
                                             <span>Todos</span>
-                                            <span class="pill-counter"></span>
+                                            <span class="pill-counter" id="counter-users-todos">0</span>
                                         </button>
-                                        <button type="button" class="pill-filter-btn" aria-pressed="false">
+                                        <button type="button" class="pill-filter-btn" data-status="ativo" aria-pressed="false">
                                             <span class="status-dot dot-ativo" aria-hidden="true"></span>
                                             <span>Ativos</span>
-                                            <span class="pill-counter">21</span>
+                                            <span class="pill-counter" id="counter-users-ativos">0</span>
                                         </button>
-                                        <button type="button" class="pill-filter-btn pill-warning" aria-pressed="false">
+                                        <button type="button" class="pill-filter-btn pill-warning" data-status="inativo" aria-pressed="false">
                                             <span class="status-dot dot-inativo" aria-hidden="true"></span>
                                             <span>Inativos</span>
-                                            <span class="pill-counter">2</span>
+                                            <span class="pill-counter" id="counter-users-inativos">0</span>
                                         </button>
-                                        <button type="button" class="pill-filter-btn pill-danger" aria-pressed="false">
+                                        <button type="button" class="pill-filter-btn pill-danger" data-status="suspenso" aria-pressed="false">
                                             <span class="status-dot dot-suspenso" aria-hidden="true"></span>
                                             <span>Suspensos</span>
-                                            <span class="pill-counter">1</span>
+                                            <span class="pill-counter" id="counter-users-suspensos">0</span>
                                         </button>
                                     </div>
                                 </div>
@@ -257,7 +258,7 @@
                                                 <th scope="col" class="text-end" style="min-width: 110px;">Ações</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="tabela-usuarios-corpo">
                                             <!-- Usuário 1: Administrador -->
                                             <tr>
                                                 <td>
@@ -473,21 +474,11 @@
 
                                 <!-- Rodapé da Tabela: Paginação -->
                                 <div class="users-footer-bar">
-                                    <div class="users-pagination-info" aria-live="polite">
-                                        Exibindo <strong>1-5</strong> de <strong></strong> operadores cadastrados
+                                    <div class="users-pagination-info" id="usuarios-paginacao-info" aria-live="polite">
+                                        Carregando operadores...
                                     </div>
-                                    <div class="stock-pagination-wrapper" role="navigation" aria-label="Paginação da lista de usuários">
-                                        <button type="button" class="page-btn" disabled aria-label="Página anterior">
-                                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
-                                        </button>
-                                        <button type="button" class="page-btn active" aria-current="page">1</button>
-                                        <button type="button" class="page-btn">2</button>
-                                        <button type="button" class="page-btn">3</button>
-                                        <button type="button" class="page-btn">4</button>
-                                        <button type="button" class="page-btn">5</button>
-                                        <button type="button" class="page-btn" aria-label="Próxima página">
-                                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
-                                        </button>
+                                    <div class="stock-pagination-wrapper" id="usuarios-paginacao-controles" role="navigation" aria-label="Paginação da lista de usuários">
+                                        <!-- Botões de página injetados dinamicamente via JS -->
                                     </div>
                                 </div>
 
@@ -576,7 +567,7 @@
                                     <div class="mb-4">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
                                             <label for="novo-senha" class="form-label-uppercase mb-0">Senha Provisória <span class="text-danger" aria-hidden="true">*</span></label>
-                                            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none link-terracotta small fw-semibold" aria-label="Gerar senha segura aleatória">
+                                            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none link-terracotta small fw-semibold" id="btn-gerar-senha" aria-label="Gerar senha segura aleatória">
                                                 <i class="bi bi-magic me-1" aria-hidden="true"></i> Gerar senha
                                             </button>
                                         </div>
@@ -702,8 +693,22 @@
         </div> <!-- /main-content-wrapper -->
     </div> <!-- /app-layout -->
 
+    <!-- TOAST DE NOTIFICAÇÃO FLUTUANTE DOCISIS -->
+    <div class="docisis-toast-container" aria-live="polite" aria-atomic="true">
+        <div id="docisis-toast" class="docisis-toast" role="status">
+            <i class="bi bi-check-circle-fill text-success fs-5 toast-icon" aria-hidden="true"></i>
+            <div>
+                <strong class="d-block text-dark fw-bold" style="font-size:0.9rem;">Módulo de Usuários</strong>
+                <span id="toast-mensagem" class="text-muted" style="font-size:0.85rem;">Operação realizada com sucesso.</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap 5 Bundle JS -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts Docisis -->
+    <script src="src/js/app.js"></script>
+    <script src="src/js/usuarios.js"></script>
 </body>
 
 </html>

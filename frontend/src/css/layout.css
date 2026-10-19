@@ -173,8 +173,10 @@
     .sidebar-docisis {
         width: 100%;
         height: auto;
-        position: static;
-        padding: 0.5rem 0;
+        position: sticky;
+        top: 0;
+        padding: 0.4rem 0.5rem;
+        z-index: 1020;
     }
 
     .sidebar-nav {
@@ -182,6 +184,7 @@
         justify-content: space-around;
         height: auto;
         padding: 0;
+        gap: 0.25rem;
         overflow-x: auto;
     }
 
@@ -190,17 +193,25 @@
     }
 
     .sidebar-item {
-        width: 44px;
-        height: 44px;
+        width: 58px;
+        height: 50px;
+        min-height: 48px;
         flex-shrink: 0;
+        padding: 0.25rem 0.2rem;
+    }
+
+    .sidebar-item i {
+        font-size: 1.2rem !important;
     }
 
     .sidebar-item span {
-        font-size: 0.6rem;
+        font-size: 0.65rem;
+        margin-top: 0.15rem;
     }
 
     .topbar-docisis {
         padding: 0.5rem 1rem;
+        min-height: 56px;
     }
 
     .user-name-text {
@@ -208,6 +219,6 @@
     }
 
     .workspace-docisis {
-        padding: 1rem 0.75rem;
+        padding: 1rem 0.5rem;
     }
 }

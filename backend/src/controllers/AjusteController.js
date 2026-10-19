@@ -22,7 +22,8 @@ class AjusteController {
       const status = error.status || 500;
       return res.status(status).json({
         sucesso: false,
-        erro: error.message || "Erro interno ao processar o ajuste de estoque.",
+        mensagem: error.mensagem || error.message || "Erro interno ao processar o ajuste de estoque.",
+        erro: error.mensagem || error.message || "Erro interno",
       });
     }
   }
@@ -36,27 +37,21 @@ class AjusteController {
       const status = error.status || 500;
       return res.status(status).json({
         sucesso: false,
-        erro: error.message || "Erro ao buscar o ajuste.",
+        mensagem: error.mensagem || error.message || "Erro ao buscar o ajuste.",
+        erro: error.mensagem || error.message,
       });
     }
   }
 
   async listar(req, res) {
     try {
-      const { id_lote, id_funcionario, data_inicio, data_fim } = req.query;
-
-      const ajustes = await ajusteService.listarAjustes({
-        id_lote,
-        id_funcionario,
-        data_inicio,
-        data_fim,
-      });
-
-      return res.status(200).json({ sucesso: true, dados: ajustes });
+      const ajustes = await ajusteService.listarAjustes(req.query);
+      return res.status(200).json(ajustes);
     } catch (error) {
-      return res.status(500).json({
+      return res.status(error.status || 500).json({
         sucesso: false,
-        erro: "Erro interno ao buscar o histórico de ajustes.",
+        mensagem: error.mensagem || error.message || "Erro interno ao buscar o histórico de ajustes.",
+        erro: error.mensagem || error.message,
       });
     }
   }

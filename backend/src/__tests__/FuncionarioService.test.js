@@ -97,7 +97,7 @@ describe('FuncionarioService - Testes Unitários', () => {
 
     await expect(FuncionarioService.cadastrarFuncionario(dadosInvalido)).rejects.toEqual({
       status: 400,
-      mensagem: 'Nome, CPF, e-mail, telefone e ID do cargo são obrigatórios e devem ser válidos'
+      mensagem: 'Nome, CPF, e-mail, senha, telefone e ID do cargo são obrigatórios e devem ser válidos'
     });
   });
 
@@ -107,7 +107,7 @@ describe('FuncionarioService - Testes Unitários', () => {
       senha: 'hash_antigo_no_banco'
     };
 
-    FuncionarioRepository.findById.mockResolvedValue(funcionarioMock);
+    FuncionarioRepository.findByIdWithPassword.mockResolvedValue(funcionarioMock);
     bcrypt.compare.mockResolvedValue(false); // senha atual incorreta
 
     await expect(

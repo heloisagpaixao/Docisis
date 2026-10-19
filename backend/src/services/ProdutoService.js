@@ -1,10 +1,15 @@
 const fs = require("fs");
 const path = require("path");
 const ProdutoRepository = require("../repositories/ProdutoRepository");
+const { validarMagicBytes } = require("../utils/fileValidator");
 
 const removerArquivo = (file) => {
   if (file?.path && fs.existsSync(file.path)) {
-    fs.unlinkSync(file.path);
+    try {
+      fs.unlinkSync(file.path);
+    } catch (err) {
+      console.error(`Erro ao remover arquivo temporário ${file.path}:`, err);
+    }
   }
 };
 
@@ -28,21 +33,32 @@ const removerFotoDoDisco = (caminhoRelativo) => {
 };
 
 class ProdutoService {
-  async listarProdutos() {
-    const produtos = await ProdutoRepository.findAll();
+  async listarProdutos(queryParams = {}) {
+    const page = Math.max(1, parseInt(queryParams.page, 10) || 1);
+    const limit = Math.max(
+      1,
+      Math.min(100, parseInt(queryParams.limit, 10) || 10),
+    );
+
+    const resultado = await ProdutoRepository.findAll({
+      ...queryParams,
+      page,
+      limit,
+    });
+
     return {
       sucesso: true,
-      dados: produtos,
-      total: produtos.length,
+      ...resultado,
     };
   }
 
   async buscarProdutoPorId(id) {
-    if (!id || isNaN(id)) {
-      throw { status: 400, mensagem: "ID inválido" };
+    const idNum = Number(id);
+    if (!id || !Number.isInteger(idNum) || idNum <= 0) {
+      throw { status: 400, mensagem: "ID de produto inválido" };
     }
 
-    const produto = await ProdutoRepository.findById(id);
+    const produto = await ProdutoRepository.findById(idNum);
     if (!produto) {
       throw { status: 404, mensagem: "Produto não encontrado" };
     }
@@ -57,28 +73,54 @@ class ProdutoService {
     const { file } = dados;
 
     try {
+      if (file && !validarMagicBytes(file.path, ["jpeg", "png", "jpg"])) {
+        throw {
+          status: 400,
+          mensagem:
+            "Arquivo inválido ou corrompido: o conteúdo real não corresponde a uma imagem válida (JPEG/PNG).",
+        };
+      }
+
       const { nome, dt_validade, codigo, peso } = dados;
 
-      if (!nome || !dt_validade || codigo === undefined) {
+      if (!nome || !dt_validade || codigo === undefined || codigo === null || codigo === "") {
         throw {
           status: 400,
           mensagem: "Os campos nome, dt_validade e codigo são obrigatórios",
         };
       }
 
-      const codigoExistente = await ProdutoRepository.findByCodigo(codigo);
+      const codigoNum = Number(codigo);
+      if (!Number.isInteger(codigoNum) || codigoNum <= 0) {
+        throw {
+          status: 400,
+          mensagem: "O código do produto deve ser um número inteiro positivo",
+        };
+      }
+
+      if (peso !== undefined && peso !== null && peso !== "") {
+        const pesoNum = Number(peso);
+        if (isNaN(pesoNum) || pesoNum < 0) {
+          throw {
+            status: 400,
+            mensagem: "O peso do produto deve ser um número válido e não negativo",
+          };
+        }
+      }
+
+      const codigoExistente = await ProdutoRepository.findByCodigo(codigoNum);
       if (codigoExistente) {
         throw {
           status: 400,
-          mensagem: `Já existe um produto com o código ${codigo}`,
+          mensagem: `Já existe um produto com o código ${codigoNum}`,
         };
       }
 
       const novoProduto = {
         nome: nome.trim(),
         dt_validade,
-        codigo: Number(codigo),
-        peso: peso ?? null,
+        codigo: codigoNum,
+        peso: peso ? Number(peso) : null,
         imagem: file ? `/public/uploads/produtos/${file.filename}` : null,
       };
 
@@ -99,11 +141,20 @@ class ProdutoService {
     const { file } = dados;
 
     try {
-      if (!id || isNaN(id)) {
-        throw { status: 400, mensagem: "ID inválido" };
+      if (file && !validarMagicBytes(file.path, ["jpeg", "png", "jpg"])) {
+        throw {
+          status: 400,
+          mensagem:
+            "Arquivo inválido ou corrompido: o conteúdo real não corresponde a uma imagem válida (JPEG/PNG).",
+        };
       }
 
-      const existe = await ProdutoRepository.findById(id);
+      const idNum = Number(id);
+      if (!id || !Number.isInteger(idNum) || idNum <= 0) {
+        throw { status: 400, mensagem: "ID de produto inválido" };
+      }
+
+      const existe = await ProdutoRepository.findById(idNum);
       if (!existe) {
         throw { status: 404, mensagem: "Produto não encontrado" };
       }
@@ -113,19 +164,35 @@ class ProdutoService {
       if (dados.nome !== undefined) atualizado.nome = dados.nome.trim();
       if (dados.dt_validade !== undefined)
         atualizado.dt_validade = dados.dt_validade;
-      if (dados.peso !== undefined) atualizado.peso = dados.peso;
 
-      if (dados.codigo !== undefined) {
-        const codigoExistente = await ProdutoRepository.findByCodigo(
-          dados.codigo,
-        );
-        if (codigoExistente && codigoExistente.id_produto !== Number(id)) {
+      if (dados.peso !== undefined && dados.peso !== null && dados.peso !== "") {
+        const pesoNum = Number(dados.peso);
+        if (isNaN(pesoNum) || pesoNum < 0) {
           throw {
             status: 400,
-            mensagem: `Já existe um produto com o código ${dados.codigo}`,
+            mensagem: "O peso do produto deve ser um número válido e não negativo",
           };
         }
-        atualizado.codigo = Number(dados.codigo);
+        atualizado.peso = pesoNum;
+      }
+
+      if (dados.codigo !== undefined) {
+        const codigoNum = Number(dados.codigo);
+        if (!Number.isInteger(codigoNum) || codigoNum <= 0) {
+          throw {
+            status: 400,
+            mensagem: "O código do produto deve ser um número inteiro positivo",
+          };
+        }
+
+        const codigoExistente = await ProdutoRepository.findByCodigo(codigoNum);
+        if (codigoExistente && codigoExistente.id_produto !== idNum) {
+          throw {
+            status: 400,
+            mensagem: `Já existe um produto com o código ${codigoNum}`,
+          };
+        }
+        atualizado.codigo = codigoNum;
       }
 
       if (file) {
@@ -139,7 +206,7 @@ class ProdutoService {
         };
       }
 
-      await ProdutoRepository.update(id, atualizado);
+      await ProdutoRepository.update(idNum, atualizado);
 
       if (file && existe.imagem) {
         removerFotoDoDisco(existe.imagem);
@@ -156,20 +223,31 @@ class ProdutoService {
   }
 
   async deletarProduto(id) {
-    if (!id || isNaN(id)) {
-      throw { status: 400, mensagem: "ID inválido" };
+    const idNum = Number(id);
+    if (!id || !Number.isInteger(idNum) || idNum <= 0) {
+      throw { status: 400, mensagem: "ID de produto inválido" };
     }
 
-    const existe = await ProdutoRepository.findById(id);
+    const existe = await ProdutoRepository.findById(idNum);
     if (!existe) {
       throw { status: 404, mensagem: "Produto não encontrado" };
+    }
+
+    // Trava de integridade: checa se existem lotes vinculados ao produto
+    const hasDeps = await ProdutoRepository.hasDependents(idNum);
+    if (hasDeps) {
+      throw {
+        status: 409,
+        mensagem:
+          "Não é possível excluir o produto: existem lotes de estoque vinculados a ele.",
+      };
     }
 
     if (existe.imagem) {
       removerFotoDoDisco(existe.imagem);
     }
 
-    await ProdutoRepository.delete(id);
+    await ProdutoRepository.delete(idNum);
 
     return {
       sucesso: true,

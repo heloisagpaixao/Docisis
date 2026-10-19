@@ -1,48 +1,75 @@
 const pool = require("../config/database");
 
 class LoteRepository {
-  async findAll() {
-    const [rows] = await pool.query(`
-            SELECT l.*, nf.fornecedor, nf.dt_compra 
-            FROM lotes l
-            LEFT JOIN nota_fiscal nf ON l.id_nota = nf.id_nota
-            ORDER BY l.id DESC
-        `);
-    return rows;
+  async findAll({ page = 1, limit = 10, id_produto } = {}) {
+    let countSql = `SELECT COUNT(*) AS total FROM lotes l WHERE 1=1`;
+    let sql = `
+      SELECT l.id, l.quantidade, l.id_produto, l.dt_validade, l.id_nota, l.alterado_em,
+             p.nome AS produto_nome, nf.fornecedor, nf.dt_compra
+      FROM lotes l
+      LEFT JOIN produtos p ON l.id_produto = p.id_produto
+      LEFT JOIN nota_fiscal nf ON l.id_nota = nf.id_nota
+      WHERE 1=1
+    `;
+    const params = [];
+    const countParams = [];
+
+    if (id_produto) {
+      sql += " AND l.id_produto = ?";
+      countSql += " AND l.id_produto = ?";
+      params.push(id_produto);
+      countParams.push(id_produto);
+    }
+
+    const [[{ total }]] = await pool.query(countSql, countParams);
+
+    const offset = (page - 1) * limit;
+    sql += " ORDER BY l.id DESC LIMIT ? OFFSET ?";
+    params.push(limit, offset);
+
+    const [rows] = await pool.query(sql, params);
+
+    return {
+      dados: rows,
+      total,
+      pagina: page,
+      limite: limit,
+      totalPaginas: Math.ceil(total / limit),
+    };
   }
 
   async findById(id) {
     const [rows] = await pool.query(
-      `
-            SELECT l.*, nf.fornecedor, nf.dt_compra 
-            FROM lotes l
-            LEFT JOIN nota_fiscal nf ON l.id_nota = nf.id_nota
-            WHERE l.id = ?
-        `,
+      `SELECT l.id, l.quantidade, l.id_produto, l.dt_validade, l.id_nota, l.alterado_em,
+              p.nome AS produto_nome, nf.fornecedor, nf.dt_compra
+       FROM lotes l
+       LEFT JOIN produtos p ON l.id_produto = p.id_produto
+       LEFT JOIN nota_fiscal nf ON l.id_nota = nf.id_nota
+       WHERE l.id = ?`,
       [id],
     );
     return rows[0];
   }
 
   async create(loteData) {
-    const { quantidade, materia_prima, dt_validade, id_nota } = loteData;
+    const { quantidade, id_produto, dt_validade, id_nota } = loteData;
     const [result] = await pool.query(
-      "INSERT INTO lotes (quantidade, materia_prima, dt_validade, id_nota) VALUES (?, ?, ?, ?)",
-      [quantidade, materia_prima, dt_validade, id_nota],
+      "INSERT INTO lotes (quantidade, id_produto, dt_validade, id_nota) VALUES (?, ?, ?, ?)",
+      [quantidade, id_produto, dt_validade, id_nota],
     );
     return result.insertId;
   }
 
   async findVencendo(dias = 30) {
     const [rows] = await pool.query(
-      `
-        SELECT l.*, f.nome AS fornecedor_nome
-        FROM lotes l
-        LEFT JOIN fornecedores f ON l.id_fornecedor = f.id
-        WHERE l.quantidade > 0 
-          AND l.dt_validade <= DATE_ADD(CURDATE(), INTERVAL ? DAY)
-        ORDER BY l.dt_validade ASC
-    `,
+      `SELECT l.id, l.quantidade, l.id_produto, l.dt_validade, l.id_nota, l.alterado_em,
+              p.nome AS produto_nome, nf.fornecedor
+       FROM lotes l
+       LEFT JOIN produtos p ON l.id_produto = p.id_produto
+       LEFT JOIN nota_fiscal nf ON l.id_nota = nf.id_nota
+       WHERE l.quantidade > 0 
+         AND l.dt_validade <= DATE_ADD(CURDATE(), INTERVAL ? DAY)
+       ORDER BY l.dt_validade ASC`,
       [Number(dias)],
     );
     return rows;
@@ -50,7 +77,7 @@ class LoteRepository {
 
   async findMovimentacoes(idLote) {
     const sql = `
-    SELECT 'ENTRADA' AS tipo, e.id_entrada AS id, e.dt_entrada AS data, e.motivo, NULL AS quantidade, f.nome AS funcionario_nome
+    SELECT 'ENTRADA' AS tipo, e.id_entrada AS id, e.dt_entrada AS data, e.motivo, e.quantidade, f.nome AS funcionario_nome
     FROM entradas e
     LEFT JOIN funcionarios f ON e.id_funcionario = f.id
     WHERE e.id_lote = ?
@@ -76,12 +103,20 @@ class LoteRepository {
     return rows;
   }
 
+  /**
+   * Atualiza lote com whitelist de campos permitidos.
+   * Campo 'quantidade' é BLOQUEADO — só pode ser alterado via Entrada/Saída/Ajuste.
+   */
   async update(id, loteData) {
+    const allowedFields = ["id_produto", "dt_validade", "id_nota"];
     const fields = [];
     const values = [];
+
     for (const [key, value] of Object.entries(loteData)) {
-      fields.push(`${key} = ?`);
-      values.push(value);
+      if (allowedFields.includes(key)) {
+        fields.push(`${key} = ?`);
+        values.push(value);
+      }
     }
     if (fields.length === 0) return null;
 
@@ -94,6 +129,20 @@ class LoteRepository {
   async delete(id) {
     const [result] = await pool.query("DELETE FROM lotes WHERE id = ?", [id]);
     return result.affectedRows;
+  }
+
+  /**
+   * Verifica se existem registros dependentes (entradas, saídas, ajustes) vinculados ao lote.
+   */
+  async hasDependents(id) {
+    const [rows] = await pool.query(
+      `SELECT 
+        (SELECT COUNT(*) FROM entradas WHERE id_lote = ?) +
+        (SELECT COUNT(*) FROM saidas WHERE id_lote = ?) +
+        (SELECT COUNT(*) FROM ajustes WHERE id_lote = ?) AS total`,
+      [id, id, id],
+    );
+    return rows[0].total > 0;
   }
 }
 

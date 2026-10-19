@@ -1,56 +1,77 @@
 const pool = require("../config/database");
 
-class CargosRepository {
-  async listar() {
-    const [resultado] = await pool.query(
-      "SELECT id_cargo, permissoes FROM cargos",
+class CargoRepository {
+  async findAll({ page = 1, limit = 10 } = {}) {
+    const [[{ total }]] = await pool.query(
+      "SELECT COUNT(*) AS total FROM cargos",
     );
 
-    return resultado;
+    const offset = (page - 1) * limit;
+    const [rows] = await pool.query(
+      "SELECT id_cargo, permissoes FROM cargos ORDER BY id_cargo ASC LIMIT ? OFFSET ?",
+      [limit, offset],
+    );
+
+    return {
+      dados: rows,
+      total,
+      pagina: page,
+      limite: limit,
+      totalPaginas: Math.ceil(total / limit),
+    };
   }
 
-  async buscarPorId(id) {
-    const [resultado] = await pool.query(
+  async findById(id) {
+    const [rows] = await pool.query(
       "SELECT id_cargo, permissoes FROM cargos WHERE id_cargo = ?",
       [id],
     );
-
-    return resultado[0];
+    return rows[0];
   }
 
-  async cadastrar(cargo) {
+  async create(cargo) {
     const { permissoes } = cargo;
 
-    const [resultado] = await pool.query(
+    const [result] = await pool.query(
       "INSERT INTO cargos (permissoes) VALUES (?)",
       [permissoes],
     );
 
     return {
-      id_cargo: resultado.insertId,
+      id_cargo: result.insertId,
       permissoes,
     };
   }
 
-  async atualizar(id, cargo) {
+  async update(id, cargo) {
     const { permissoes } = cargo;
 
-    const [resultado] = await pool.query(
+    const [result] = await pool.query(
       "UPDATE cargos SET permissoes = ? WHERE id_cargo = ?",
       [permissoes, id],
     );
 
-    return resultado;
+    return result;
   }
 
-  async deletar(id) {
-    const [resultado] = await pool.query(
+  async delete(id) {
+    const [result] = await pool.query(
       "DELETE FROM cargos WHERE id_cargo = ?",
       [id],
     );
+    return result;
+  }
 
-    return resultado;
+  /**
+   * Verifica se existem funcionários vinculados ao cargo.
+   */
+  async hasDependents(id) {
+    const [rows] = await pool.query(
+      "SELECT COUNT(*) AS total FROM funcionarios WHERE id_cargo = ?",
+      [id],
+    );
+    return rows[0].total > 0;
   }
 }
 
-module.exports = new CargosRepository();
+module.exports = new CargoRepository();

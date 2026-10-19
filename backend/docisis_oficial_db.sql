@@ -97,11 +97,12 @@ CREATE TABLE nota_fiscal (
 CREATE TABLE lotes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     quantidade INT NOT NULL,
-    materia_prima VARCHAR(100) NOT NULL,
+    id_produto INT NOT NULL,
     dt_validade DATE NOT NULL,
     id_nota INT NOT NULL,
     alterado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_lote_nota FOREIGN KEY (id_nota) REFERENCES nota_fiscal(id_nota)
+    CONSTRAINT fk_lote_nota FOREIGN KEY (id_nota) REFERENCES nota_fiscal(id_nota),
+    CONSTRAINT fk_lote_produto FOREIGN KEY (id_produto) REFERENCES produtos(id_produto)
 );
 
 -- ===========================
@@ -112,6 +113,7 @@ CREATE TABLE entradas (
     dt_entrada DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_funcionario INT NOT NULL,
     id_lote INT NOT NULL,
+    quantidade INT NOT NULL,
     motivo VARCHAR(100) NOT NULL,
     CONSTRAINT fk_entrada_funcionario FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id),
     CONSTRAINT fk_entrada_lote FOREIGN KEY (id_lote) REFERENCES lotes(id)
@@ -148,18 +150,10 @@ CREATE TABLE ajustes (
 );
 
 -- ===========================
--- ESTOQUE
--- ===========================
-CREATE TABLE estoque (
-    id_estoque INT AUTO_INCREMENT PRIMARY KEY,
-    id_lote INT NOT NULL,
-    CONSTRAINT fk_estoque_lote FOREIGN KEY (id_lote) REFERENCES lotes(id)
-);
-
--- ===========================
 -- ÍNDICES DE PERFORMANCE
 -- ===========================
 CREATE INDEX idx_lotes_quantidade_validade ON lotes(quantidade, dt_validade);
+CREATE INDEX idx_lotes_id_produto ON lotes(id_produto);
 CREATE INDEX idx_entradas_dt_entrada ON entradas(dt_entrada);
 CREATE INDEX idx_entradas_lote ON entradas(id_lote);
 CREATE INDEX idx_entradas_funcionario ON entradas(id_funcionario);

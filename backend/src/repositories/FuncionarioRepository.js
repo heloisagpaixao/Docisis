@@ -1,24 +1,44 @@
 const pool = require("../config/database");
 
-class FuncionariosRepository {
-  async findAll() {
-    const [rows] = await pool.query(`
-      SELECT f.*, c.permissoes 
-      FROM funcionarios f
-      LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
-      ORDER BY f.id DESC
-    `);
-    return rows;
+class FuncionarioRepository {
+  /**
+   * Lista funcionários SEM expor o hash da senha.
+   */
+  async findAll({ page = 1, limit = 10 } = {}) {
+    const [[{ total }]] = await pool.query(
+      "SELECT COUNT(*) AS total FROM funcionarios",
+    );
+
+    const offset = (page - 1) * limit;
+    const [rows] = await pool.query(
+      `SELECT f.id, f.nome, f.cpf, f.email, f.telefone, f.id_cargo, f.foto_perfil, f.criado_em,
+              c.permissoes
+       FROM funcionarios f
+       LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
+       ORDER BY f.id DESC
+       LIMIT ? OFFSET ?`,
+      [limit, offset],
+    );
+
+    return {
+      dados: rows,
+      total,
+      pagina: page,
+      limite: limit,
+      totalPaginas: Math.ceil(total / limit),
+    };
   }
 
+  /**
+   * Busca funcionário por ID SEM expor o hash da senha.
+   */
   async findById(id) {
     const [rows] = await pool.query(
-      `
-      SELECT f.*, c.permissoes 
-      FROM funcionarios f
-      LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
-      WHERE f.id = ?
-    `,
+      `SELECT f.id, f.nome, f.cpf, f.email, f.telefone, f.id_cargo, f.foto_perfil, f.criado_em,
+              c.permissoes
+       FROM funcionarios f
+       LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
+       WHERE f.id = ?`,
       [id],
     );
     return rows[0];
@@ -26,7 +46,7 @@ class FuncionariosRepository {
 
   async findByCpf(cpf) {
     const [rows] = await pool.query(
-      "SELECT * FROM funcionarios WHERE cpf = ?",
+      "SELECT id, nome, cpf, email, telefone, id_cargo, foto_perfil, criado_em FROM funcionarios WHERE cpf = ?",
       [cpf],
     );
     return rows[0];
@@ -34,17 +54,20 @@ class FuncionariosRepository {
 
   async findByEmail(email) {
     const [rows] = await pool.query(
-      "SELECT * FROM funcionarios WHERE email = ?",
+      "SELECT id, nome, cpf, email, telefone, id_cargo, foto_perfil, criado_em FROM funcionarios WHERE email = ?",
       [email],
     );
     return rows[0];
   }
 
-  // Usado pelo AuthService no login: precisa da senha (hash) e das
-  // permissões do cargo para montar o payload do JWT.
+  /**
+   * Usado pelo AuthService no login: precisa da senha (hash) e das
+   * permissões do cargo para montar o payload do JWT.
+   */
   async findByEmailWithCargo(email) {
     const [rows] = await pool.query(
-      `SELECT f.*, c.permissoes
+      `SELECT f.id, f.nome, f.cpf, f.email, f.senha, f.telefone, f.id_cargo, f.foto_perfil, f.criado_em,
+              c.permissoes
        FROM funcionarios f
        LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
        WHERE f.email = ?`,
@@ -55,11 +78,23 @@ class FuncionariosRepository {
 
   async findByEmailAndCpf(email, cpf) {
     const [rows] = await pool.query(
-      `SELECT f.*, c.permissoes 
-       FROM funcionarios f 
-       JOIN cargos c ON f.id_cargo = c.id_cargo 
+      `SELECT f.id, f.nome, f.cpf, f.email, f.senha, f.telefone, f.id_cargo, f.foto_perfil, f.criado_em,
+              c.permissoes
+       FROM funcionarios f
+       JOIN cargos c ON f.id_cargo = c.id_cargo
        WHERE f.email = ? AND f.cpf = ?`,
       [email, cpf],
+    );
+    return rows[0];
+  }
+
+  /**
+   * Busca funcionário por ID COM a senha (para alteração de senha).
+   */
+  async findByIdWithPassword(id) {
+    const [rows] = await pool.query(
+      "SELECT id, nome, cpf, email, senha, telefone, id_cargo, foto_perfil, criado_em FROM funcionarios WHERE id = ?",
+      [id],
     );
     return rows[0];
   }
@@ -83,12 +118,19 @@ class FuncionariosRepository {
     return result.insertId;
   }
 
-  async update(id, funcionariosData) {
+  /**
+   * Update com whitelist de campos permitidos.
+   */
+  async update(id, funcionarioData) {
+    const allowedFields = ["nome", "cpf", "email", "senha", "telefone", "id_cargo", "foto_perfil"];
     const fields = [];
     const values = [];
-    for (const [key, value] of Object.entries(funcionariosData)) {
-      fields.push(`${key} = ?`);
-      values.push(value);
+
+    for (const [key, value] of Object.entries(funcionarioData)) {
+      if (allowedFields.includes(key)) {
+        fields.push(`${key} = ?`);
+        values.push(value);
+      }
     }
     if (fields.length === 0) return null;
 
@@ -104,6 +146,20 @@ class FuncionariosRepository {
     ]);
     return result.affectedRows;
   }
+
+  /**
+   * Verifica se existem registros dependentes vinculados ao funcionário.
+   */
+  async hasDependents(id) {
+    const [rows] = await pool.query(
+      `SELECT 
+        (SELECT COUNT(*) FROM entradas WHERE id_funcionario = ?) +
+        (SELECT COUNT(*) FROM saidas WHERE id_funcionario = ?) +
+        (SELECT COUNT(*) FROM ajustes WHERE id_funcionario = ?) AS total`,
+      [id, id, id],
+    );
+    return rows[0].total > 0;
+  }
 }
 
-module.exports = new FuncionariosRepository();
+module.exports = new FuncionarioRepository();

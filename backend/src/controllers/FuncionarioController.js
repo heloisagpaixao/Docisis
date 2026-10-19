@@ -3,13 +3,13 @@ const FuncionarioService = require("../services/FuncionarioService");
 class FuncionarioController {
   async listar(req, res) {
     try {
-      const resultado = await FuncionarioService.listarFuncionarios();
+      const resultado = await FuncionarioService.listarFuncionarios(req.query);
       res.json(resultado);
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
-        mensagem: erro.mensagem || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -23,8 +23,8 @@ class FuncionarioController {
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
-        mensagem: erro.mensagem || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -37,10 +37,11 @@ class FuncionarioController {
       });
       return res.status(201).json(resultado);
     } catch (error) {
-      console.error("ERRO REAL:", error);
-      return res
-        .status(error.status || 500)
-        .json({ mensagem: error.mensagem || "Erro interno do servidor" });
+      return res.status(error.status || 500).json({
+        sucesso: false,
+        mensagem: error.mensagem || error.message || "Erro interno do servidor",
+        erro: error.mensagem || error.message,
+      });
     }
   }
 
@@ -53,10 +54,11 @@ class FuncionarioController {
       });
       return res.status(200).json(resultado);
     } catch (error) {
-      console.error("ERRO NO PUT:", error);
-      return res
-        .status(error.status || 500)
-        .json({ mensagem: error.mensagem || "Erro interno do servidor" });
+      return res.status(error.status || 500).json({
+        sucesso: false,
+        mensagem: error.mensagem || error.message || "Erro interno do servidor",
+        erro: error.mensagem || error.message,
+      });
     }
   }
 
@@ -69,8 +71,22 @@ class FuncionarioController {
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
-        mensagem: erro.mensagem || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
+      });
+    }
+  }
+
+  async alterarSenha(req, res) {
+    try {
+      const { id } = req.params;
+      const resultado = await FuncionarioService.alterarSenha(id, req.body);
+      res.json(resultado);
+    } catch (erro) {
+      res.status(erro.status || 500).json({
+        sucesso: false,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
       });
     }
   }

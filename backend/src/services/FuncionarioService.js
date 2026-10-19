@@ -1,13 +1,17 @@
 const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const FuncionarioRepository = require("../repositories/FuncionarioRepository");
+const { validarMagicBytes } = require("../utils/fileValidator");
 
 // Auxiliar para remover arquivo temporário/recém-enviado pelo Multer
 const removerArquivo = (file) => {
   if (file?.path && fs.existsSync(file.path)) {
-    fs.unlinkSync(file.path);
+    try {
+      fs.unlinkSync(file.path);
+    } catch (err) {
+      console.error(`Erro ao remover arquivo temporário ${file.path}:`, err);
+    }
   }
 };
 
@@ -32,22 +36,32 @@ const removerFotoDoDisco = (caminhoRelativo) => {
 };
 
 class FuncionarioService {
-  async listarFuncionarios() {
-    const funcionarios = await FuncionarioRepository.findAll();
+  async listarFuncionarios(queryParams = {}) {
+    const page = Math.max(1, parseInt(queryParams.page, 10) || 1);
+    const limit = Math.max(
+      1,
+      Math.min(100, parseInt(queryParams.limit, 10) || 10),
+    );
+
+    const resultado = await FuncionarioRepository.findAll({
+      ...queryParams,
+      page,
+      limit,
+    });
 
     return {
       sucesso: true,
-      dados: funcionarios,
-      total: funcionarios.length,
+      ...resultado,
     };
   }
 
   async buscarFuncionarioPorId(id) {
-    if (!id || isNaN(id)) {
-      throw { status: 400, mensagem: "ID inválido" };
+    const idNum = Number(id);
+    if (!id || !Number.isInteger(idNum) || idNum <= 0) {
+      throw { status: 400, mensagem: "ID de funcionário inválido" };
     }
 
-    const funcionario = await FuncionarioRepository.findById(id);
+    const funcionario = await FuncionarioRepository.findById(idNum);
     if (!funcionario) {
       throw { status: 404, mensagem: "Funcionário não encontrado" };
     }
@@ -62,10 +76,18 @@ class FuncionarioService {
     const { file } = dados;
 
     try {
+      if (file && !validarMagicBytes(file.path, ["jpeg", "png", "jpg"])) {
+        throw {
+          status: 400,
+          mensagem:
+            "Arquivo inválido ou corrompido: o conteúdo real não corresponde a uma imagem válida (JPEG/PNG).",
+        };
+      }
+
       let { nome, cpf, email, senha, telefone, id_cargo } = dados;
 
-      if (typeof id_cargo === "string") {
-        id_cargo = parseInt(id_cargo, 10);
+      if (id_cargo !== undefined) {
+        id_cargo = Number(id_cargo);
       }
 
       if (
@@ -75,12 +97,13 @@ class FuncionarioService {
         !senha ||
         !telefone ||
         id_cargo === undefined ||
-        isNaN(id_cargo)
+        !Number.isInteger(id_cargo) ||
+        id_cargo <= 0
       ) {
         throw {
           status: 400,
           mensagem:
-            "Nome, CPF, e-mail, telefone e ID do cargo são obrigatórios e devem ser válidos",
+            "Nome, CPF, e-mail, senha, telefone e ID do cargo são obrigatórios e devem ser válidos",
         };
       }
 
@@ -105,8 +128,8 @@ class FuncionarioService {
         };
       }
 
-      const salt = await bcrypt.genSalt(10)
-      const senhaHash = await bcrypt.hash(senha, salt)
+      const salt = await bcrypt.genSalt(10);
+      const senhaHash = await bcrypt.hash(senha, salt);
 
       const novoFuncionario = {
         nome: nome.trim(),
@@ -133,59 +156,24 @@ class FuncionarioService {
     }
   }
 
-  async login(email, senha) {
-    if (!email || !senha) {
-      throw { status: 400, mensagem: "E-mail e senha são obrigatórios." };
-    }
-
-    const emailLimpo = email.trim().toLowerCase();
-    const funcionario = await FuncionarioRepository.findByEmail(emailLimpo);
-
-    if (!funcionario) {
-      throw { status: 401, mensagem: "Credenciais inválidas." };
-    }
-
-    const senhaCorreta = await bcrypt.compare(senha, funcionario.senha);
-    if (!senhaCorreta) {
-      throw { status: 401, mensagem: "Credenciais inválidas." };
-    }
-
-    const segredo = "chave_super_secreta_docisis_2026" || process.env.JWT_SECRET;
-    if (!segredo) {
-      throw { status: 500, mensagem: "Configuração do JWT ausente no servidor." };
-    }
-
-    const payload = {
-      id: funcionario.id,
-      nome: funcionario.nome,
-      email: funcionario.email,
-      id_cargo: funcionario.id_cargo,
-    };
-
-    const token = jwt.sign(payload, segredo, { expiresIn: "8h" });
-
-    return {
-      sucesso: true,
-      mensagem: "Login realizado com sucesso.",
-      token,
-      funcionario: {
-        id: funcionario.id,
-        nome: funcionario.nome,
-        email: funcionario.email,
-      },
-    };
-  }
-
-
   async atualizarFuncionario(id, dados) {
     const { file } = dados;
 
     try {
-      if (!id || isNaN(id)) {
-        throw { status: 400, mensagem: "ID inválido" };
+      if (file && !validarMagicBytes(file.path, ["jpeg", "png", "jpg"])) {
+        throw {
+          status: 400,
+          mensagem:
+            "Arquivo inválido ou corrompido: o conteúdo real não corresponde a uma imagem válida (JPEG/PNG).",
+        };
       }
 
-      const existe = await FuncionarioRepository.findById(id);
+      const idNum = Number(id);
+      if (!id || !Number.isInteger(idNum) || idNum <= 0) {
+        throw { status: 400, mensagem: "ID de funcionário inválido" };
+      }
+
+      const existe = await FuncionarioRepository.findById(idNum);
       if (!existe) {
         throw { status: 404, mensagem: "Funcionário não encontrado" };
       }
@@ -227,14 +215,14 @@ class FuncionarioService {
       }
 
       if (id_cargo !== undefined) {
-        if (typeof id_cargo === "string") id_cargo = parseInt(id_cargo, 10);
-        if (isNaN(id_cargo)) {
+        const cargoNum = Number(id_cargo);
+        if (!Number.isInteger(cargoNum) || cargoNum <= 0) {
           throw {
             status: 400,
-            mensagem: "ID do cargo deve ser um número válido",
+            mensagem: "ID do cargo deve ser um número inteiro válido",
           };
         }
-        atualizado.id_cargo = id_cargo;
+        atualizado.id_cargo = cargoNum;
       }
 
       if (file) {
@@ -248,7 +236,7 @@ class FuncionarioService {
         };
       }
 
-      await FuncionarioRepository.update(id, atualizado);
+      await FuncionarioRepository.update(idNum, atualizado);
 
       // Se a imagem foi atualizada com sucesso, apaga a antiga
       if (file && existe.foto_perfil) {
@@ -266,13 +254,24 @@ class FuncionarioService {
   }
 
   async deletarFuncionario(id) {
-    if (!id || isNaN(id)) {
-      throw { status: 400, mensagem: "ID inválido" };
+    const idNum = Number(id);
+    if (!id || !Number.isInteger(idNum) || idNum <= 0) {
+      throw { status: 400, mensagem: "ID de funcionário inválido" };
     }
 
-    const existe = await FuncionarioRepository.findById(id);
+    const existe = await FuncionarioRepository.findById(idNum);
     if (!existe) {
       throw { status: 404, mensagem: "Funcionário não encontrado" };
+    }
+
+    // Trava de integridade: checa se existem registros dependentes (entradas, saídas, ajustes)
+    const hasDeps = await FuncionarioRepository.hasDependents(idNum);
+    if (hasDeps) {
+      throw {
+        status: 409,
+        mensagem:
+          "Não é possível excluir o funcionário: existem movimentações de estoque (entradas, saídas ou ajustes) associadas a ele.",
+      };
     }
 
     // Apaga a imagem física no disco antes de excluir o registro no banco
@@ -280,7 +279,7 @@ class FuncionarioService {
       removerFotoDoDisco(existe.foto_perfil);
     }
 
-    await FuncionarioRepository.delete(id);
+    await FuncionarioRepository.delete(idNum);
 
     return {
       sucesso: true,
@@ -289,23 +288,32 @@ class FuncionarioService {
   }
 
   async alterarSenha(id, { senhaAtual, novaSenha } = {}) {
-    if (!id || isNaN(id)) {
-      throw { status: 400, mensagem: "ID inválido" };
+    const idNum = Number(id);
+    if (!id || !Number.isInteger(idNum) || idNum <= 0) {
+      throw { status: 400, mensagem: "ID de funcionário inválido" };
     }
     if (!senhaAtual || !novaSenha) {
-      throw { status: 400, mensagem: "Senha atual e nova senha são obrigatórias" };
+      throw {
+        status: 400,
+        mensagem: "Senha atual e nova senha são obrigatórias",
+      };
     }
-    const funcionario = await FuncionarioRepository.findById(id);
+
+    // Busca funcionário com senha para comparação segura
+    const funcionario = await FuncionarioRepository.findByIdWithPassword(idNum);
     if (!funcionario) {
       throw { status: 404, mensagem: "Funcionário não encontrado" };
     }
+
     const senhaValida = await bcrypt.compare(senhaAtual, funcionario.senha);
     if (!senhaValida) {
       throw { status: 401, mensagem: "Senha atual incorreta" };
     }
+
     const salt = await bcrypt.genSalt(10);
     const senhaHash = await bcrypt.hash(novaSenha, salt);
-    await FuncionarioRepository.update(id, { senha: senhaHash });
+    await FuncionarioRepository.update(idNum, { senha: senhaHash });
+
     return {
       sucesso: true,
       mensagem: "Senha alterada com sucesso",

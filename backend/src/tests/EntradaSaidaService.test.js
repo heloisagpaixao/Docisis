@@ -26,6 +26,7 @@ describe('EntradaService & SaidaService - Testes Unitários', () => {
       const entradaData = {
         id_funcionario: 1,
         id_lote: 5,
+        quantidade: 20,
         motivo: 'Recebimento de matéria-prima fornecedor'
       };
 

@@ -3,13 +3,13 @@ const SaidaService = require("../services/SaidaService");
 class SaidaController {
   async listar(req, res) {
     try {
-      const resultado = await SaidaService.listarSaidas();
+      const resultado = await SaidaService.listarSaidas(req.query);
       res.json(resultado);
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
         mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -22,7 +22,7 @@ class SaidaController {
       res.status(erro.status || 500).json({
         sucesso: false,
         mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -39,7 +39,7 @@ class SaidaController {
       res.status(erro.status || 500).json({
         sucesso: false,
         mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -55,7 +55,7 @@ class SaidaController {
       res.status(erro.status || 500).json({
         sucesso: false,
         mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -68,7 +68,7 @@ class SaidaController {
       res.status(erro.status || 500).json({
         sucesso: false,
         mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        erro: erro.mensagem || erro.message,
       });
     }
   }

@@ -3,13 +3,13 @@ const LoteService = require("../services/LoteService");
 class LoteController {
   async listar(req, res) {
     try {
-      const resultado = await LoteService.listarLotes();
+      const resultado = await LoteService.listarLotes(req.query);
       res.json(resultado);
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
-        mensagem: erro.mensagem || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -21,8 +21,8 @@ class LoteController {
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
-        mensagem: erro.mensagem || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -35,7 +35,7 @@ class LoteController {
       res.status(erro.status || 500).json({
         sucesso: false,
         mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -48,7 +48,7 @@ class LoteController {
       res.status(erro.status || 500).json({
         sucesso: false,
         mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -60,8 +60,8 @@ class LoteController {
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
-        mensagem: erro.mensagem || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -76,8 +76,8 @@ class LoteController {
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
-        mensagem: erro.mensagem || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
       });
     }
   }
@@ -89,8 +89,8 @@ class LoteController {
     } catch (erro) {
       res.status(erro.status || 500).json({
         sucesso: false,
-        mensagem: erro.mensagem || "Erro interno do servidor",
-        erro: erro.stack || erro,
+        mensagem: erro.mensagem || erro.message || "Erro interno do servidor",
+        erro: erro.mensagem || erro.message,
       });
     }
   }

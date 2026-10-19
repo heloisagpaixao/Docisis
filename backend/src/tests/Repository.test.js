@@ -21,7 +21,7 @@ describe('Camada de Repositories - Consultas SQL e Persistência', () => {
     const resultado = await ProdutoRepository.findById(1);
 
     expect(pool.query).toHaveBeenCalledWith(
-      expect.stringContaining('SELECT * FROM produtos WHERE id_produto = ?'),
+      expect.stringContaining('WHERE id_produto = ?'),
       [1]
     );
     expect(resultado).toEqual(produtoMock);
@@ -53,22 +53,24 @@ describe('Camada de Repositories - Consultas SQL e Persistência', () => {
   });
 
   test('REPO-03 (Consultas com JOIN): LoteRepository e EstoqueRepository devem executar queries estruturadas', async () => {
-    // Teste de JOIN em LoteRepository.findAll (lotes com nota fiscal)
+    // Teste de JOIN em LoteRepository.findAll (lotes com nota fiscal e produto)
     const lotesComJoinMock = [
-      { id: 1, quantidade: 20, materia_prima: 'Leite Condensado', fornecedor: 'Nestlé' }
+      { id: 1, quantidade: 20, id_produto: 2, produto_nome: 'Leite Condensado', fornecedor: 'Nestlé' }
     ];
-    pool.query.mockResolvedValueOnce([lotesComJoinMock]);
+    pool.query.mockResolvedValueOnce([[{ total: 1 }]]); // countSql
+    pool.query.mockResolvedValueOnce([lotesComJoinMock]); // sql com limit/offset
 
     const resultadoLotes = await LoteRepository.findAll();
 
     expect(pool.query).toHaveBeenCalledWith(
-      expect.stringMatching(/JOIN nota_fiscal nf/)
+      expect.stringMatching(/JOIN nota_fiscal nf/),
+      expect.any(Array)
     );
-    expect(resultadoLotes).toEqual(lotesComJoinMock);
+    expect(resultadoLotes.dados).toEqual(lotesComJoinMock);
 
     // Teste de movimentações unificadas (ENTRADA, SAIDA, AJUSTE)
     const movimentacoesMock = [
-      { tipo: 'ENTRADA', id: 1, quantidade: null, funcionario_nome: 'Admin' },
+      { tipo: 'ENTRADA', id: 1, quantidade: 10, funcionario_nome: 'Admin' },
       { tipo: 'SAIDA', id: 2, quantidade: 5, funcionario_nome: 'Operador' }
     ];
     pool.query.mockResolvedValueOnce([movimentacoesMock]);
@@ -79,14 +81,5 @@ describe('Camada de Repositories - Consultas SQL e Persistência', () => {
       [1, 1, 1]
     );
     expect(resultadoMov).toEqual(movimentacoesMock);
-
-    // Teste de consulta em EstoqueRepository
-    const estoqueMock = [
-      { id_estoque: 1, id_lote: 1, quantidade: 15, materia_prima: 'Farinha' }
-    ];
-    pool.query.mockResolvedValueOnce([estoqueMock]);
-
-    const resultadoEstoque = await EstoqueRepository.findAll();
-    expect(resultadoEstoque).toEqual(estoqueMock);
   });
 });

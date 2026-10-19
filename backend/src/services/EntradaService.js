@@ -23,11 +23,12 @@ class EntradaService {
   }
 
   async buscarEntradaPorId(id) {
-    if (!id || isNaN(id)) {
+    const idNum = Number(id);
+    if (!id || !Number.isInteger(idNum) || idNum <= 0) {
       throw { status: 400, mensagem: "ID inválido" };
     }
 
-    const entrada = await EntradaRepository.findById(id);
+    const entrada = await EntradaRepository.findById(idNum);
     if (!entrada) {
       throw { status: 404, mensagem: "Entrada não encontrada" };
     }
@@ -39,33 +40,51 @@ class EntradaService {
   }
 
   async cadastrarEntrada(dados) {
-    const { id_funcionario, id_lote, motivo, dt_entrada } = dados;
+    const { id_funcionario, id_lote, quantidade, motivo, dt_entrada } = dados;
 
-    if (!id_funcionario || !id_lote || !motivo) {
+    if (!id_funcionario || !id_lote || !quantidade || !motivo) {
       throw {
         status: 400,
-        mensagem: "Os campos id_funcionario, id_lote e motivo são obrigatórios",
+        mensagem: "Os campos id_funcionario, id_lote, quantidade e motivo são obrigatórios",
       };
     }
 
-    const funcionarioExiste =
-      await FuncionarioRepository.findById(id_funcionario);
+    const qtdNum = Number(quantidade);
+    if (!Number.isInteger(qtdNum) || qtdNum <= 0) {
+      throw {
+        status: 400,
+        mensagem: "A quantidade deve ser um número inteiro positivo",
+      };
+    }
+
+    const idFuncNum = Number(id_funcionario);
+    if (!Number.isInteger(idFuncNum) || idFuncNum <= 0) {
+      throw { status: 400, mensagem: "ID do funcionário inválido" };
+    }
+
+    const idLoteNum = Number(id_lote);
+    if (!Number.isInteger(idLoteNum) || idLoteNum <= 0) {
+      throw { status: 400, mensagem: "ID do lote inválido" };
+    }
+
+    const funcionarioExiste = await FuncionarioRepository.findById(idFuncNum);
     if (!funcionarioExiste) {
       throw {
         status: 404,
-        mensagem: `Funcionário com ID ${id_funcionario} não encontrado`,
+        mensagem: `Funcionário com ID ${idFuncNum} não encontrado`,
       };
     }
 
-    const loteExiste = await LoteRepository.findById(id_lote);
+    const loteExiste = await LoteRepository.findById(idLoteNum);
     if (!loteExiste) {
-      throw { status: 404, mensagem: `Lote com ID ${id_lote} não encontrado` };
+      throw { status: 404, mensagem: `Lote com ID ${idLoteNum} não encontrado` };
     }
 
     const novaEntrada = {
       dt_entrada: dt_entrada || new Date(),
-      id_funcionario: Number(id_funcionario),
-      id_lote: Number(id_lote),
+      id_funcionario: idFuncNum,
+      id_lote: idLoteNum,
+      quantidade: qtdNum,
       motivo: motivo.trim(),
     };
 
@@ -79,11 +98,12 @@ class EntradaService {
   }
 
   async atualizarEntrada(id, dados) {
-    if (!id || isNaN(id)) {
+    const idNum = Number(id);
+    if (!id || !Number.isInteger(idNum) || idNum <= 0) {
       throw { status: 400, mensagem: "ID inválido" };
     }
 
-    const existe = await EntradaRepository.findById(id);
+    const existe = await EntradaRepository.findById(idNum);
     if (!existe) {
       throw { status: 404, mensagem: "Entrada não encontrada" };
     }
@@ -91,27 +111,33 @@ class EntradaService {
     const atualizado = {};
 
     if (dados.id_funcionario !== undefined) {
-      const funcionarioExiste = await FuncionarioRepository.findById(
-        dados.id_funcionario,
-      );
+      const idFuncNum = Number(dados.id_funcionario);
+      if (!Number.isInteger(idFuncNum) || idFuncNum <= 0) {
+        throw { status: 400, mensagem: "ID do funcionário inválido" };
+      }
+      const funcionarioExiste = await FuncionarioRepository.findById(idFuncNum);
       if (!funcionarioExiste) {
         throw {
           status: 404,
-          mensagem: `Funcionário com ID ${dados.id_funcionario} não encontrado`,
+          mensagem: `Funcionário com ID ${idFuncNum} não encontrado`,
         };
       }
-      atualizado.id_funcionario = Number(dados.id_funcionario);
+      atualizado.id_funcionario = idFuncNum;
     }
 
     if (dados.id_lote !== undefined) {
-      const loteExiste = await LoteRepository.findById(dados.id_lote);
+      const idLoteNum = Number(dados.id_lote);
+      if (!Number.isInteger(idLoteNum) || idLoteNum <= 0) {
+        throw { status: 400, mensagem: "ID do lote inválido" };
+      }
+      const loteExiste = await LoteRepository.findById(idLoteNum);
       if (!loteExiste) {
         throw {
           status: 404,
-          mensagem: `Lote com ID ${dados.id_lote} não encontrado`,
+          mensagem: `Lote com ID ${idLoteNum} não encontrado`,
         };
       }
-      atualizado.id_lote = Number(dados.id_lote);
+      atualizado.id_lote = idLoteNum;
     }
 
     if (dados.motivo !== undefined) atualizado.motivo = dados.motivo.trim();
@@ -125,7 +151,7 @@ class EntradaService {
       };
     }
 
-    await EntradaRepository.update(id, atualizado);
+    await EntradaRepository.update(idNum, atualizado);
 
     return {
       sucesso: true,
@@ -134,16 +160,17 @@ class EntradaService {
   }
 
   async deletarEntrada(id) {
-    if (!id || isNaN(id)) {
+    const idNum = Number(id);
+    if (!id || !Number.isInteger(idNum) || idNum <= 0) {
       throw { status: 400, mensagem: "ID inválido" };
     }
 
-    const existe = await EntradaRepository.findById(id);
+    const existe = await EntradaRepository.findById(idNum);
     if (!existe) {
       throw { status: 404, mensagem: "Entrada não encontrada" };
     }
 
-    await EntradaRepository.delete(id);
+    await EntradaRepository.delete(idNum);
 
     return {
       sucesso: true,

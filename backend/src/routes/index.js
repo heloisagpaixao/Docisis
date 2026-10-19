@@ -12,8 +12,6 @@ const NotasFiscaisRoutes = require("./NotaFiscalRoutes");
 const ProdutosRoutes = require("./ProdutoRoutes");
 const SaidasRoutes = require("./SaidaRoutes");
 
-const AuthMiddleware = require("../middlewares/AuthMiddleware");
-
 // Rota base (Root endpoint)
 router.get("/docisis", (req, res) => {
   res.json({
@@ -27,12 +25,12 @@ router.get("/docisis", (req, res) => {
 router.use("/auth", AuthsRoutes);
 router.use("/", AuthsRoutes);
 
-// Registrar domínios de rotas
+// Registrar domínios de rotas (cada módulo se autoprotege com seu authMiddleware)
 router.use("/ajustes", AjustesRoutes);
-router.use("/cargos", AuthMiddleware, CargosRoutes);
+router.use("/cargos", CargosRoutes);
 router.use("/entradas", EntradasRoutes);
 router.use("/estoque", EstoqueRoutes);
-router.use("/funcionarios", AuthMiddleware, FuncionariosRoutes);
+router.use("/funcionarios", FuncionariosRoutes);
 router.use("/lotes", LotesRoutes);
 router.use("/notasfiscais", NotasFiscaisRoutes);
 router.use("/produtos", ProdutosRoutes);

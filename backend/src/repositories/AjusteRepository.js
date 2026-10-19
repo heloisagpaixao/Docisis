@@ -14,7 +14,7 @@ class AjusteRepository {
       );
 
       if (lotes.length === 0) {
-        throw new Error("Lote não encontrado.");
+        throw { status: 404, mensagem: "Lote não encontrado." };
       }
 
       const quantidade_anterior = lotes[0].quantidade;
@@ -73,10 +73,11 @@ class AjusteRepository {
         f.id AS id_funcionario,
         f.nome AS funcionario_nome,
         l.id AS id_lote,
-        l.materia_prima
+        p.nome AS produto_nome
       FROM ajustes a
       INNER JOIN funcionarios f ON f.id = a.id_funcionario
       INNER JOIN lotes l ON l.id = a.id_lote
+      LEFT JOIN produtos p ON l.id_produto = p.id_produto
       WHERE a.id_ajuste = ?
     `,
       [id],
@@ -85,7 +86,8 @@ class AjusteRepository {
     return rows[0] || null;
   }
 
-  async findAll({ id_lote, id_funcionario, data_inicio, data_fim } = {}) {
+  async findAll({ id_lote, id_funcionario, data_inicio, data_fim, page = 1, limit = 10 } = {}) {
+    let countSql = `SELECT COUNT(*) AS total FROM ajustes a WHERE 1=1`;
     let sql = `
       SELECT 
         a.id_ajuste,
@@ -95,33 +97,53 @@ class AjusteRepository {
         a.quantidade_ajuste,
         a.motivo,
         f.nome AS funcionario,
-        l.id AS id_lote
+        l.id AS id_lote,
+        p.nome AS produto_nome
       FROM ajustes a
       INNER JOIN funcionarios f ON f.id = a.id_funcionario
       INNER JOIN lotes l ON l.id = a.id_lote
+      LEFT JOIN produtos p ON l.id_produto = p.id_produto
       WHERE 1=1
     `;
     const params = [];
+    const countParams = [];
 
     if (id_lote) {
       sql += " AND a.id_lote = ?";
+      countSql += " AND a.id_lote = ?";
       params.push(id_lote);
+      countParams.push(id_lote);
     }
 
     if (id_funcionario) {
       sql += " AND a.id_funcionario = ?";
+      countSql += " AND a.id_funcionario = ?";
       params.push(id_funcionario);
+      countParams.push(id_funcionario);
     }
 
     if (data_inicio && data_fim) {
       sql += " AND a.dt_ajuste BETWEEN ? AND ?";
+      countSql += " AND a.dt_ajuste BETWEEN ? AND ?";
       params.push(data_inicio, data_fim);
+      countParams.push(data_inicio, data_fim);
     }
 
-    sql += " ORDER BY a.dt_ajuste DESC";
+    const [[{ total }]] = await db.execute(countSql, countParams);
+
+    const offset = (page - 1) * limit;
+    sql += " ORDER BY a.dt_ajuste DESC LIMIT ? OFFSET ?";
+    params.push(String(limit), String(offset));
 
     const [rows] = await db.execute(sql, params);
-    return rows;
+
+    return {
+      dados: rows,
+      total,
+      pagina: page,
+      limite: limit,
+      totalPaginas: Math.ceil(total / limit),
+    };
   }
 }
 

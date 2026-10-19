@@ -1,12 +1,52 @@
-CREATE DATABASE IF NOT EXISTS docisis_db;
-USE docisis_db;
+-- =====================================================================
+-- DOCISIS - Banco de dados (MySQL)
+--
+-- ORDEM DE CRIAÇÃO (sem dependência circular, as setas vão sempre
+-- das tabelas "filhas" para as "pais"):
+--
+--   cargos, permissoes, nota_fiscal, produtos   (não dependem de ninguém)
+--        |
+--        +-- cargo_permissoes  -> cargos, permissoes
+--        +-- funcionarios      -> cargos
+--        +-- lotes             -> nota_fiscal
+--                |
+--                +-- entradas, saidas, ajustes -> funcionarios, lotes
+--                +-- estoque                   -> lotes
+-- =====================================================================
+
+CREATE DATABASE IF NOT EXISTS docisis_oficial_db
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+USE docisis_oficial_db;
 
 -- ===========================
--- CARGOS
+-- CARGOS (agora com nome)
 -- ===========================
 CREATE TABLE cargos (
     id_cargo INT AUTO_INCREMENT PRIMARY KEY,
-    permissoes BOOLEAN NOT NULL
+    nome VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- ===========================
+-- PERMISSÕES (identificadas por nome, ex.: LOTE_CADASTRAR)
+-- ===========================
+CREATE TABLE permissoes (
+    id_permissao INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL UNIQUE,
+    descricao VARCHAR(150) DEFAULT NULL
+);
+
+-- ===========================
+-- CARGO x PERMISSÃO (relação N:N)
+-- O cargo NÃO aponta para funcionário; só o funcionário aponta
+-- para o cargo. É isso que evita o ciclo.
+-- ===========================
+CREATE TABLE cargo_permissoes (
+    id_cargo INT NOT NULL,
+    id_permissao INT NOT NULL,
+    PRIMARY KEY (id_cargo, id_permissao),
+    CONSTRAINT fk_cp_cargo FOREIGN KEY (id_cargo) REFERENCES cargos(id_cargo) ON DELETE CASCADE,
+    CONSTRAINT fk_cp_permissao FOREIGN KEY (id_permissao) REFERENCES permissoes(id_permissao) ON DELETE CASCADE
 );
 
 -- ===========================
@@ -52,7 +92,7 @@ CREATE TABLE nota_fiscal (
 );
 
 -- ===========================
--- LOTES
+-- LOTES (o lote aponta para a nota; a nota NÃO aponta para o lote)
 -- ===========================
 CREATE TABLE lotes (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -129,9 +169,57 @@ CREATE INDEX idx_saidas_funcionario ON saidas(id_funcionario);
 CREATE INDEX idx_ajustes_lote ON ajustes(id_lote);
 
 -- ===========================
+-- VIEW: permissões de cada funcionário, por nome
+-- ===========================
+CREATE VIEW vw_permissoes_funcionario AS
+SELECT f.id AS id_funcionario,
+       f.nome AS funcionario,
+       c.nome AS cargo,
+       p.nome AS permissao
+FROM funcionarios f
+JOIN cargos c            ON c.id_cargo = f.id_cargo
+JOIN cargo_permissoes cp ON cp.id_cargo = c.id_cargo
+JOIN permissoes p        ON p.id_permissao = cp.id_permissao;
+
+-- ===========================
 -- DADOS INICIAIS
 -- ===========================
-INSERT INTO cargos (id_cargo, permissoes) VALUES 
-(1, true), 
-(2, true), 
-(3, false);
+
+-- Os ids 1, 2 e 3 são os mesmos do script antigo (1 e 2 eram "true", 3 era "false")
+INSERT INTO cargos (id_cargo, nome) VALUES
+(1, 'Líder'),
+(2, 'Responsável do Setor'),
+(3, 'Estoquista');
+
+INSERT INTO permissoes (nome, descricao) VALUES
+('PRODUTO_GERENCIAR',     'Cadastrar, editar e excluir produtos'),
+('LOTE_GERENCIAR',        'Cadastrar e editar lotes'),
+('NOTA_FISCAL_REGISTRAR', 'Registrar notas fiscais'),
+('ENTRADA_REGISTRAR',     'Registrar entrada de produtos'),
+('SAIDA_REGISTRAR',       'Registrar saída de produtos'),
+('AJUSTE_REGISTRAR',      'Registrar ajustes de estoque'),
+('ESTOQUE_CONSULTAR',     'Consultar o estoque'),
+('NOTIFICACAO_CONSULTAR', 'Ver alertas de validade e de estoque'),
+('RELATORIO_GERAR',       'Gerar relatórios e exportar XLSX'),
+('FUNCIONARIO_GERENCIAR', 'Cadastrar, editar e excluir funcionários'),
+('CARGO_GERENCIAR',       'Alterar cargos e permissões');
+
+-- Líder: todas as permissões
+INSERT INTO cargo_permissoes (id_cargo, id_permissao)
+SELECT c.id_cargo, p.id_permissao
+FROM cargos c CROSS JOIN permissoes p
+WHERE c.nome = 'Líder';
+
+-- Responsável do Setor: tudo, menos gerenciar funcionários e cargos
+INSERT INTO cargo_permissoes (id_cargo, id_permissao)
+SELECT c.id_cargo, p.id_permissao
+FROM cargos c CROSS JOIN permissoes p
+WHERE c.nome = 'Responsável do Setor'
+  AND p.nome NOT IN ('FUNCIONARIO_GERENCIAR', 'CARGO_GERENCIAR');
+
+-- Estoquista: operação do dia a dia
+INSERT INTO cargo_permissoes (id_cargo, id_permissao)
+SELECT c.id_cargo, p.id_permissao
+FROM cargos c CROSS JOIN permissoes p
+WHERE c.nome = 'Estoquista'
+  AND p.nome IN ('ESTOQUE_CONSULTAR', 'ENTRADA_REGISTRAR', 'SAIDA_REGISTRAR', 'NOTIFICACAO_CONSULTAR');

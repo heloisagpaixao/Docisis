@@ -1,23 +1,29 @@
-const app = require('./app');
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
 const pool = require('./config/database');
+const autenticar = require('./middlewares/auth');
+const exigirPermissao = require('./middlewares/permissao');
 
-const PORT = process.env.PORT || 3000;
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-// Testando conexão de forma assíncrona com Promises e iniciando o servidor
-async function startServer() {
-    try {
-        const connection = await pool.getConnection();
-        console.log("Conexão com MySQL estabelecida! ✔️");
-        connection.release();
+app.get('/health', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT COUNT(*) AS cargos FROM cargos');
+    res.json({ status: 'ok', cargos: rows[0].cargos });
+  } catch (err) {
+    res.status(500).json({ status: 'erro', mensagem: err.message });
+  }
+});
 
-        app.listen(PORT, () => {
-            console.log(`Servidor Docisis rodando na porta ${PORT} 🚀`);
-            console.log(`Rotas MVC ativas e escutando!`);
-        });
-    } catch (err) {
-        console.error("Erro fatal ao conectar ao banco de dados:", err);
-        process.exit(1);
-    }
-}
+app.use('/auth', require('./routes/auth.routes'));
 
-startServer();
+app.listen(process.env.PORT || 3000, () =>
+  console.log(`Docisis API rodando na porta ${process.env.PORT || 3000}`)
+);
+
+// Rota TEMPORÁRIA só para testar permissões (apague depois)
+app.get('/teste/lote', autenticar, exigirPermissao('LOTE_GERENCIAR'),
+  (req, res) => res.json({ ok: true, usuario: req.usuario }));

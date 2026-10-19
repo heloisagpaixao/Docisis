@@ -19,11 +19,9 @@ app.get('/health', async (req, res) => {
 });
 
 app.use('/auth', require('./routes/auth.routes'));
+app.use('/funcionarios', require('./routes/funcionarios.routes'));
+app.use('/cargos', require('./routes/cargos.routes'));
 
 app.listen(process.env.PORT || 3000, () =>
   console.log(`Docisis API rodando na porta ${process.env.PORT || 3000}`)
 );
-
-// Rota TEMPORÁRIA só para testar permissões (apague depois)
-app.get('/teste/lote', autenticar, exigirPermissao('LOTE_GERENCIAR'),
-  (req, res) => res.json({ ok: true, usuario: req.usuario }));

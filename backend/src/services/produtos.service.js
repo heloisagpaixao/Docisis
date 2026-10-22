@@ -1,37 +1,41 @@
-const repo = require("../repositories/produtos.repository");
+const produtoRepository = require("../repositories/ProdutoRepository");
 
-const CAMPOS_EDITAVEIS = ["nome", "dt_validade", "codigo", "peso", "imagem"];
+const erro = (status, mensagem) => ({ status, mensagem });
 
-const listar = (filtros) => repo.listar(filtros);
-const buscarPorId = (id) => repo.buscarPorId(id);
+const listar = (filtros) => produtoRepository.findAll(filtros);
 
-async function criar({
-  nome,
-  dt_validade,
-  codigo,
-  peso = null,
-  imagem = null,
-}) {
-  const id = await repo.inserir({
-    nome: nome.trim(),
-    dt_validade,
-    codigo,
-    peso,
-    imagem,
-  });
-  return repo.buscarPorId(id);
+async function buscar(id) {
+  const produto = await produtoRepository.findById(id);
+  if (!produto) throw erro(404, "Produto não encontrado");
+  return produto;
+}
+
+async function criar(dados) {
+  if (await produtoRepository.findByCodigo(dados.codigo)) {
+    throw erro(409, "Já existe um produto com este código");
+  }
+  const id = await produtoRepository.create(dados);
+  return produtoRepository.findById(id);
 }
 
 async function atualizar(id, dados) {
-  const campos = {};
-  for (const c of CAMPOS_EDITAVEIS) {
-    if (dados[c] !== undefined) campos[c] = dados[c];
+  await buscar(id);
+  if (dados.codigo !== undefined) {
+    const existente = await produtoRepository.findByCodigo(dados.codigo);
+    if (existente && existente.id_produto !== Number(id)) {
+      throw erro(409, "Já existe um produto com este código");
+    }
   }
-  if (Object.keys(campos).length === 0) return repo.buscarPorId(id);
-  const ok = await repo.atualizar(id, campos);
-  return ok ? repo.buscarPorId(id) : null;
+  await produtoRepository.update(id, dados);
+  return produtoRepository.findById(id);
 }
 
-const excluir = (id) => repo.excluir(id);
+async function excluir(id) {
+  await buscar(id);
+  if (await produtoRepository.hasDependents(id)) {
+    throw erro(409, "Produto possui lotes cadastrados e não pode ser excluído");
+  }
+  await produtoRepository.delete(id);
+}
 
-module.exports = { listar, buscarPorId, criar, atualizar, excluir };
+module.exports = { listar, buscar, criar, atualizar, excluir };

@@ -36,4 +36,10 @@ app.use((req, res) => res.status(404).json({ erro: "Rota não encontrada" }));
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🧁 Docisis API rodando na porta ${PORT}!`));
+app.listen(PORT, () => {
+  console.log(`🧁 Docisis API rodando na porta ${PORT}!`);
+  // Confere validade e estoque ao ligar e, depois, a cada NOTIFICACOES_INTERVALO_MIN minutos
+  require("./services/notificacoes.service").iniciarRotina();
+  // Apaga refresh tokens vencidos ao ligar e a cada 24 h
+  require("./services/auth.service").iniciarLimpeza();
+});

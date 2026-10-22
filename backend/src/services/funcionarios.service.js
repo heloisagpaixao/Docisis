@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const funcionarioRepository = require("../repositories/funcionarios.repository");
 const cargoRepository = require("../repositories/cargos.repository");
+const refreshTokenRepository = require("../repositories/refreshtoken.repository");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 const CAMPOS_EDITAVEIS = ["nome", "email", "telefone", "foto_perfil"];
@@ -55,6 +56,8 @@ async function atualizar(id, dados) {
   if (dados.senha) campos.senha = await bcrypt.hash(dados.senha, 10);
 
   await funcionarioRepository.update(id, campos);
+  // senha nova: derruba as sessões abertas, para quem tinha a senha antiga não continuar logado
+  if (dados.senha) await refreshTokenRepository.revogarTodosDoFuncionario(id);
   return funcionarioRepository.findById(id);
 }
 

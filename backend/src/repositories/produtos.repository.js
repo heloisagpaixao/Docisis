@@ -2,7 +2,7 @@ const pool = require("../config/database");
 
 // A validade pertence ao LOTE; por isso dt_validade não é lida nem gravada aqui.
 const COLUNAS =
-  "id_produto, nome, codigo, peso, imagem, criado_em, alterado_em";
+  "id_produto, nome, codigo, peso, imagem, estoque_minimo, estoque_maximo, criado_em, alterado_em";
 
 // O MySQL devolve DECIMAL como texto ("5.00"); aqui vira número
 const formatar = (row) =>
@@ -59,10 +59,18 @@ class ProdutoRepository {
     return formatar(rows[0]);
   }
 
-  async create({ nome, codigo, peso = null, imagem = null }) {
+  async create({
+    nome,
+    codigo,
+    peso = null,
+    imagem = null,
+    estoque_minimo = null,
+    estoque_maximo = null,
+  }) {
     const [result] = await pool.query(
-      "INSERT INTO produtos (nome, codigo, peso, imagem) VALUES (?, ?, ?, ?)",
-      [nome, codigo, peso, imagem],
+      `INSERT INTO produtos (nome, codigo, peso, imagem, estoque_minimo, estoque_maximo)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [nome, codigo, peso, imagem, estoque_minimo, estoque_maximo],
     );
     return result.insertId;
   }
@@ -71,7 +79,14 @@ class ProdutoRepository {
    * Update com whitelist de campos permitidos.
    */
   async update(id, produtoData) {
-    const allowedFields = ["nome", "codigo", "peso", "imagem"];
+    const allowedFields = [
+      "nome",
+      "codigo",
+      "peso",
+      "imagem",
+      "estoque_minimo",
+      "estoque_maximo",
+    ];
     const fields = [];
     const values = [];
 

@@ -86,7 +86,14 @@ class AjusteRepository {
     return rows[0] || null;
   }
 
-  async findAll({ id_lote, id_funcionario, data_inicio, data_fim, page = 1, limit = 10 } = {}) {
+  async findAll({
+    id_lote,
+    id_funcionario,
+    data_inicio,
+    data_fim,
+    page = 1,
+    limit = 10,
+  } = {}) {
     let countSql = `SELECT COUNT(*) AS total FROM ajustes a WHERE 1=1`;
     let sql = `
       SELECT 

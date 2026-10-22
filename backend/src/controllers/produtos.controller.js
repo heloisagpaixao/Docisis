@@ -42,6 +42,21 @@ function validar(body, { completo }) {
       dados.peso = Math.round(n * 100) / 100; // a coluna guarda 2 casas decimais
     }
   }
+  for (const campo of ["estoque_minimo", "estoque_maximo"]) {
+    if (b[campo] !== undefined) {
+      if (b[campo] === null) {
+        dados[campo] = null; // null = o produto não gera alerta desse tipo
+      } else {
+        const n = numero(b[campo]);
+        if (!Number.isInteger(n) || n < 0 || n > MAX_INT) {
+          return {
+            erro: `${campo} deve ser um inteiro maior ou igual a zero (ou null)`,
+          };
+        }
+        dados[campo] = n;
+      }
+    }
+  }
   if (b.imagem !== undefined) {
     if (b.imagem === null) {
       dados.imagem = null;

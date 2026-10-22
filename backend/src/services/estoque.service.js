@@ -1,4 +1,4 @@
-const estoqueRepository = require("../repositories/EstoqueRepository");
+const estoqueRepository = require("../repositories/estoque.repository");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 

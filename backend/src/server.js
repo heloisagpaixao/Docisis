@@ -27,6 +27,7 @@ app.use("/entradas", require("./routes/entradas.routes"));
 app.use("/saidas", require("./routes/saidas.routes"));
 app.use("/ajustes", require("./routes/ajustes.routes"));
 app.use("/estoque", require("./routes/estoque.routes"));
+app.use("/notificacoes", require("./routes/notificacoes.routes"));
 
 // Rota inexistente
 app.use((req, res) => res.status(404).json({ erro: "Rota não encontrada" }));

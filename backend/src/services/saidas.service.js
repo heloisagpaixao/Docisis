@@ -1,4 +1,5 @@
 const saidaRepository = require("../repositories/saidas.repository");
+const notificacoes = require("./notificacoes.service");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 
@@ -19,18 +20,21 @@ async function criar({ id_lote, quantidade, motivo }, idFuncionario) {
     quantidade,
     motivo,
   });
+  notificacoes.agendarVerificacao();
   return saidaRepository.findById(id);
 }
 
 // Só quantidade e motivo podem ser corrigidos; o saldo do lote acompanha a diferença.
 async function atualizar(id, dados) {
   await saidaRepository.update(id, dados);
+  notificacoes.agendarVerificacao();
   return saidaRepository.findById(id);
 }
 
 // Devolve a quantidade ao lote (404 se não existe)
 async function excluir(id) {
   await saidaRepository.delete(id);
+  notificacoes.agendarVerificacao();
 }
 
 module.exports = { listar, buscar, criar, atualizar, excluir };

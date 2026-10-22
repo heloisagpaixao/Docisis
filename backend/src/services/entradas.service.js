@@ -1,4 +1,5 @@
 const entradaRepository = require("../repositories/entradas.repository");
+const notificacoes = require("./notificacoes.service");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 
@@ -19,6 +20,7 @@ async function criar({ id_lote, quantidade, motivo }, idFuncionario) {
     quantidade,
     motivo,
   });
+  notificacoes.agendarVerificacao();
   return entradaRepository.findById(id);
 }
 
@@ -32,6 +34,7 @@ async function atualizar(id, { motivo }) {
 // Estorna o saldo do lote (409 se parte da entrada já foi consumida; 404 se não existe)
 async function excluir(id) {
   await entradaRepository.delete(id);
+  notificacoes.agendarVerificacao();
 }
 
 module.exports = { listar, buscar, criar, atualizar, excluir };

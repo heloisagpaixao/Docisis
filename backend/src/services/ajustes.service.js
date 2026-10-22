@@ -1,121 +1,38 @@
-const ajusteRepository = require("../repositories/AjusteRepository");
-const funcionarioRepository = require("../repositories/funcionarios.repository");
+const ajusteRepository = require("../repositories/ajustes.repository");
 const loteRepository = require("../repositories/lotes.repository");
+const notificacoes = require("./notificacoes.service");
 
-class AjusteService {
-  async criarAjuste({ id_lote, id_funcionario, quantidade_nova, motivo }) {
-    if (!id_lote || !id_funcionario) {
-      throw {
-        status: 400,
-        mensagem: "O ID do lote e do funcionário são obrigatórios.",
-        message: "O ID do lote e do funcionário são obrigatórios.",
-      };
-    }
+const erro = (status, mensagem) => ({ status, mensagem });
 
-    const idLoteNum = Number(id_lote);
-    if (!Number.isInteger(idLoteNum) || idLoteNum <= 0) {
-      throw {
-        status: 400,
-        mensagem: "ID do lote inválido.",
-        message: "ID do lote inválido.",
-      };
-    }
+const listar = (filtros) => ajusteRepository.findAll(filtros);
 
-    const idFuncNum = Number(id_funcionario);
-    if (!Number.isInteger(idFuncNum) || idFuncNum <= 0) {
-      throw {
-        status: 400,
-        mensagem: "ID do funcionário inválido.",
-        message: "ID do funcionário inválido.",
-      };
-    }
-
-    const qtdNovaNum = Number(quantidade_nova);
-    if (!Number.isInteger(qtdNovaNum) || qtdNovaNum < 0) {
-      throw {
-        status: 400,
-        mensagem:
-          "A nova quantidade deve ser um número inteiro maior ou igual a zero.",
-        message:
-          "A nova quantidade deve ser um número inteiro maior ou igual a zero.",
-      };
-    }
-
-    if (!motivo || motivo.trim() === "") {
-      throw {
-        status: 400,
-        mensagem: "O motivo do ajuste é obrigatório.",
-        message: "O motivo do ajuste é obrigatório.",
-      };
-    }
-
-    // Valida funcionário e lote
-    const funcExiste = await funcionarioRepository.findById(idFuncNum);
-    if (!funcExiste) {
-      throw {
-        status: 404,
-        mensagem: `Funcionário com ID ${idFuncNum} não encontrado.`,
-        message: `Funcionário com ID ${idFuncNum} não encontrado.`,
-      };
-    }
-
-    const loteExiste = await loteRepository.findById(idLoteNum);
-    if (!loteExiste) {
-      throw {
-        status: 404,
-        mensagem: `Lote com ID ${idLoteNum} não encontrado.`,
-        message: `Lote com ID ${idLoteNum} não encontrado.`,
-      };
-    }
-
-    return await ajusteRepository.create({
-      id_lote: idLoteNum,
-      id_funcionario: idFuncNum,
-      quantidade_nova: qtdNovaNum,
-      motivo: motivo.trim(),
-    });
-  }
-
-  async buscarPorId(id) {
-    const idNum = Number(id);
-    if (!id || !Number.isInteger(idNum) || idNum <= 0) {
-      throw {
-        status: 400,
-        mensagem: "ID do ajuste inválido.",
-        message: "ID do ajuste inválido.",
-      };
-    }
-
-    const ajuste = await ajusteRepository.findById(idNum);
-    if (!ajuste) {
-      throw {
-        status: 404,
-        mensagem: "Ajuste de estoque não encontrado.",
-        message: "Ajuste de estoque não encontrado.",
-      };
-    }
-
-    return ajuste;
-  }
-
-  async listarAjustes(queryParams = {}) {
-    const page = Math.max(1, parseInt(queryParams.page, 10) || 1);
-    const limit = Math.max(
-      1,
-      Math.min(100, parseInt(queryParams.limit, 10) || 10),
-    );
-
-    const resultado = await ajusteRepository.findAll({
-      ...queryParams,
-      page,
-      limit,
-    });
-
-    return {
-      sucesso: true,
-      ...resultado,
-    };
-  }
+async function buscar(id) {
+  const ajuste = await ajusteRepository.findById(id);
+  if (!ajuste) throw erro(404, "Ajuste não encontrado");
+  return ajuste;
 }
 
-module.exports = new AjusteService();
+/**
+ * Define o saldo do lote como `quantidade_nova` e guarda o antes/depois no histórico.
+ * Ajustes não podem ser editados nem excluídos: são o registro de auditoria.
+ */
+async function criar({ id_lote, quantidade_nova, motivo }, idFuncionario) {
+  const lote = await loteRepository.findById(id_lote);
+  if (!lote) throw erro(404, "Lote não encontrado");
+  if (lote.quantidade === quantidade_nova) {
+    throw erro(
+      400,
+      `A nova quantidade é igual à atual (${lote.quantidade}); não há o que ajustar`,
+    );
+  }
+  const ajuste = await ajusteRepository.create({
+    id_lote,
+    id_funcionario: idFuncionario,
+    quantidade_nova,
+    motivo,
+  });
+  notificacoes.agendarVerificacao();
+  return ajusteRepository.findById(ajuste.id_ajuste);
+}
+
+module.exports = { listar, buscar, criar };

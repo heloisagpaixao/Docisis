@@ -2,6 +2,7 @@ const loteRepository = require("../repositories/lotes.repository");
 const produtoRepository = require("../repositories/produtos.repository");
 const notaRepository = require("../repositories/notasfiscais.repository");
 const funcionarioRepository = require("../repositories/funcionarios.repository");
+const notificacoes = require("./notificacoes.service");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 
@@ -55,6 +56,7 @@ async function criar(
     id_nota,
     id_funcionario: idFuncionario,
   });
+  notificacoes.agendarVerificacao();
   return loteRepository.findById(id);
 }
 
@@ -77,6 +79,7 @@ async function atualizar(id, dados) {
   if (dados.id_nota !== undefined) await garantirNota(dados.id_nota);
 
   await loteRepository.update(id, dados);
+  notificacoes.agendarVerificacao();
   return loteRepository.findById(id);
 }
 
@@ -89,6 +92,7 @@ async function excluir(id) {
     );
   }
   await loteRepository.delete(id);
+  notificacoes.agendarVerificacao();
 }
 
 module.exports = {

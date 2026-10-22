@@ -46,7 +46,13 @@ class NotaFiscalRepository {
       INSERT INTO nota_fiscal (fornecedor, quantidade, dt_compra, arquivo)
       VALUES (?, ?, ?, ?)
     `;
-    const params = [fornecedor, quantidade, dt_compra, arquivo || null];
+    // dt_compra é obrigatória no banco: se não vier, usa o momento do registro
+    const params = [
+      fornecedor,
+      quantidade,
+      dt_compra || new Date(),
+      arquivo || null,
+    ];
 
     const [result] = await pool.query(sql, params);
     return result.insertId;

@@ -1,36 +1,29 @@
-const ajusteRepository = require("../repositories/AjusteRepository");
-const loteRepository = require("../repositories/LoteRepository");
+const router = require("express").Router();
+const autenticar = require("../middlewares/auth");
+const exigirPermissao = require("../middlewares/permissao");
+const asyncHandler = require("../utils/asyncHandler");
+const c = require("../controllers/saidas.controller");
 
-const erro = (status, mensagem) => ({ status, mensagem });
+router.use(autenticar);
 
-const listar = (filtros) => ajusteRepository.findAll(filtros);
+router.get("/", exigirPermissao("ESTOQUE_CONSULTAR"), asyncHandler(c.listar));
+router.get(
+  "/:id",
+  exigirPermissao("ESTOQUE_CONSULTAR"),
+  asyncHandler(c.buscar),
+);
 
-async function buscar(id) {
-  const ajuste = await ajusteRepository.findById(id);
-  if (!ajuste) throw erro(404, "Ajuste não encontrado");
-  return ajuste;
-}
+router.post("/", exigirPermissao("SAIDA_REGISTRAR"), asyncHandler(c.criar));
+router.put(
+  "/:id",
+  exigirPermissao("SAIDA_REGISTRAR"),
+  asyncHandler(c.atualizar),
+);
+// Apagar um registro de auditoria é uma correção gerencial: exige AJUSTE_REGISTRAR
+router.delete(
+  "/:id",
+  exigirPermissao("AJUSTE_REGISTRAR"),
+  asyncHandler(c.excluir),
+);
 
-/**
- * Define o saldo do lote como `quantidade_nova` e guarda o antes/depois no histórico.
- * Ajustes não podem ser editados nem excluídos: são o registro de auditoria.
- */
-async function criar({ id_lote, quantidade_nova, motivo }, idFuncionario) {
-  const lote = await loteRepository.findById(id_lote);
-  if (!lote) throw erro(404, "Lote não encontrado");
-  if (lote.quantidade === quantidade_nova) {
-    throw erro(
-      400,
-      `A nova quantidade é igual à atual (${lote.quantidade}); não há o que ajustar`,
-    );
-  }
-  const ajuste = await ajusteRepository.create({
-    id_lote,
-    id_funcionario: idFuncionario,
-    quantidade_nova,
-    motivo,
-  });
-  return ajusteRepository.findById(ajuste.id_ajuste);
-}
-
-module.exports = { listar, buscar, criar };
+module.exports = router;

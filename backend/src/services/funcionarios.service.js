@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
-const funcionarioRepository = require("../repositories/FuncionarioRepository");
-const cargoRepository = require("../repositories/CargoRepository");
+const funcionarioRepository = require("../repositories/funcionarios.repository");
+const cargoRepository = require("../repositories/cargos.repository");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 const CAMPOS_EDITAVEIS = ["nome", "email", "telefone", "foto_perfil"];

@@ -1,7 +1,7 @@
-const loteRepository = require("../repositories/LoteRepository");
-const produtoRepository = require("../repositories/ProdutoRepository");
-const notaRepository = require("../repositories/NotaFiscalRepository");
-const funcionarioRepository = require("../repositories/FuncionarioRepository");
+const loteRepository = require("../repositories/lotes.repository");
+const produtoRepository = require("../repositories/produtos.repository");
+const notaRepository = require("../repositories/notasfiscais.repository");
+const funcionarioRepository = require("../repositories/funcionarios.repository");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 

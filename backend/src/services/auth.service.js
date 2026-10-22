@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const funcionarioRepository = require("../repositories/FuncionarioRepository");
+const funcionarioRepository = require("../repositories/funcionarios.repository");
 
 /**
  * Devolve { token, funcionario, permissoes } ou null se as credenciais forem inválidas.

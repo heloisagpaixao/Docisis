@@ -51,13 +51,44 @@ class LoteRepository {
     return rows[0];
   }
 
-  async create(loteData) {
-    const { quantidade, id_produto, dt_validade, id_nota } = loteData;
-    const [result] = await pool.query(
-      "INSERT INTO lotes (quantidade, id_produto, dt_validade, id_nota) VALUES (?, ?, ?, ?)",
-      [quantidade, id_produto, dt_validade, id_nota],
-    );
-    return result.insertId;
+  /**
+   * Cadastra o lote e, se houver quantidade inicial, registra a ENTRADA
+   * correspondente na MESMA transação. Assim o saldo nunca é somado duas vezes
+   * e todo aumento de estoque fica no histórico (RF003).
+   */
+  async createComEntradaInicial({
+    quantidade = 0,
+    id_produto,
+    dt_validade,
+    id_nota,
+    id_funcionario,
+  }) {
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.beginTransaction();
+
+      const [result] = await connection.query(
+        "INSERT INTO lotes (quantidade, id_produto, dt_validade, id_nota) VALUES (?, ?, ?, ?)",
+        [quantidade, id_produto, dt_validade, id_nota],
+      );
+      const idLote = result.insertId;
+
+      if (quantidade > 0) {
+        await connection.query(
+          "INSERT INTO entradas (id_funcionario, id_lote, quantidade, motivo) VALUES (?, ?, ?, ?)",
+          [id_funcionario, idLote, quantidade, "Entrada inicial do lote"],
+        );
+      }
+
+      await connection.commit();
+      return idLote;
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
   }
 
   async findVencendo(dias = 30) {

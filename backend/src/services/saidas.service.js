@@ -1,4 +1,4 @@
-const saidaRepository = require("../repositories/SaidaRepository");
+const saidaRepository = require("../repositories/saidas.repository");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 

@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const pool = require("./config/db");
+const pool = require("./config/database");
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
@@ -35,4 +35,4 @@ app.use((req, res) => res.status(404).json({ erro: "Rota não encontrada" }));
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Docisis API rodando na porta ${PORT}`));
+app.listen(PORT, () => console.log(`🧁 Docisis API rodando na porta ${PORT}!`));

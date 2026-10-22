@@ -1,4 +1,4 @@
-const produtoRepository = require("../repositories/ProdutoRepository");
+const produtoRepository = require("../repositories/produtos.repository");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 

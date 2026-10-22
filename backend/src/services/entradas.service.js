@@ -1,4 +1,4 @@
-const entradaRepository = require("../repositories/EntradaRepository");
+const entradaRepository = require("../repositories/entradas.repository");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 

@@ -1,6 +1,6 @@
 const ajusteRepository = require("../repositories/AjusteRepository");
-const funcionarioRepository = require("../repositories/FuncionarioRepository");
-const loteRepository = require("../repositories/LoteRepository");
+const funcionarioRepository = require("../repositories/funcionarios.repository");
+const loteRepository = require("../repositories/lotes.repository");
 
 class AjusteService {
   async criarAjuste({ id_lote, id_funcionario, quantidade_nova, motivo }) {

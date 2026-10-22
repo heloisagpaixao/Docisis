@@ -1,4 +1,4 @@
-const notaRepository = require("../repositories/NotaFiscalRepository");
+const notaRepository = require("../repositories/notasfiscais.repository");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 
@@ -11,11 +11,7 @@ async function buscar(id) {
 }
 
 async function criar(dados) {
-  const id = await notaRepository.create({
-    ...dados,
-    // a coluna dt_compra é obrigatória: se não vier, usa o momento do registro
-    dt_compra: dados.dt_compra ?? new Date(),
-  });
+  const id = await notaRepository.create(dados);
   return notaRepository.findById(id);
 }
 

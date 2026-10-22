@@ -22,6 +22,11 @@ app.use("/funcionarios", require("./routes/funcionarios.routes"));
 app.use("/cargos", require("./routes/cargos.routes"));
 app.use("/produtos", require("./routes/produtos.routes"));
 app.use("/notasfiscais", require("./routes/notasfiscais.routes"));
+app.use("/lotes", require("./routes/lotes.routes"));
+app.use("/entradas", require("./routes/entradas.routes"));
+app.use("/saidas", require("./routes/saidas.routes"));
+app.use("/ajustes", require("./routes/ajustes.routes"));
+app.use("/estoque", require("./routes/estoque.routes"));
 
 // Rota inexistente
 app.use((req, res) => res.status(404).json({ erro: "Rota não encontrada" }));

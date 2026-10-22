@@ -1,7 +1,14 @@
 const pool = require("../config/database");
 
 class SaidaRepository {
-  async findAll({ page = 1, limit = 10, id_funcionario, id_lote, data_inicio, data_fim } = {}) {
+  async findAll({
+    page = 1,
+    limit = 10,
+    id_funcionario,
+    id_lote,
+    data_inicio,
+    data_fim,
+  } = {}) {
     let countSql = `SELECT COUNT(*) AS total FROM saidas s WHERE 1=1`;
     let sql = `
       SELECT s.id_saida, s.dt_saida, s.id_funcionario, s.id_lote, s.quantidade, s.motivo,
@@ -139,7 +146,7 @@ class SaidaRepository {
       }
 
       const saidaAnterior = saidaRows[0];
-      const idLoteAtual = saidaData.id_lote || saidaAnterior.id_lote;
+      const idLoteAtual = saidaAnterior.id_lote; // o lote de uma saída não pode ser trocado
 
       // Se a quantidade está sendo alterada, ajusta o lote
       if (saidaData.quantidade !== undefined) {
@@ -182,7 +189,12 @@ class SaidaRepository {
       }
 
       // Monta o UPDATE com whitelist
-      const allowedFields = ["dt_saida", "id_funcionario", "id_lote", "quantidade", "motivo"];
+      const allowedFields = [
+        "dt_saida",
+        "id_funcionario",
+        "quantidade",
+        "motivo",
+      ];
       const fields = [];
       const values = [];
 

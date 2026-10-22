@@ -1,73 +1,83 @@
 const bcrypt = require("bcrypt");
-const pool = require("../config/database");
+const funcionarioRepository = require("../repositories/FuncionarioRepository");
+const cargoRepository = require("../repositories/CargoRepository");
 
-const SELECT = `
-  SELECT f.id, f.nome, f.cpf, f.email, f.telefone, f.id_cargo,
-         c.nome AS cargo, f.foto_perfil, f.criado_em
-  FROM funcionarios f
-  JOIN cargos c ON c.id_cargo = f.id_cargo`;
+const erro = (status, mensagem) => ({ status, mensagem });
+const CAMPOS_EDITAVEIS = ["nome", "email", "telefone", "foto_perfil"];
 
-async function listar() {
-  const [rows] = await pool.query(`${SELECT} ORDER BY f.nome`);
-  return rows;
+async function garantirCargo(id_cargo) {
+  if (!(await cargoRepository.findById(id_cargo))) {
+    throw erro(400, "Cargo informado não existe");
+  }
 }
 
-async function buscarPorId(id) {
-  const [rows] = await pool.query(`${SELECT} WHERE f.id = ?`, [id]);
-  return rows[0] || null;
+const listar = (paginacao) => funcionarioRepository.findAll(paginacao);
+
+async function buscar(id) {
+  const funcionario = await funcionarioRepository.findById(id);
+  if (!funcionario) throw erro(404, "Funcionário não encontrado");
+  return funcionario;
 }
 
-async function criar({ nome, cpf, email, senha, telefone, id_cargo }) {
-  const hash = await bcrypt.hash(senha, 10);
-  const [r] = await pool.query(
-    `INSERT INTO funcionarios (nome, cpf, email, senha, telefone, id_cargo)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [nome, cpf, email, hash, telefone, id_cargo],
-  );
-  return buscarPorId(r.insertId);
+async function criar(dados) {
+  await garantirCargo(dados.id_cargo);
+  if (await funcionarioRepository.findByCpf(dados.cpf))
+    throw erro(409, "CPF já cadastrado");
+  if (await funcionarioRepository.findByEmail(dados.email))
+    throw erro(409, "E-mail já cadastrado");
+
+  const id = await funcionarioRepository.create({
+    nome: dados.nome,
+    cpf: dados.cpf,
+    email: dados.email,
+    senha: await bcrypt.hash(dados.senha, 10),
+    telefone: dados.telefone,
+    id_cargo: dados.id_cargo,
+    foto_perfil: dados.foto_perfil ?? null,
+  });
+  return funcionarioRepository.findById(id);
 }
 
 async function atualizar(id, dados) {
-  const permitidos = ["nome", "email", "telefone", "foto_perfil"];
-  const campos = [];
-  const valores = [];
-  for (const campo of permitidos) {
-    if (dados[campo] !== undefined) {
-      campos.push(`${campo} = ?`);
-      valores.push(dados[campo]);
-    }
+  await buscar(id);
+
+  if (dados.email) {
+    const existente = await funcionarioRepository.findByEmail(dados.email);
+    if (existente && existente.id !== Number(id))
+      throw erro(409, "E-mail já cadastrado");
   }
-  if (dados.senha) {
-    campos.push("senha = ?");
-    valores.push(await bcrypt.hash(dados.senha, 10));
+
+  // O cargo NÃO é alterado por aqui: tem rota própria, com permissão própria.
+  const campos = {};
+  for (const campo of CAMPOS_EDITAVEIS) {
+    if (dados[campo] !== undefined) campos[campo] = dados[campo];
   }
-  if (campos.length === 0) return buscarPorId(id);
+  if (dados.senha) campos.senha = await bcrypt.hash(dados.senha, 10);
 
-  const [r] = await pool.query(
-    `UPDATE funcionarios SET ${campos.join(", ")} WHERE id = ?`,
-    [...valores, id],
-  );
-  return r.affectedRows ? buscarPorId(id) : null;
+  await funcionarioRepository.update(id, campos);
+  return funcionarioRepository.findById(id);
 }
 
-async function alterarCargo(id, id_cargo) {
-  const [r] = await pool.query(
-    "UPDATE funcionarios SET id_cargo = ? WHERE id = ?",
-    [id_cargo, id],
-  );
-  return r.affectedRows ? buscarPorId(id) : null;
+async function alterarCargo(id, id_cargo, idSolicitante) {
+  if (Number(id) === idSolicitante)
+    throw erro(400, "Você não pode alterar o próprio cargo");
+  await buscar(id);
+  await garantirCargo(id_cargo);
+  await funcionarioRepository.update(id, { id_cargo });
+  return funcionarioRepository.findById(id);
 }
 
-async function excluir(id) {
-  const [r] = await pool.query("DELETE FROM funcionarios WHERE id = ?", [id]);
-  return r.affectedRows > 0;
+async function excluir(id, idSolicitante) {
+  if (Number(id) === idSolicitante)
+    throw erro(400, "Você não pode excluir o próprio usuário");
+  await buscar(id);
+  if (await funcionarioRepository.hasDependents(id)) {
+    throw erro(
+      409,
+      "Funcionário possui movimentações registradas e não pode ser excluído",
+    );
+  }
+  await funcionarioRepository.delete(id);
 }
 
-module.exports = {
-  listar,
-  buscarPorId,
-  criar,
-  atualizar,
-  alterarCargo,
-  excluir,
-};
+module.exports = { listar, buscar, criar, atualizar, alterarCargo, excluir };

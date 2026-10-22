@@ -12,7 +12,7 @@ class FuncionarioRepository {
     const offset = (page - 1) * limit;
     const [rows] = await pool.query(
       `SELECT f.id, f.nome, f.cpf, f.email, f.telefone, f.id_cargo, f.foto_perfil, f.criado_em,
-              c.permissoes
+              c.nome AS cargo
        FROM funcionarios f
        LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
        ORDER BY f.id DESC
@@ -35,7 +35,7 @@ class FuncionarioRepository {
   async findById(id) {
     const [rows] = await pool.query(
       `SELECT f.id, f.nome, f.cpf, f.email, f.telefone, f.id_cargo, f.foto_perfil, f.criado_em,
-              c.permissoes
+              c.nome AS cargo
        FROM funcionarios f
        LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
        WHERE f.id = ?`,
@@ -67,7 +67,7 @@ class FuncionarioRepository {
   async findByEmailWithCargo(email) {
     const [rows] = await pool.query(
       `SELECT f.id, f.nome, f.cpf, f.email, f.senha, f.telefone, f.id_cargo, f.foto_perfil, f.criado_em,
-              c.permissoes
+              c.nome AS cargo
        FROM funcionarios f
        LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
        WHERE f.email = ?`,
@@ -79,7 +79,7 @@ class FuncionarioRepository {
   async findByEmailAndCpf(email, cpf) {
     const [rows] = await pool.query(
       `SELECT f.id, f.nome, f.cpf, f.email, f.senha, f.telefone, f.id_cargo, f.foto_perfil, f.criado_em,
-              c.permissoes
+              c.nome AS cargo
        FROM funcionarios f
        JOIN cargos c ON f.id_cargo = c.id_cargo
        WHERE f.email = ? AND f.cpf = ?`,
@@ -97,6 +97,17 @@ class FuncionarioRepository {
       [id],
     );
     return rows[0];
+  }
+
+  /**
+   * Lista as permissões (por NOME) do funcionário, via view vw_permissoes_funcionario.
+   */
+  async findPermissoes(id) {
+    const [rows] = await pool.query(
+      "SELECT permissao FROM vw_permissoes_funcionario WHERE id_funcionario = ? ORDER BY permissao",
+      [id],
+    );
+    return rows.map((r) => r.permissao);
   }
 
   async create(funcionario) {
@@ -122,7 +133,15 @@ class FuncionarioRepository {
    * Update com whitelist de campos permitidos.
    */
   async update(id, funcionarioData) {
-    const allowedFields = ["nome", "cpf", "email", "senha", "telefone", "id_cargo", "foto_perfil"];
+    const allowedFields = [
+      "nome",
+      "cpf",
+      "email",
+      "senha",
+      "telefone",
+      "id_cargo",
+      "foto_perfil",
+    ];
     const fields = [];
     const values = [];
 

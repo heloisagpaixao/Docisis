@@ -1,9 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const pool = require("./config/database");
-const autenticar = require("./middlewares/auth");
-const exigirPermissao = require("./middlewares/permissao");
+const pool = require("./config/db");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 app.use(cors());
@@ -23,6 +22,11 @@ app.use("/funcionarios", require("./routes/funcionarios.routes"));
 app.use("/cargos", require("./routes/cargos.routes"));
 app.use("/produtos", require("./routes/produtos.routes"));
 
-app.listen(process.env.PORT || 3000, () =>
-  console.log(`Docisis API rodando na porta ${process.env.PORT || 3000}!`),
-);
+// Rota inexistente
+app.use((req, res) => res.status(404).json({ erro: "Rota não encontrada" }));
+
+// SEMPRE por último
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Docisis API rodando na porta ${PORT}`));

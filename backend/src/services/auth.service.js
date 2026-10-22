@@ -1,16 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const pool = require("../config/database");
+const funcionarioRepository = require("../repositories/FuncionarioRepository");
 
+/**
+ * Devolve { token, funcionario, permissoes } ou null se as credenciais forem inválidas.
+ * A mesma resposta (null) vale para e-mail inexistente e senha errada.
+ */
 async function login(email, senha) {
-  const [rows] = await pool.query(
-    `SELECT f.id, f.nome, f.email, f.senha, c.nome AS cargo
-     FROM funcionarios f
-     JOIN cargos c ON c.id_cargo = f.id_cargo
-     WHERE f.email = ?`,
-    [email],
-  );
-  const funcionario = rows[0];
+  const funcionario = await funcionarioRepository.findByEmailWithCargo(email);
   const senhaOk =
     funcionario && (await bcrypt.compare(senha, funcionario.senha));
   if (!senhaOk) return null;
@@ -21,11 +18,6 @@ async function login(email, senha) {
     { expiresIn: process.env.JWT_EXPIRES_IN || "15m" },
   );
 
-  const [perms] = await pool.query(
-    "SELECT permissao FROM vw_permissoes_funcionario WHERE id_funcionario = ?",
-    [funcionario.id],
-  );
-
   return {
     token,
     funcionario: {
@@ -34,7 +26,7 @@ async function login(email, senha) {
       email: funcionario.email,
       cargo: funcionario.cargo,
     },
-    permissoes: perms.map((p) => p.permissao),
+    permissoes: await funcionarioRepository.findPermissoes(funcionario.id),
   };
 }
 

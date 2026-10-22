@@ -1,7 +1,14 @@
 const pool = require("../config/database");
 
 class EntradaRepository {
-  async findAll({ page = 1, limit = 10, id_funcionario, id_lote, data_inicio, data_fim } = {}) {
+  async findAll({
+    page = 1,
+    limit = 10,
+    id_funcionario,
+    id_lote,
+    data_inicio,
+    data_fim,
+  } = {}) {
     let countSql = `SELECT COUNT(*) AS total FROM entradas e WHERE 1=1`;
     let sql = `
       SELECT e.id_entrada, e.dt_entrada, e.id_funcionario, e.id_lote, e.quantidade, e.motivo,
@@ -72,7 +79,8 @@ class EntradaRepository {
    * Usa transação com SELECT ... FOR UPDATE para garantir consistência concorrente.
    */
   async create(entradaData) {
-    const { dt_entrada, id_funcionario, id_lote, quantidade, motivo } = entradaData;
+    const { dt_entrada, id_funcionario, id_lote, quantidade, motivo } =
+      entradaData;
     const connection = await pool.getConnection();
 
     try {
@@ -111,7 +119,7 @@ class EntradaRepository {
   }
 
   async update(id, entradaData) {
-    const allowedFields = ["dt_entrada", "id_funcionario", "id_lote", "motivo"];
+    const allowedFields = ["dt_entrada", "id_funcionario", "motivo"]; // id_lote e quantidade não mudam: o saldo do lote depende deles
     const fields = [];
     const values = [];
 
@@ -150,14 +158,22 @@ class EntradaRepository {
 
       const { id_lote, quantidade } = entradaRows[0];
 
-      // Trava e atualiza o lote (decrementa a quantidade que foi adicionada)
-      await connection.query(
+      // Trava o lote e confere se o saldo ainda comporta o estorno
+      const [loteRows] = await connection.query(
         "SELECT quantidade FROM lotes WHERE id = ? FOR UPDATE",
         [id_lote],
       );
 
+      if (loteRows[0].quantidade < quantidade) {
+        throw {
+          status: 409,
+          mensagem:
+            "Não é possível excluir: parte desta entrada já foi consumida.",
+        };
+      }
+
       await connection.query(
-        "UPDATE lotes SET quantidade = GREATEST(quantidade - ?, 0) WHERE id = ?",
+        "UPDATE lotes SET quantidade = quantidade - ? WHERE id = ?",
         [quantidade, id_lote],
       );
 

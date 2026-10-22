@@ -1,110 +1,107 @@
 const service = require("../services/funcionarios.service");
+const { lerPaginacao } = require("../utils/paginacao");
+const {
+  idValido,
+  cpfValido,
+  formatarCpf,
+  emailValido,
+  telefoneValido,
+} = require("../utils/validadores");
 
-// Traduz erros do MySQL em respostas HTTP claras
-function tratarErro(err, res) {
-  if (err.code === "ER_DUP_ENTRY") {
-    return res.status(409).json({ erro: "CPF ou e-mail já cadastrado" });
+const texto = (v, min, max) =>
+  typeof v === "string" && v.trim().length >= min && v.trim().length <= max;
+// bcrypt só considera os 72 primeiros bytes da senha
+const senhaValida = (s) =>
+  typeof s === "string" && s.length >= 8 && Buffer.byteLength(s) <= 72;
+
+/** Valida e normaliza o corpo. Devolve { erro } ou { dados }. */
+function validar(body, { completo }) {
+  const b = body || {};
+  const dados = {};
+
+  if (completo) {
+    for (const c of ["nome", "cpf", "email", "senha", "telefone", "id_cargo"]) {
+      if (b[c] === undefined || b[c] === null || b[c] === "")
+        return { erro: `Informe ${c}` };
+    }
   }
-  if (err.code === "ER_NO_REFERENCED_ROW_2") {
-    return res.status(400).json({ erro: "Cargo informado não existe" });
+  if (b.nome !== undefined) {
+    if (!texto(b.nome, 2, 100))
+      return { erro: "Nome deve ter entre 2 e 100 caracteres" };
+    dados.nome = b.nome.trim();
   }
-  if (err.code === "ER_ROW_IS_REFERENCED_2") {
-    return res
-      .status(409)
-      .json({
-        erro: "Funcionário possui movimentações e não pode ser excluído",
-      });
+  if (completo && b.cpf !== undefined) {
+    if (!cpfValido(b.cpf)) return { erro: "CPF inválido" };
+    dados.cpf = formatarCpf(b.cpf);
   }
-  console.error(err);
-  return res.status(500).json({ erro: "Erro interno do servidor" });
+  if (b.email !== undefined) {
+    if (!emailValido(b.email.trim?.())) return { erro: "E-mail inválido" };
+    dados.email = b.email.trim().toLowerCase();
+  }
+  if (b.senha !== undefined) {
+    if (!senhaValida(b.senha))
+      return { erro: "A senha deve ter de 8 a 72 caracteres" };
+    dados.senha = b.senha;
+  }
+  if (b.telefone !== undefined) {
+    if (!telefoneValido(b.telefone))
+      return { erro: "Telefone inválido (informe o DDD)" };
+    dados.telefone = String(b.telefone).trim();
+  }
+  if (b.foto_perfil !== undefined && b.foto_perfil !== null) {
+    if (!texto(b.foto_perfil, 1, 255)) return { erro: "foto_perfil inválida" };
+    dados.foto_perfil = b.foto_perfil.trim();
+  }
+  if (completo) {
+    if (!idValido(b.id_cargo)) return { erro: "id_cargo inválido" };
+    dados.id_cargo = Number(b.id_cargo);
+  }
+  return { dados };
 }
 
-const idValido = (v) => Number.isInteger(Number(v)) && Number(v) > 0;
-
 exports.listar = async (req, res) => {
-  try {
-    res.json(await service.listar());
-  } catch (e) {
-    tratarErro(e, res);
-  }
+  res.json(await service.listar(lerPaginacao(req.query)));
 };
 
 exports.buscar = async (req, res) => {
   if (!idValido(req.params.id))
     return res.status(400).json({ erro: "ID inválido" });
-  try {
-    const f = await service.buscarPorId(req.params.id);
-    if (!f) return res.status(404).json({ erro: "Funcionário não encontrado" });
-    res.json(f);
-  } catch (e) {
-    tratarErro(e, res);
-  }
+  res.json(await service.buscar(req.params.id));
 };
 
 exports.criar = async (req, res) => {
-  const { nome, cpf, email, senha, telefone, id_cargo } = req.body;
-  if (!nome || !cpf || !email || !senha || !telefone || !id_cargo) {
-    return res
-      .status(400)
-      .json({ erro: "Informe nome, cpf, email, senha, telefone e id_cargo" });
-  }
-  if (senha.length < 8) {
-    return res
-      .status(400)
-      .json({ erro: "A senha deve ter pelo menos 8 caracteres" });
-  }
-  try {
-    res.status(201).json(await service.criar(req.body));
-  } catch (e) {
-    tratarErro(e, res);
-  }
+  const { erro, dados } = validar(req.body, { completo: true });
+  if (erro) return res.status(400).json({ erro });
+  res.status(201).json(await service.criar(dados));
 };
 
 exports.atualizar = async (req, res) => {
   if (!idValido(req.params.id))
     return res.status(400).json({ erro: "ID inválido" });
-  if (req.body.senha && req.body.senha.length < 8) {
+  const { erro, dados } = validar(req.body, { completo: false });
+  if (erro) return res.status(400).json({ erro });
+  if (Object.keys(dados).length === 0) {
     return res
       .status(400)
-      .json({ erro: "A senha deve ter pelo menos 8 caracteres" });
+      .json({ erro: "Informe ao menos um campo para atualizar" });
   }
-  try {
-    const f = await service.atualizar(req.params.id, req.body);
-    if (!f) return res.status(404).json({ erro: "Funcionário não encontrado" });
-    res.json(f);
-  } catch (e) {
-    tratarErro(e, res);
-  }
+  res.json(await service.atualizar(req.params.id, dados));
 };
 
 exports.alterarCargo = async (req, res) => {
   if (!idValido(req.params.id))
     return res.status(400).json({ erro: "ID inválido" });
-  if (!idValido(req.body.id_cargo))
+  const id_cargo = (req.body || {}).id_cargo;
+  if (!idValido(id_cargo))
     return res.status(400).json({ erro: "Informe um id_cargo válido" });
-  try {
-    const f = await service.alterarCargo(req.params.id, req.body.id_cargo);
-    if (!f) return res.status(404).json({ erro: "Funcionário não encontrado" });
-    res.json(f);
-  } catch (e) {
-    tratarErro(e, res);
-  }
+  res.json(
+    await service.alterarCargo(req.params.id, Number(id_cargo), req.usuario.id),
+  );
 };
 
 exports.excluir = async (req, res) => {
   if (!idValido(req.params.id))
     return res.status(400).json({ erro: "ID inválido" });
-  if (Number(req.params.id) === req.usuario.id) {
-    return res
-      .status(400)
-      .json({ erro: "Você não pode excluir o próprio usuário" });
-  }
-  try {
-    const ok = await service.excluir(req.params.id);
-    if (!ok)
-      return res.status(404).json({ erro: "Funcionário não encontrado" });
-    res.status(204).send();
-  } catch (e) {
-    tratarErro(e, res);
-  }
+  await service.excluir(req.params.id, req.usuario.id);
+  res.status(204).send();
 };

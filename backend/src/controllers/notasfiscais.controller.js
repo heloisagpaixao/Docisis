@@ -1,4 +1,5 @@
 const service = require("../services/notasfiscais.service");
+const arquivos = require("../services/arquivos.service");
 const { lerPaginacao } = require("../utils/paginacao");
 const { idValido, numero, lerData } = require("../utils/validadores");
 
@@ -44,19 +45,7 @@ function validar(body, { completo }) {
     }
     dados.dt_compra = data;
   }
-  if (b.arquivo !== undefined) {
-    if (b.arquivo === null) {
-      dados.arquivo = null;
-    } else if (
-      typeof b.arquivo !== "string" ||
-      !b.arquivo.trim() ||
-      b.arquivo.length > 255
-    ) {
-      return { erro: "arquivo inválido" };
-    } else {
-      dados.arquivo = b.arquivo.trim();
-    }
-  }
+  // arquivo não é aceito aqui: use PUT /notasfiscais/:id/arquivo
   return { dados };
 }
 
@@ -97,5 +86,32 @@ exports.excluir = async (req, res) => {
   if (!idValido(req.params.id))
     return res.status(400).json({ erro: "ID inválido" });
   await service.excluir(req.params.id);
+  res.status(204).send();
+};
+
+// ----- arquivo da nota fiscal (upload) -----
+
+exports.enviarArquivo = async (req, res) => {
+  if (!idValido(req.params.id))
+    return res.status(400).json({ erro: "ID inválido" });
+  res.json(await service.salvarArquivo(req.params.id, req.arquivo));
+};
+
+exports.baixarArquivo = async (req, res) => {
+  if (!idValido(req.params.id))
+    return res.status(400).json({ erro: "ID inválido" });
+  const caminho = await service.caminhoArquivo(req.params.id);
+  const extensao = caminho.slice(caminho.lastIndexOf("."));
+  await arquivos.enviar(
+    res,
+    caminho,
+    `nota-fiscal-${req.params.id}${extensao}`,
+  );
+};
+
+exports.removerArquivo = async (req, res) => {
+  if (!idValido(req.params.id))
+    return res.status(400).json({ erro: "ID inválido" });
+  await service.removerArquivo(req.params.id);
   res.status(204).send();
 };

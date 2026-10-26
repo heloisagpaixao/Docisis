@@ -2,9 +2,11 @@ const bcrypt = require("bcrypt");
 const funcionarioRepository = require("../repositories/funcionarios.repository");
 const cargoRepository = require("../repositories/cargos.repository");
 const refreshTokenRepository = require("../repositories/refreshtoken.repository");
+const arquivos = require("./arquivos.service");
 
 const erro = (status, mensagem) => ({ status, mensagem });
-const CAMPOS_EDITAVEIS = ["nome", "email", "telefone", "foto_perfil"];
+// foto_perfil NÃO entra aqui: só muda pelo endpoint de upload
+const CAMPOS_EDITAVEIS = ["nome", "email", "telefone"];
 
 async function garantirCargo(id_cargo) {
   if (!(await cargoRepository.findById(id_cargo))) {
@@ -34,7 +36,7 @@ async function criar(dados) {
     senha: await bcrypt.hash(dados.senha, 10),
     telefone: dados.telefone,
     id_cargo: dados.id_cargo,
-    foto_perfil: dados.foto_perfil ?? null,
+    foto_perfil: null,
   });
   return funcionarioRepository.findById(id);
 }
@@ -73,7 +75,7 @@ async function alterarCargo(id, id_cargo, idSolicitante) {
 async function excluir(id, idSolicitante) {
   if (Number(id) === idSolicitante)
     throw erro(400, "Você não pode excluir o próprio usuário");
-  await buscar(id);
+  const funcionario = await buscar(id);
   if (await funcionarioRepository.hasDependents(id)) {
     throw erro(
       409,
@@ -81,6 +83,41 @@ async function excluir(id, idSolicitante) {
     );
   }
   await funcionarioRepository.delete(id);
+  await arquivos.remover(funcionario.foto_perfil);
 }
 
-module.exports = { listar, buscar, criar, atualizar, alterarCargo, excluir };
+async function salvarFoto(id, arquivo) {
+  const funcionario = await buscar(id);
+  await arquivos.substituir({
+    pasta: "perfis",
+    arquivo,
+    atual: funcionario.foto_perfil,
+    gravar: (caminho) =>
+      funcionarioRepository.update(id, { foto_perfil: caminho }),
+  });
+  return buscar(id);
+}
+
+async function removerFoto(id) {
+  const funcionario = await buscar(id);
+  await funcionarioRepository.update(id, { foto_perfil: null });
+  await arquivos.remover(funcionario.foto_perfil);
+}
+
+async function caminhoFoto(id) {
+  const funcionario = await buscar(id);
+  if (!funcionario.foto_perfil) throw erro(404, "Funcionário não possui foto");
+  return funcionario.foto_perfil;
+}
+
+module.exports = {
+  listar,
+  buscar,
+  criar,
+  atualizar,
+  alterarCargo,
+  excluir,
+  salvarFoto,
+  removerFoto,
+  caminhoFoto,
+};

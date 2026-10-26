@@ -1,4 +1,5 @@
 const service = require("../services/funcionarios.service");
+const arquivos = require("../services/arquivos.service");
 const { lerPaginacao } = require("../utils/paginacao");
 const {
   idValido,
@@ -48,10 +49,7 @@ function validar(body, { completo }) {
       return { erro: "Telefone inválido (informe o DDD)" };
     dados.telefone = String(b.telefone).trim();
   }
-  if (b.foto_perfil !== undefined && b.foto_perfil !== null) {
-    if (!texto(b.foto_perfil, 1, 255)) return { erro: "foto_perfil inválida" };
-    dados.foto_perfil = b.foto_perfil.trim();
-  }
+  // foto_perfil não é aceita aqui: use PUT /funcionarios/:id/foto
   if (completo) {
     if (!idValido(b.id_cargo)) return { erro: "id_cargo inválido" };
     dados.id_cargo = Number(b.id_cargo);
@@ -103,5 +101,26 @@ exports.excluir = async (req, res) => {
   if (!idValido(req.params.id))
     return res.status(400).json({ erro: "ID inválido" });
   await service.excluir(req.params.id, req.usuario.id);
+  res.status(204).send();
+};
+
+// ----- foto de perfil (upload) -----
+
+exports.enviarFoto = async (req, res) => {
+  if (!idValido(req.params.id))
+    return res.status(400).json({ erro: "ID inválido" });
+  res.json(await service.salvarFoto(req.params.id, req.arquivo));
+};
+
+exports.baixarFoto = async (req, res) => {
+  if (!idValido(req.params.id))
+    return res.status(400).json({ erro: "ID inválido" });
+  await arquivos.enviar(res, await service.caminhoFoto(req.params.id));
+};
+
+exports.removerFoto = async (req, res) => {
+  if (!idValido(req.params.id))
+    return res.status(400).json({ erro: "ID inválido" });
+  await service.removerFoto(req.params.id);
   res.status(204).send();
 };

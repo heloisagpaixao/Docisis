@@ -3,6 +3,7 @@ const autenticar = require("../middlewares/auth");
 const exigirPermissao = require("../middlewares/permissao");
 const asyncHandler = require("../utils/asyncHandler");
 const c = require("../controllers/produtos.controller");
+const { receberImagem } = require("../middlewares/upload");
 
 router.use(autenticar);
 
@@ -25,6 +26,24 @@ router.delete(
   "/:id",
   exigirPermissao("PRODUTO_GERENCIAR"),
   asyncHandler(c.excluir),
+);
+
+// Imagem do produto
+router.get(
+  "/:id/imagem",
+  exigirPermissao("ESTOQUE_CONSULTAR"),
+  asyncHandler(c.baixarImagem),
+);
+router.put(
+  "/:id/imagem",
+  exigirPermissao("PRODUTO_GERENCIAR"),
+  receberImagem("imagem"),
+  asyncHandler(c.enviarImagem),
+);
+router.delete(
+  "/:id/imagem",
+  exigirPermissao("PRODUTO_GERENCIAR"),
+  asyncHandler(c.removerImagem),
 );
 
 module.exports = router;

@@ -3,6 +3,7 @@ const autenticar = require("../middlewares/auth");
 const exigirPermissao = require("../middlewares/permissao");
 const asyncHandler = require("../utils/asyncHandler");
 const c = require("../controllers/notasfiscais.controller");
+const { receberDocumento } = require("../middlewares/upload");
 
 router.use(autenticar);
 
@@ -27,6 +28,24 @@ router.delete(
   "/:id",
   exigirPermissao("NOTA_FISCAL_REGISTRAR"),
   asyncHandler(c.excluir),
+);
+
+// Arquivo da nota (PDF, JPEG ou PNG)
+router.get(
+  "/:id/arquivo",
+  exigirPermissao("ESTOQUE_CONSULTAR"),
+  asyncHandler(c.baixarArquivo),
+);
+router.put(
+  "/:id/arquivo",
+  exigirPermissao("NOTA_FISCAL_REGISTRAR"),
+  receberDocumento("arquivo"),
+  asyncHandler(c.enviarArquivo),
+);
+router.delete(
+  "/:id/arquivo",
+  exigirPermissao("NOTA_FISCAL_REGISTRAR"),
+  asyncHandler(c.removerArquivo),
 );
 
 module.exports = router;

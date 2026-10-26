@@ -1,4 +1,5 @@
 const service = require("../services/produtos.service");
+const arquivos = require("../services/arquivos.service");
 const { lerPaginacao } = require("../utils/paginacao");
 const { idValido, numero } = require("../utils/validadores");
 
@@ -57,19 +58,7 @@ function validar(body, { completo }) {
       }
     }
   }
-  if (b.imagem !== undefined) {
-    if (b.imagem === null) {
-      dados.imagem = null;
-    } else if (
-      typeof b.imagem !== "string" ||
-      !b.imagem.trim() ||
-      b.imagem.length > 255
-    ) {
-      return { erro: "imagem inválida" };
-    } else {
-      dados.imagem = b.imagem.trim();
-    }
-  }
+  // imagem não é aceita aqui: use PUT /produtos/:id/imagem
   return { dados };
 }
 
@@ -115,5 +104,26 @@ exports.excluir = async (req, res) => {
   if (!idValido(req.params.id))
     return res.status(400).json({ erro: "ID inválido" });
   await service.excluir(req.params.id);
+  res.status(204).send();
+};
+
+// ----- imagem do produto (upload) -----
+
+exports.enviarImagem = async (req, res) => {
+  if (!idValido(req.params.id))
+    return res.status(400).json({ erro: "ID inválido" });
+  res.json(await service.salvarImagem(req.params.id, req.arquivo));
+};
+
+exports.baixarImagem = async (req, res) => {
+  if (!idValido(req.params.id))
+    return res.status(400).json({ erro: "ID inválido" });
+  await arquivos.enviar(res, await service.caminhoImagem(req.params.id));
+};
+
+exports.removerImagem = async (req, res) => {
+  if (!idValido(req.params.id))
+    return res.status(400).json({ erro: "ID inválido" });
+  await service.removerImagem(req.params.id);
   res.status(204).send();
 };

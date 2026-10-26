@@ -1,5 +1,6 @@
 const produtoRepository = require("../repositories/produtos.repository");
 const notificacoes = require("./notificacoes.service");
+const arquivos = require("./arquivos.service");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 
@@ -55,12 +56,45 @@ async function atualizar(id, dados) {
 }
 
 async function excluir(id) {
-  await buscar(id);
+  const produto = await buscar(id);
   if (await produtoRepository.hasDependents(id)) {
     throw erro(409, "Produto possui lotes cadastrados e não pode ser excluído");
   }
   await produtoRepository.delete(id);
+  await arquivos.remover(produto.imagem);
   notificacoes.agendarVerificacao();
 }
 
-module.exports = { listar, buscar, criar, atualizar, excluir };
+async function salvarImagem(id, arquivo) {
+  const produto = await buscar(id);
+  await arquivos.substituir({
+    pasta: "produtos",
+    arquivo,
+    atual: produto.imagem,
+    gravar: (caminho) => produtoRepository.update(id, { imagem: caminho }),
+  });
+  return buscar(id);
+}
+
+async function removerImagem(id) {
+  const produto = await buscar(id);
+  await produtoRepository.update(id, { imagem: null });
+  await arquivos.remover(produto.imagem);
+}
+
+async function caminhoImagem(id) {
+  const produto = await buscar(id);
+  if (!produto.imagem) throw erro(404, "Produto não possui imagem");
+  return produto.imagem;
+}
+
+module.exports = {
+  listar,
+  buscar,
+  criar,
+  atualizar,
+  excluir,
+  salvarImagem,
+  removerImagem,
+  caminhoImagem,
+};

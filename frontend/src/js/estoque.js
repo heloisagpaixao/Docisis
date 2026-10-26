@@ -613,7 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!modalElement) return;
 
         // Atualiza nome do operador responsável no modal
-        const user = Docisis.getUser() || { nome: 'Heloisa Paixão' };
+        const user = Docisis.getUser() || { nome: 'Carlos' };
         if (modalOperadorNome) modalOperadorNome.textContent = user.nome;
 
         atualizarOpcoesOperacao(tipoMovimentacaoAtual);
@@ -654,17 +654,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = estoqueItens.find(p => String(p.id) === String(produtoId));
             if (!item) return;
 
+            const user = Docisis.getUser() || { nome: 'Carlos' };
+            const loteId = Number(item.id_lote || item.id || 1);
+
             // Envio à rota adequada do backend conforme o tipo
             let endpoint = '/entradas';
             if (tipoMovimentacaoAtual === 'saida') endpoint = '/saidas';
             else if (tipoMovimentacaoAtual === 'ajuste') endpoint = '/ajustes';
 
             try {
-                await Docisis.api(endpoint, {
+                const res = await Docisis.api(endpoint, {
                     method: 'POST',
                     body: {
-                        id_produto: produtoId,
+                        id_produto: Number(produtoId),
+                        id_lote: loteId,
+                        id_funcionario: user.id || 1,
                         quantidade: qtd,
+                        quantidade_nova: qtd,
                         lote,
                         motivo,
                         preco_custo: custo,
@@ -672,6 +678,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         observacao: obs
                     }
                 });
+
+                if (!res.ok && res.status > 0) {
+                    Docisis.showToast(res.error || 'Não foi possível registrar a movimentação no servidor.', 'erro');
+                    return;
+                }
 
                 // Atualizar o saldo físico local
                 if (tipoMovimentacaoAtual === 'entrada') {
@@ -685,7 +696,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Registrar auditoria em histórico local
                 try {
                     const historicoExtra = JSON.parse(localStorage.getItem('docisis_historico_extra') || '[]');
-                    const user = Docisis.getUser() || { nome: 'Heloisa Paixão' };
                     historicoExtra.unshift({
                         id: Date.now(),
                         data_hora: new Date().toISOString(),
@@ -695,7 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         responsavel: user.nome,
                         lote: lote,
                         validade: inputMovValidade?.value || item.validade_principal,
-                        valor: qtd * item.preco_custo,
+                        valor: qtd * (item.preco_custo || custo || 0),
                         observacoes: obs
                     });
                     localStorage.setItem('docisis_historico_extra', JSON.stringify(historicoExtra));
@@ -704,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 Docisis.showToast(`Movimentação de ${item.nome} registrada com sucesso!`);
 
                 // Fechar modal e re-renderizar
-                const modal = bootstrap.Modal.getInstance(modalElement);
+                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
                 if (modal) modal.hide();
                 formMovimentacao.reset();
 
@@ -712,6 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderizarTabela();
 
             } catch (err) {
+                console.error('[Docisis Estoque]', err);
                 Docisis.showToast('Erro ao registrar movimentação.', 'erro');
             }
         });

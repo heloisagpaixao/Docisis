@@ -149,27 +149,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Transiciona para 2FA para verificação de segurança
                     iniciar2FA();
                 } else {
-                    // Fallback gracioso se o backend estiver sem banco ou offline
-                    if (res.status === 0 || !res.ok) {
-                        console.warn('[Docisis Login] Backend offline ou credenciais recusadas:', res.error);
-                        
-                        // Permite acesso demonstrativo para homologação do front-end se email padrão
-                        if (email.includes('docisis.com.br') || email === 'admin@docisis.com.br' || senha.length >= 6) {
-                            usuarioAutenticando = {
-                                token: 'demo-jwt-token-docisis',
-                                user: {
-                                    nome: email === 'admin@docisis.com.br' ? 'Heloisa Paixão' : email.split('@')[0],
-                                    email: email,
-                                    cargo: 'ADMIN'
-                                }
-                            };
-                            Docisis.setToken(usuarioAutenticando.token);
-                            Docisis.setUser(usuarioAutenticando.user);
-                            iniciar2FA();
-                            return;
-                        }
-
+                    // Se o servidor retornou erro de credenciais (401, 400, etc.)
+                    if (res.status > 0) {
                         exibirAlerta(res.error || 'Credenciais inválidas. Verifique seu e-mail e senha.');
+                    } else {
+                        // Backend offline (status 0)
+                        console.warn('[Docisis Login] Backend offline:', res.error);
+                        exibirAlerta('Servidor backend offline. Verifique se o serviço está em execução.');
                     }
                 }
             } catch (err) {

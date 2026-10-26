@@ -1,4 +1,10 @@
 {
+  "name": "docisis-frontend",
+  "version": "1.0.0",
+  "description": "Docisis Frontend - Gestão Profissional de Confeitaria",
+  "scripts": {
+    "test": "node --test tests/**/*.test.js"
+  },
   "dependencies": {
     "bootstrap": "^5.3.8"
   }

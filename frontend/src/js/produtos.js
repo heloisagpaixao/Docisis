@@ -237,6 +237,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+            // Campos exigidos pela tabela de produtos no backend
+            const codigoNumerico = parseInt(sku.replace(/\D/g, ''), 10) || Math.floor(100000 + Math.random() * 900000);
+            const dtValidadeFormatada = dataValidade || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+            const pesoNumerico = parseFloat(document.getElementById('peso-produto')?.value) || (unidadeMedida === 'kg' ? estoqueInicial : 1.0);
+
             // Prepara FormData se houver foto, caso contrário JSON
             let payload;
             let options = { method: 'POST' };
@@ -244,6 +249,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (arquivoImagem) {
                 payload = new FormData();
                 payload.append('nome', nome);
+                payload.append('codigo', codigoNumerico);
+                payload.append('dt_validade', dtValidadeFormatada);
+                payload.append('peso', pesoNumerico);
                 payload.append('sku', sku);
                 payload.append('categoria', categoria);
                 payload.append('preco', precoVenda);
@@ -257,6 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 options.body = {
                     nome,
+                    codigo: codigoNumerico,
+                    dt_validade: dtValidadeFormatada,
+                    peso: pesoNumerico,
                     sku,
                     categoria,
                     preco: precoVenda,
@@ -270,17 +281,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const res = await Docisis.api('/produtos', options);
 
+            // Se o backend respondeu com erro de validação (ex: 400 código duplicado, 401 etc)
+            if (!res.ok && res.status > 0) {
+                Docisis.showToast(res.error || 'Não foi possível cadastrar o produto no servidor.', 'erro');
+                return;
+            }
+
             // Atualiza resumo de métricas do dia
             if (metricaUltimoNome) metricaUltimoNome.textContent = nome;
             if (metricaUltimoDetalhe) {
                 metricaUltimoDetalhe.textContent = `SKU: ${sku} • Estoque: ${estoqueInicial} ${unidadeMedida}`;
             }
 
-            // Armazenar em cache local para integração imediata caso backend offline
+            // Armazenar em cache local para integração imediata entre telas
             try {
                 const itensEstoqueLocal = JSON.parse(localStorage.getItem('docisis_estoque_extra') || '[]');
                 itensEstoqueLocal.unshift({
-                    id: Date.now(),
+                    id: (res.data && res.data.id) ? res.data.id : Date.now(),
                     nome,
                     sku,
                     categoria,
@@ -290,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     estoque_minimo: estoqueMinimo,
                     unidade_medida: unidadeMedida,
                     lote_principal: lote,
-                    validade_principal: dataValidade || '2026-11-30',
+                    validade_principal: dtValidadeFormatada,
                     status: estoqueInicial <= estoqueMinimo ? 'CRITICO' : 'NORMAL'
                 });
                 localStorage.setItem('docisis_estoque_extra', JSON.stringify(itensEstoqueLocal));
@@ -311,6 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         } catch (err) {
+            console.error('[Docisis Produtos]', err);
             Docisis.showToast('Erro ao cadastrar produto.', 'erro');
         } finally {
             if (btnAtivo) {

@@ -221,16 +221,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Carregar histórico
     async function carregarHistorico() {
+        historicoData = [...dadosIniciais];
+
+        // 1. Incorporar movimentações realizadas durante a sessão (via Estoque)
         try {
-            const apiRes = await Docisis.api.get('/historico');
-            if (Array.isArray(apiRes) && apiRes.length > 0) {
-                historicoData = apiRes;
-            } else {
-                historicoData = [...dadosIniciais];
+            const extras = JSON.parse(localStorage.getItem('docisis_historico_extra') || '[]');
+            if (Array.isArray(extras) && extras.length > 0) {
+                const registrosFormatados = extras.map((e, idx) => ({
+                    id: `OP-2026-${String(9100 + idx)}`,
+                    categoria: e.tipo === 'ENTRADA' ? 'entradas' : (e.tipo === 'SAIDA' ? 'vendas' : 'ajustes'),
+                    tipo: e.tipo === 'ENTRADA' ? 'Entrada de Insumo' : (e.tipo === 'SAIDA' ? 'Saída de Estoque' : 'Ajuste de Estoque'),
+                    badgeClass: e.tipo === 'ENTRADA' ? 'badge-docisis-success' : (e.tipo === 'SAIDA' ? 'badge-docisis-info' : 'badge-docisis-warning'),
+                    icone: e.tipo === 'ENTRADA' ? 'bi-box-arrow-in-down' : (e.tipo === 'SAIDA' ? 'bi-box-arrow-up-right' : 'bi-arrow-left-right'),
+                    data: e.data_hora || new Date().toISOString(),
+                    dataFormatada: Docisis.formatarData(e.data_hora) || 'Hoje, Recente',
+                    detalheTitulo: e.evento || 'Movimentação Registrada',
+                    detalheDesc: e.observacoes ? `${e.observacoes} • Doc: ${e.documento}` : `Doc: ${e.documento}`,
+                    doc: e.documento || 'NF-INTERNA',
+                    operador: e.responsavel || 'Heloisa Paixão',
+                    origemDestino: 'Fábrica Central Docisis',
+                    valor: Number(e.valor) || 0,
+                    statusTexto: 'Auditado',
+                    statusBadge: 'status-ativo',
+                    lote: e.lote || 'LOT-PADRAO',
+                    validade: e.validade ? Docisis.formatarData(e.validade) : 'Sob Controle',
+                    observacoes: e.observacoes || 'Movimentação realizada e validada pelo operador.',
+                    hash: 'SHA256: 7f8a9b' + Math.random().toString(16).slice(2, 10) + 'c3d4e5f6'
+                }));
+                historicoData = [...registrosFormatados, ...historicoData];
             }
-        } catch {
-            historicoData = [...dadosIniciais];
+        } catch (err) {
+            console.warn('[Docisis Histórico] Falha ao ler extras:', err);
         }
+
+        // 2. Tentar carregar registros adicionais da API se disponíveis
+        try {
+            const apiRes = await Docisis.api.get('/ajustes');
+            const lista = apiRes?.data?.dados || apiRes?.data;
+            if (Array.isArray(lista) && lista.length > 0) {
+                const apiFormatados = lista.map((a, idx) => ({
+                    id: `AJ-2026-${a.id_ajuste || idx + 1}`,
+                    categoria: 'ajustes',
+                    tipo: 'Ajuste de Estoque',
+                    badgeClass: 'badge-docisis-warning',
+                    icone: 'bi-arrow-left-right',
+                    data: a.dt_ajuste || new Date().toISOString(),
+                    dataFormatada: Docisis.formatarData(a.dt_ajuste),
+                    detalheTitulo: `Ajuste Lote #${a.id_lote}`,
+                    detalheDesc: `Motivo: ${a.motivo || 'Balanço periódico'}`,
+                    doc: `AJ-${a.id_ajuste || idx + 1}`,
+                    operador: 'Operador Docisis',
+                    origemDestino: 'Estoque Central',
+                    valor: 0,
+                    statusTexto: 'Auditado',
+                    statusBadge: 'status-ativo',
+                    lote: `LOT-${a.id_lote}`,
+                    validade: 'Conforme Lote',
+                    observacoes: a.motivo || 'Ajuste de inventário registrado no backend.',
+                    hash: 'SHA256: backend-' + (a.id_ajuste || idx)
+                }));
+                historicoData = [...apiFormatados, ...historicoData];
+            }
+        } catch {}
 
         popularOperadoresSelect();
         aplicarFiltrosEAtualizar();
@@ -485,8 +537,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('receipt-valor').textContent = Docisis.formatCurrency(item.valor);
         document.getElementById('receipt-hash').textContent = item.hash || 'SHA256: 0000000000000000000000000000000000000000000000000000000000000000';
 
-        if (auditModal) {
-            auditModal.show();
+        const modal = auditModal || (modalElement ? bootstrap.Modal.getOrCreateInstance(modalElement) : null);
+        if (modal) {
+            modal.show();
         }
     }
 

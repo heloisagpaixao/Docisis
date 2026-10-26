@@ -48,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function carregarDadosUsuario() {
         const user = Docisis.getUser() || {
-            nome: 'Heloisa Paixão',
-            email: 'heloisa.paixao@docisis.com.br',
+            nome: 'Usuário Padrão',
+            email: 'usuário.padrão@docisis.com.br',
             telefone: '(11) 98765-4321',
-            cargo: 'Chef Confeiteira / Administradora'
+            cargo: 'Administrador'
         };
 
         if (perfilNome) perfilNome.value = user.nome || '';

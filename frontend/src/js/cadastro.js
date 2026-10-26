@@ -74,6 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
+                // Mapeia perfil selecionado para o ID de cargo correspondente no banco
+                const cargoMap = {
+                    'ADMIN': 1,
+                    'LIDER': 2,
+                    'OPERADOR': 3
+                };
+                const id_cargo = cargoMap[cargo] || 3;
+
                 // Requisição à API de Funcionários
                 const res = await Docisis.api('/funcionarios', {
                     method: 'POST',
@@ -83,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         cpf: cpf.replace(/\D/g, ''),
                         telefone: telefone.replace(/\D/g, ''),
                         senha,
+                        id_cargo,
                         cargo
                     }
                 });
@@ -95,16 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.location.href = 'login.html';
                     }, 1800);
                 } else {
-                    // Fallback se backend offline: simula sucesso para homologação
                     if (res.status === 0) {
-                        console.warn('[Docisis Cadastro] Backend offline. Simulando sucesso local.');
-                        exibirAlerta('Operador cadastrado com sucesso no ambiente local! Redirecionando para login...', 'success');
-                        setTimeout(() => {
-                            window.location.href = 'login.html';
-                        }, 1800);
-                        return;
+                        console.warn('[Docisis Cadastro] Backend offline.');
+                        exibirAlerta('Servidor temporariamente indisponível. Verifique se o backend está em execução.');
+                    } else {
+                        exibirAlerta(res.error || 'Não foi possível concluir o cadastro. Verifique os dados informados.');
                     }
-                    exibirAlerta(res.error || 'Não foi possível concluir o cadastro. Verifique os dados informados.');
                 }
             } catch (err) {
                 exibirAlerta('Erro inesperado ao processar solicitação de cadastro.');

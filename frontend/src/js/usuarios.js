@@ -156,15 +156,16 @@ document.addEventListener('DOMContentLoaded', () => {
     async function carregarUsuarios() {
         try {
             const apiRes = await Docisis.api.get('/funcionarios');
-            if (Array.isArray(apiRes) && apiRes.length > 0) {
-                usuariosData = apiRes.map((u, idx) => ({
+            const lista = apiRes?.data?.dados || apiRes?.data || (Array.isArray(apiRes) ? apiRes : null);
+            if (Array.isArray(lista) && lista.length > 0) {
+                usuariosData = lista.map((u, idx) => ({
                     id: u.id || idx + 1,
                     nome: u.nome || 'Operador Docisis',
                     email: u.email || 'operador@docisis.com.br',
                     cpf: u.cpf || '000.000.000-00',
                     telefone: u.telefone || '(11) 90000-0000',
-                    cargo: (u.cargo || 'OPERADOR').toUpperCase(),
-                    cargoNome: formatCargoNome(u.cargo || 'OPERADOR'),
+                    cargo: (u.cargo || (u.id_cargo === 1 ? 'ADMIN' : (u.id_cargo === 2 ? 'LIDER' : 'OPERADOR'))).toUpperCase(),
+                    cargoNome: formatCargoNome(u.cargo || (u.id_cargo === 1 ? 'ADMIN' : (u.id_cargo === 2 ? 'LIDER' : 'OPERADOR'))),
                     status: u.status || 'ativo',
                     statusNome: formatStatusNome(u.status || 'ativo'),
                     tem2fa: u.tem2fa !== undefined ? Boolean(u.tem2fa) : true,
@@ -594,17 +595,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
+                // Mapeia cargo para ID compatível com o banco
+                const cargoMap = { 'ADMIN': 1, 'LIDER': 2, 'OPERADOR': 3 };
+                const id_cargo = cargoMap[cargo] || 3;
+
                 // Tenta persistir no backend
-                await Docisis.api.post('/funcionarios', {
+                const res = await Docisis.api.post('/funcionarios', {
                     nome,
                     email,
-                    cpf,
-                    telefone,
+                    cpf: cpf.replace(/\D/g, ''),
+                    telefone: telefone.replace(/\D/g, ''),
                     senha,
+                    id_cargo,
                     cargo
                 });
-            } catch {
-                // Modo resiliente
+
+                if (!res.ok && res.status > 0) {
+                    Docisis.showToast(res.error || 'Não foi possível cadastrar o usuário no servidor.', 'danger');
+                    return;
+                }
+
+                if (res.data && res.data.id) {
+                    novoOperador.id = res.data.id;
+                }
+            } catch (err) {
+                console.warn('[Docisis Usuários] Backend offline ou erro:', err);
             } finally {
                 // Adiciona ao estado local e re-renderiza
                 usuariosData.unshift(novoOperador);
@@ -616,10 +631,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitBtn.innerHTML = '<i class="bi bi-person-plus-fill me-1" aria-hidden="true"></i> Cadastrar Operador & Ativar';
                 }
 
-                Docisis.showToast(`Operador ${nome} cadastrado com sucesso! Credenciais enviadas.`, 'success');
+                Docisis.showToast(`Operador ${nome} cadastrado com sucesso!`, 'success');
                 currentPage = 1;
                 aplicarFiltrosEAtualizar();
             }
+        });
+    }
+
+    // Botão de Relatório de Acessos
+    const btnRelatorioAcessos = document.getElementById('btn-relatorio-acessos');
+    if (btnRelatorioAcessos) {
+        btnRelatorioAcessos.addEventListener('click', () => {
+            Docisis.showToast('Preparando laudo de acessos para impressão...', 'info');
+            setTimeout(() => {
+                window.print();
+            }, 300);
         });
     }
 

@@ -1,6 +1,6 @@
 /**
  * DOCISIS - MÓDULO CENTRAL DA APLICAÇÃO (APP.JS)
- * Gestão de Sessão, API Client, Topbar e Utilitários Globais
+ * Gestão de Sessão, API Client, Topbar, Proteção de Rotas e Utilitários Globais
  */
 
 const Docisis = (() => {
@@ -102,7 +102,7 @@ const Docisis = (() => {
                 ok: response.ok,
                 status: response.status,
                 data: data,
-                error: response.ok ? null : (data?.mensagem || data?.erro || response.statusText)
+                error: response.ok ? null : (data?.mensagem || data?.erro || data?.message || response.statusText)
             };
         } catch (err) {
             console.warn(`[Docisis API] Servidor não alcançado em ${url}:`, err.message);
@@ -115,26 +115,97 @@ const Docisis = (() => {
         }
     }
 
+    // Métodos utilitários anexados ao api para flexibilidade
+    api.get = (endpoint, options = {}) => api(endpoint, { ...options, method: 'GET' });
+    api.post = (endpoint, body = {}, options = {}) => api(endpoint, { ...options, method: 'POST', body });
+    api.put = (endpoint, body = {}, options = {}) => api(endpoint, { ...options, method: 'PUT', body });
+    api.delete = (endpoint, options = {}) => api(endpoint, { ...options, method: 'DELETE' });
+
     /**
-     * Exibe notificação flutuante (Toast)
+     * Extrai iniciais de um nome (ex: "Carlos Eduardo" -> "CE")
+     */
+    function getInitials(name) {
+        if (!name) return 'DC';
+        const parts = String(name).trim().split(/\s+/);
+        if (parts.length > 1) {
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        return parts[0].slice(0, 2).toUpperCase();
+    }
+
+    /**
+     * Exibe notificação flutuante (Toast) com suporte a múltiplos estilos
      */
     function showToast(mensagem, tipo = 'sucesso') {
-        const toast = document.getElementById('docisis-toast');
-        const toastMsg = document.getElementById('toast-mensagem');
-        if (!toast || !toastMsg) return;
+        let toast = document.getElementById('docisis-toast');
+        let toastMsg = document.getElementById('toast-mensagem');
+
+        // Criação dinâmica caso o elemento não exista na página
+        if (!toast || !toastMsg) {
+            let container = document.querySelector('.docisis-toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'docisis-toast-container';
+                container.setAttribute('aria-live', 'polite');
+                container.setAttribute('aria-atomic', 'true');
+                document.body.appendChild(container);
+            }
+
+            toast = document.createElement('div');
+            toast.id = 'docisis-toast';
+            toast.className = 'docisis-toast';
+            toast.setAttribute('role', 'status');
+            toast.innerHTML = `
+                <i class="bi bi-check-circle-fill text-success fs-5 toast-icon" aria-hidden="true"></i>
+                <div>
+                    <strong class="d-block text-dark fw-bold" style="font-size: 0.9rem;">Sistema Docisis</strong>
+                    <span id="toast-mensagem" class="text-muted" style="font-size: 0.85rem;"></span>
+                </div>
+            `;
+            container.appendChild(toast);
+            toastMsg = document.getElementById('toast-mensagem');
+        }
 
         toastMsg.textContent = mensagem;
 
-        // Atualiza ícone conforme tipo
+        // Atualiza ícone conforme o tipo
         const icon = toast.querySelector('.toast-icon');
+        const tipoNorm = String(tipo).toLowerCase();
+
         if (icon) {
-            icon.className = 'bi toast-icon fs-5 ' + (tipo === 'erro' ? 'bi-exclamation-triangle-fill text-danger' : 'bi-check-circle-fill text-success');
+            if (tipoNorm === 'erro' || tipoNorm === 'danger') {
+                icon.className = 'bi toast-icon fs-5 bi-exclamation-triangle-fill text-danger';
+            } else if (tipoNorm === 'warning' || tipoNorm === 'aviso') {
+                icon.className = 'bi toast-icon fs-5 bi-exclamation-circle-fill text-warning';
+            } else if (tipoNorm === 'info') {
+                icon.className = 'bi toast-icon fs-5 bi-info-circle-fill text-primary';
+            } else {
+                icon.className = 'bi toast-icon fs-5 bi-check-circle-fill text-success';
+            }
         }
 
         toast.classList.add('show');
-        setTimeout(() => {
+        if (window.__toastTimeout) clearTimeout(window.__toastTimeout);
+        window.__toastTimeout = setTimeout(() => {
             toast.classList.remove('show');
         }, 4000);
+    }
+
+    /**
+     * Verifica e protege páginas que exigem autenticação
+     */
+    function checkAuthProtection() {
+        const path = window.location.pathname.toLowerCase();
+        const isPublicPage = path.endsWith('login.html') || path.endsWith('cadastro.html') || path === '/' || path.endsWith('/');
+        const hasSession = Boolean(getToken() || getUser());
+
+        // Permite desativar redirecionamento automático em ambiente de teste automatizado se configurado
+        if (window.__DOCISIS_DISABLE_AUTH_REDIRECT__) return;
+
+        if (!isPublicPage && !hasSession) {
+            console.warn('[Docisis Auth] Acesso não autenticado a página protegida. Redirecionando para login.html...');
+            window.location.href = 'login.html';
+        }
     }
 
     /**
@@ -143,13 +214,13 @@ const Docisis = (() => {
     function initTopbar() {
         const usernameEl = document.getElementById('topbar-username');
         const initialsEl = document.getElementById('topbar-avatar-initials');
+        const topbarUser = document.querySelector('.topbar-user');
 
         let user = getUser();
         if (!user) {
-            // Usuário padrão demonstrativo se não logado
             user = {
-                nome: 'Heloisa Paixão',
-                cargo: 'Chef / Administradora'
+                nome: 'Carlos',
+                cargo: 'Chef / Administrador'
             };
         }
 
@@ -159,28 +230,54 @@ const Docisis = (() => {
         }
 
         if (initialsEl) {
-            const parts = (user.nome || 'Docisis').trim().split(/\s+/);
-            const initials = parts.length > 1
-                ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-                : parts[0].slice(0, 2).toUpperCase();
-            initialsEl.textContent = initials;
+            const fotoSalva = localStorage.getItem('docisis_user_photo');
+            if (fotoSalva) {
+                initialsEl.innerHTML = `<img src="${fotoSalva}" alt="${user.nome}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+            } else {
+                initialsEl.textContent = getInitials(user.nome);
+            }
         }
 
-        // Permite clique no avatar para logout se desejado
+        // Permite clique no avatar para navegação até o perfil
         const profileBadge = document.querySelector('.user-profile-badge');
         if (profileBadge && !profileBadge.dataset.listenerActive) {
             profileBadge.dataset.listenerActive = 'true';
             profileBadge.style.cursor = 'pointer';
-            profileBadge.setAttribute('title', 'Clique para gerenciar perfil ou sair');
-            profileBadge.addEventListener('click', (e) => {
-                if (window.location.pathname.endsWith('funcionario.html')) return;
-                // Se pressionar com Shift ou confirmação, opção de logout
-                if (e.altKey) {
-                    if (confirm('Deseja encerrar a sessão atual?')) {
-                        logout();
-                    }
-                } else {
+            profileBadge.setAttribute('title', 'Clique para gerenciar perfil de funcionário');
+            profileBadge.addEventListener('click', () => {
+                if (!window.location.pathname.endsWith('funcionario.html')) {
                     window.location.href = 'funcionario.html';
+                }
+            });
+        }
+
+        // Adiciona botão explícito de logout na barra superior caso não exista
+        if (topbarUser && !document.getElementById('btn-topbar-logout')) {
+            const logoutBtn = document.createElement('button');
+            logoutBtn.type = 'button';
+            logoutBtn.id = 'btn-topbar-logout';
+            logoutBtn.className = 'btn btn-sm btn-outline-secondary ms-2 border-0';
+            logoutBtn.title = 'Encerrar Sessão (Sair)';
+            logoutBtn.setAttribute('aria-label', 'Encerrar sessão e sair');
+            logoutBtn.innerHTML = '<i class="bi bi-box-arrow-right fs-5 text-secondary" aria-hidden="true"></i>';
+            logoutBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm('Deseja realmente encerrar sua sessão no Docisis?')) {
+                    logout();
+                }
+            });
+            topbarUser.appendChild(logoutBtn);
+        }
+
+        // Permite que o logotipo na Topbar retorne à tela principal de estoque
+        const topbarLogo = document.querySelector('.topbar-brand');
+        if (topbarLogo && !topbarLogo.dataset.listenerActive) {
+            topbarLogo.dataset.listenerActive = 'true';
+            topbarLogo.style.cursor = 'pointer';
+            topbarLogo.setAttribute('title', 'Ir para Gestão de Estoque');
+            topbarLogo.addEventListener('click', () => {
+                if (!window.location.pathname.endsWith('estoque.html')) {
+                    window.location.href = 'estoque.html';
                 }
             });
         }
@@ -223,11 +320,15 @@ const Docisis = (() => {
     }
 
     /**
-     * Formatação de data brasileira
+     * Formatação de data brasileira (evita deslocamento de fuso em strings YYYY-MM-DD)
      */
     function formatarData(dataIso) {
         if (!dataIso) return '--';
         try {
+            if (typeof dataIso === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dataIso.trim())) {
+                const [ano, mes, dia] = dataIso.trim().split('-');
+                return `${dia}/${mes}/${ano}`;
+            }
             const d = new Date(dataIso);
             if (isNaN(d.getTime())) return dataIso;
             return d.toLocaleDateString('pt-BR');
@@ -238,6 +339,7 @@ const Docisis = (() => {
 
     // Inicialização ao carregar a página
     document.addEventListener('DOMContentLoaded', () => {
+        checkAuthProtection();
         initTopbar();
 
         // Aplicar máscaras automáticas em inputs com IDs comuns
@@ -265,9 +367,13 @@ const Docisis = (() => {
         logout,
         showToast,
         initTopbar,
+        getInitials,
         formatarCPF,
         formatarTelefone,
         formatarMoeda,
-        formatarData
+        formatCurrency: formatarMoeda, // Alias para compatibilidade
+        formatarData,
+        formatDate: formatarData,      // Alias para compatibilidade
+        checkAuthProtection
     };
 })();

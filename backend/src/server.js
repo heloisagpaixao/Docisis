@@ -1,23 +1,46 @@
-const app = require('./app');
-const pool = require('./config/database');
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const pool = require("./config/database");
+const errorHandler = require("./middlewares/errorHandler");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.get("/health", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT COUNT(*) AS cargos FROM cargos");
+    res.json({ status: "ok", cargos: rows[0].cargos });
+  } catch (err) {
+    res.status(500).json({ status: "erro", mensagem: err.message });
+  }
+});
+
+app.use("/auth", require("./routes/auth.routes"));
+app.use("/funcionarios", require("./routes/funcionarios.routes"));
+app.use("/cargos", require("./routes/cargos.routes"));
+app.use("/produtos", require("./routes/produtos.routes"));
+app.use("/notasfiscais", require("./routes/notasfiscais.routes"));
+app.use("/lotes", require("./routes/lotes.routes"));
+app.use("/entradas", require("./routes/entradas.routes"));
+app.use("/saidas", require("./routes/saidas.routes"));
+app.use("/ajustes", require("./routes/ajustes.routes"));
+app.use("/estoque", require("./routes/estoque.routes"));
+app.use("/notificacoes", require("./routes/notificacoes.routes"));
+app.use("/relatorios", require("./routes/relatorios.routes"));
+
+// Rota inexistente
+app.use((req, res) => res.status(404).json({ erro: "Rota não encontrada" }));
+
+// SEMPRE por último
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
-
-// Testando conexão de forma assíncrona com Promises e iniciando o servidor
-async function startServer() {
-    try {
-        const connection = await pool.getConnection();
-        console.log("Conexão com MySQL estabelecida! ✔️");
-        connection.release();
-
-        app.listen(PORT, () => {
-            console.log(`Servidor Docisis rodando na porta ${PORT} 🚀`);
-            console.log(`Rotas MVC ativas e escutando!`);
-        });
-    } catch (err) {
-        console.error("Erro fatal ao conectar ao banco de dados:", err);
-        process.exit(1);
-    }
-}
-
-startServer();
+app.listen(PORT, () => {
+  console.log(`🧁 Docisis API rodando na porta ${PORT}!`);
+  // Confere validade e estoque ao ligar e, depois, a cada NOTIFICACOES_INTERVALO_MIN minutos
+  require("./services/notificacoes.service").iniciarRotina();
+  // Apaga refresh tokens vencidos ao ligar e a cada 24 h
+  require("./services/auth.service").iniciarLimpeza();
+});

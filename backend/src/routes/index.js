@@ -1,18 +1,16 @@
 const express = require("express");
 const router = express.Router();
 
-const AjustesRoutes = require("./AjusteRoutes");
-const AuthsRoutes = require("./AuthRoutes");
-const CargosRoutes = require("./CargoRoutes");
-const EntradasRoutes = require("./EntradaRoutes");
-const EstoqueRoutes = require("./EstoqueRoutes");
-const FuncionariosRoutes = require("./FuncionarioRoutes");
-const LotesRoutes = require("./LoteRoutes");
-const NotasFiscaisRoutes = require("./NotaFiscalRoutes");
-const ProdutosRoutes = require("./ProdutoRoutes");
-const SaidasRoutes = require("./SaidaRoutes");
-
-const AuthMiddleware = require("../middlewares/AuthMiddleware");
+const AjustesRoutes = require("./ajustes.routes");
+const AuthsRoutes = require("./auth.routes");
+const CargosRoutes = require("./cargos.routes");
+const EntradasRoutes = require("./entradas.routes");
+const EstoqueRoutes = require("./estoque.routes");
+const FuncionariosRoutes = require("./funcionarios.routes");
+const LotesRoutes = require("./lotes.routes");
+const NotasFiscaisRoutes = require("./notasfiscais.routes");
+const ProdutosRoutes = require("./produtos.routes");
+const SaidasRoutes = require("./saidas.routes");
 
 // Rota base (Root endpoint)
 router.get("/docisis", (req, res) => {
@@ -27,12 +25,12 @@ router.get("/docisis", (req, res) => {
 router.use("/auth", AuthsRoutes);
 router.use("/", AuthsRoutes);
 
-// Registrar domínios de rotas
+// Registrar domínios de rotas (cada módulo se autoprotege com seu authMiddleware)
 router.use("/ajustes", AjustesRoutes);
-router.use("/cargos", AuthMiddleware, CargosRoutes);
+router.use("/cargos", CargosRoutes);
 router.use("/entradas", EntradasRoutes);
 router.use("/estoque", EstoqueRoutes);
-router.use("/funcionarios", AuthMiddleware, FuncionariosRoutes);
+router.use("/funcionarios", FuncionariosRoutes);
 router.use("/lotes", LotesRoutes);
 router.use("/notasfiscais", NotasFiscaisRoutes);
 router.use("/produtos", ProdutosRoutes);

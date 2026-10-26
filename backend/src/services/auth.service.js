@@ -23,7 +23,7 @@ async function emitirTokens(funcionario, familia) {
   const accessToken = jwt.sign(
     { id: funcionario.id, cargo: funcionario.cargo },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "15m" },
+    { expiresIn: process.env.JWT_EXPIRES_IN || "7d" },
   );
   const { exp, iat } = jwt.decode(accessToken);
 

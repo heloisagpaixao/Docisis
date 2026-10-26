@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     detalheTitulo: e.evento || 'Movimentação Registrada',
                     detalheDesc: e.observacoes ? `${e.observacoes} • Doc: ${e.documento}` : `Doc: ${e.documento}`,
                     doc: e.documento || 'NF-INTERNA',
-                    operador: e.responsavel || 'Heloisa Paixão',
+                    operador: e.responsavel || (Docisis.getUser()?.nome || 'Carlos'),
                     origemDestino: 'Fábrica Central Docisis',
                     valor: Number(e.valor) || 0,
                     statusTexto: 'Auditado',

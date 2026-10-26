@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Docisis Frontend - Gestão Profissional de Confeitaria",
   "scripts": {
-    "test": "node --test tests/**/*.test.js"
+    "test": "node --test tests/app.test.js tests/functional_modules.test.js"
   },
   "dependencies": {
     "bootstrap": "^5.3.8"

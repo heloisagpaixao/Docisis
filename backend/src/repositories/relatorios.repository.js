@@ -1,4 +1,5 @@
 const pool = require("../config/database");
+const { escaparLike } = require("../utils/busca");
 
 // Datas voltam como TEXTO ('AAAA-MM-DD' ou 'AAAA-MM-DD HH:MM:SS') já formatado pelo banco:
 // assim a planilha mostra exatamente o que está gravado, sem depender de fuso horário.
@@ -75,6 +76,7 @@ class RelatorioRepository {
     id_lote,
     id_produto,
     tipo,
+    busca,
     limite,
   }) {
     const filtros = [];
@@ -98,6 +100,14 @@ class RelatorioRepository {
     if (tipo) {
       filtros.push("m.tipo = ?");
       params.push(tipo);
+    }
+    if (busca) {
+      const like = `%${escaparLike(busca)}%`;
+      filtros.push(
+        `(p.nome LIKE ? ESCAPE '!' OR CAST(p.codigo AS CHAR) LIKE ? ESCAPE '!'
+          OR m.motivo LIKE ? ESCAPE '!' OR f.nome LIKE ? ESCAPE '!')`,
+      );
+      params.push(like, like, like, like);
     }
     const where = filtros.length ? `WHERE ${filtros.join(" AND ")}` : "";
 

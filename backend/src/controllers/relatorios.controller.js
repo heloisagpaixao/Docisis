@@ -1,5 +1,6 @@
 const service = require("../services/relatorios.service");
 const { lerPeriodo, lerFiltrosMovimentacao } = require("../utils/filtros");
+const { lerBusca } = require("../utils/busca");
 const { idValido, numero } = require("../utils/validadores");
 
 const XLSX =
@@ -46,6 +47,9 @@ exports.movimentacoes = async (req, res) => {
     }
     filtros.tipo = req.query.tipo;
   }
+  const b = lerBusca(req.query);
+  if (b.erro) return res.status(400).json({ erro: b.erro });
+  if (b.busca) filtros.busca = b.busca;
   enviarPlanilha(res, await service.movimentacoes(filtros, req.usuario.id));
 };
 

@@ -1,12 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const pool = require("./config/db");
+const pool = require("./config/database");
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 app.disable("x-powered-by"); // não anuncia que o servidor usa Express
-app.use(cors());
+app.use(cors({ exposedHeaders: ["Content-Disposition"] })); // o front lê o nome do arquivo baixado
 app.use(express.json());
 
 // Dados internos: o navegador nunca guarda respostas da API em cache (importante em computador
@@ -35,6 +35,7 @@ app.use("/entradas", require("./routes/entradas.routes"));
 app.use("/saidas", require("./routes/saidas.routes"));
 app.use("/ajustes", require("./routes/ajustes.routes"));
 app.use("/estoque", require("./routes/estoque.routes"));
+app.use("/movimentacoes", require("./routes/movimentacoes.routes"));
 app.use("/notificacoes", require("./routes/notificacoes.routes"));
 app.use("/relatorios", require("./routes/relatorios.routes"));
 

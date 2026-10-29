@@ -1,8 +1,15 @@
 const estoqueRepository = require("../repositories/estoque.repository");
+const { diasAlertaValidade } = require("../utils/alertas");
 
 const erro = (status, mensagem) => ({ status, mensagem });
 
-const listar = (paginacao) => estoqueRepository.findAll(paginacao);
+/** Lista de lotes com saldo (busca, filtros e ordenação). Sem filtros, funciona como antes. */
+const listar = (filtros) =>
+  estoqueRepository.findAllDetalhado({
+    ...filtros,
+    diasAlerta: diasAlertaValidade(),
+  });
+const resumo = () => estoqueRepository.resumo(diasAlertaValidade());
 const baixo = (limite) => estoqueRepository.findBaixo(limite);
 
 async function buscarPorLote(idLote) {
@@ -11,4 +18,4 @@ async function buscarPorLote(idLote) {
   return item;
 }
 
-module.exports = { listar, baixo, buscarPorLote };
+module.exports = { listar, resumo, baixo, buscarPorLote };

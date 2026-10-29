@@ -6,7 +6,8 @@ const c = require("../controllers/estoque.controller");
 
 router.use(autenticar, exigirPermissao("ESTOQUE_CONSULTAR"));
 
-// "/baixo" vem ANTES de "/:idLote", senão o Express trataria "baixo" como um id
+// Rotas fixas ANTES de "/:idLote", senão o Express trataria "baixo" ou "resumo" como um id
+router.get("/resumo", asyncHandler(c.resumo));
 router.get("/baixo", asyncHandler(c.baixo));
 router.get("/", asyncHandler(c.listar));
 router.get("/:idLote", asyncHandler(c.buscarPorLote));

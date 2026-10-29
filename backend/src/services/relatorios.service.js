@@ -338,6 +338,7 @@ async function movimentacoes(filtros, idUsuario) {
     filtros: [
       ["Período", periodo],
       ["Tipo", filtros.tipo ? ROTULO_TIPO[filtros.tipo] : "(todos)"],
+      ["Busca", filtros.busca || "(nenhuma)"],
       ["Produto (id)", texto(filtros.id_produto)],
       ["Lote (id)", texto(filtros.id_lote)],
       ["Funcionário (id)", texto(filtros.id_funcionario)],

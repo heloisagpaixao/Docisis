@@ -23,7 +23,7 @@ async function emitirTokens(funcionario, familia) {
   const accessToken = jwt.sign(
     { id: funcionario.id, cargo: funcionario.cargo },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "7d" },
+    { expiresIn: process.env.JWT_EXPIRES_IN || "15m" },
   );
   const { exp, iat } = jwt.decode(accessToken);
 
@@ -51,17 +51,21 @@ async function montarResposta(funcionario, familia) {
       nome: funcionario.nome,
       email: funcionario.email,
       cargo: funcionario.cargo,
+      temFoto: Boolean(funcionario.foto_perfil), // o front só busca a foto se ela existir
     },
     permissoes: await funcionarioRepository.findPermissoes(funcionario.id),
   };
 }
 
 /**
+ * Entra por CPF (`{ cpf }`, só os 11 dígitos) ou por e-mail (`{ email }`).
  * Devolve os tokens ou null se as credenciais forem inválidas.
- * A mesma resposta (null) vale para e-mail inexistente e senha errada.
+ * A mesma resposta (null) vale para usuário inexistente e senha errada.
  */
-async function login(email, senha) {
-  const funcionario = await funcionarioRepository.findByEmailWithCargo(email);
+async function login({ cpf, email }, senha) {
+  const funcionario = cpf
+    ? await funcionarioRepository.findByCpfWithCargo(cpf)
+    : await funcionarioRepository.findByEmailWithCargo(email);
   const senhaOk =
     funcionario && (await bcrypt.compare(senha, funcionario.senha));
   if (!senhaOk) return null;

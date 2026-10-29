@@ -1,12 +1,20 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const pool = require("./config/database");
+const pool = require("./config/db");
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
+app.disable("x-powered-by"); // não anuncia que o servidor usa Express
 app.use(cors());
 app.use(express.json());
+
+// Dados internos: o navegador nunca guarda respostas da API em cache (importante em computador
+// compartilhado). Os endpoints de arquivo (fotos, PDFs) definem a própria regra, mais abaixo.
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 
 app.get("/health", async (req, res) => {
   try {

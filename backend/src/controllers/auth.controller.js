@@ -5,20 +5,31 @@ const refreshValido = (t) =>
   typeof t === "string" && t.length >= 20 && t.length <= 200;
 
 exports.login = async (req, res) => {
-  const { email, senha } = req.body || {};
+  const { cpf, email, senha } = req.body || {};
 
-  if (
-    typeof email !== "string" ||
-    typeof senha !== "string" ||
-    !email ||
-    !senha
-  ) {
-    return res.status(400).json({ erro: "Informe e-mail e senha" });
+  if (typeof senha !== "string" || !senha) {
+    return res
+      .status(400)
+      .json({ erro: "Informe o CPF (ou e-mail) e a senha" });
   }
 
-  const resultado = await authService.login(email.trim(), senha);
+  let identificador;
+  if (typeof cpf === "string" && cpf.trim()) {
+    const digitos = cpf.replace(/\D/g, "");
+    if (digitos.length !== 11)
+      return res.status(400).json({ erro: "Informe um CPF com 11 dígitos" });
+    identificador = { cpf: digitos };
+  } else if (typeof email === "string" && email.trim()) {
+    identificador = { email: email.trim() };
+  } else {
+    return res
+      .status(400)
+      .json({ erro: "Informe o CPF (ou e-mail) e a senha" });
+  }
+
+  const resultado = await authService.login(identificador, senha);
   if (!resultado) {
-    return res.status(401).json({ erro: "E-mail ou senha inválidos" });
+    return res.status(401).json({ erro: "Usuário ou senha inválidos" });
   }
   res.json(resultado);
 };

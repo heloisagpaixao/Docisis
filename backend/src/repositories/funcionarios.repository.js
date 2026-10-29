@@ -76,6 +76,22 @@ class FuncionarioRepository {
     return rows[0];
   }
 
+  /**
+   * Login por CPF. Recebe só os 11 dígitos e compara com o CPF gravado SEM pontuação,
+   * então funciona tanto para "529.982.247-25" quanto para "52998224725" no banco.
+   */
+  async findByCpfWithCargo(cpfSomenteDigitos) {
+    const [rows] = await pool.query(
+      `SELECT f.id, f.nome, f.cpf, f.email, f.senha, f.telefone, f.id_cargo, f.foto_perfil, f.criado_em,
+              c.nome AS cargo
+       FROM funcionarios f
+       LEFT JOIN cargos c ON f.id_cargo = c.id_cargo
+       WHERE REPLACE(REPLACE(f.cpf, '.', ''), '-', '') = ?`,
+      [cpfSomenteDigitos],
+    );
+    return rows[0];
+  }
+
   async findByEmailAndCpf(email, cpf) {
     const [rows] = await pool.query(
       `SELECT f.id, f.nome, f.cpf, f.email, f.senha, f.telefone, f.id_cargo, f.foto_perfil, f.criado_em,

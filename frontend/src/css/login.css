@@ -23,12 +23,6 @@
   color: var(--docisis-navy, #08172e);
 }
 
-/* O Bootstrap só mostra .invalid-feedback quando ela é irmã do input.
-   Aqui o input fica dentro de .input-group-docisis, então a regra é adaptada. */
-.input-group-docisis.is-invalid ~ .invalid-feedback {
-  display: block;
-}
-
 /* Animação de entrada dos passos */
 .auth-step {
   animation: fadeInStep 0.3s ease-out;

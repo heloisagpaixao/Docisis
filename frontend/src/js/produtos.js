@@ -1,354 +1,352 @@
 /**
- * DOCISIS - MÓDULO DE CADASTRO DE PRODUTOS (PRODUTOS.JS)
- * Navegação por abas, gerador de SKU, cálculo de margem, upload de fotos e integração à API
+ * DOCISIS - CADASTRO DE PRODUTOS (produtos.js)
+ *
+ * Endpoints usados:
+ *   POST /produtos               { nome, codigo, peso?, estoque_minimo?, estoque_maximo? }
+ *   PUT  /produtos/:id/imagem    multipart/form-data, campo "imagem" (JPEG, PNG ou WEBP)
+ *
+ * A foto é enviada DEPOIS que o produto é criado, porque o back-end não aceita
+ * imagem no POST /produtos.
  */
+document.addEventListener("DOMContentLoaded", () => {
+  "use strict";
 
-document.addEventListener('DOMContentLoaded', () => {
-    const formProduto = document.getElementById('form-cadastro-produto');
+  const { auth, layout } = Docisis;
 
-    // Botões de navegação entre abas
-    const tabBasicoBtn = document.getElementById('tab-basico-btn');
-    const tabInventarioBtn = document.getElementById('tab-inventario-btn');
-    const tabComplianceBtn = document.getElementById('tab-compliance-btn');
+  /* ------------------------------------------------------------------
+       Proteção da página
+       ------------------------------------------------------------------ */
+  if (!auth.exigirPermissao("PRODUTO_GERENCIAR")) return;
+  layout.montar("produtos");
 
-    const btnAvancarAba1 = document.getElementById('btn-avancar-aba1');
-    const btnVoltarAba2 = document.getElementById('btn-voltar-aba2');
-    const btnAvancarAba2 = document.getElementById('btn-avancar-aba2');
-    const btnVoltarAba3 = document.getElementById('btn-voltar-aba3');
+  /* ------------------------------------------------------------------
+       Elementos
+       ------------------------------------------------------------------ */
+  const $ = (id) => document.getElementById(id);
 
-    // Botões de Envio
-    const btnSalvarProduto = document.getElementById('btn-salvar-produto');
-    const btnSalvarContinuar = document.getElementById('btn-salvar-continuar');
+  const form = $("form-cadastro-produto");
+  const aviso = $("aviso-produto");
+  const btnSalvar = $("btn-salvar-produto");
 
-    // SKU
-    const btnGerarSku = document.getElementById('btn-gerar-sku');
-    const inputSku = document.getElementById('produto-sku');
-    const selectCategoria = document.getElementById('produto-categoria');
+  const campos = {
+    nome: { input: $("produto-nome"), erro: $("erro-nome"), aba: "basico" },
+    codigo: {
+      input: $("produto-codigo"),
+      erro: $("erro-codigo"),
+      aba: "basico",
+    },
+    peso: { input: $("produto-peso"), erro: $("erro-peso"), aba: "estoque" },
+    minimo: {
+      input: $("estoque-minimo"),
+      erro: $("erro-minimo"),
+      aba: "estoque",
+    },
+    maximo: {
+      input: $("estoque-maximo"),
+      erro: $("erro-maximo"),
+      aba: "estoque",
+    },
+  };
+  const ABAS = { basico: $("tab-basico-btn"), estoque: $("tab-estoque-btn") };
 
-    // Preços e Margem
-    const inputPrecoVenda = document.getElementById('preco-venda');
-    const inputCustoProducao = document.getElementById('custo-producao');
-    const badgeMargemLucro = document.getElementById('badge-margem-lucro');
-    const valorMargemTexto = document.getElementById('valor-margem-texto');
+  const dropzone = $("image-dropzone");
+  const fileInput = $("foto-produto-input");
+  const placeholder = $("dropzone-placeholder-content");
+  const previewImg = $("image-preview-img");
+  const previewOverlay = $("image-preview-overlay");
+  const statusBadge = $("image-status-badge");
+  const erroFoto = $("erro-foto");
 
-    // Dropzone de Imagem
-    const dropzone = document.getElementById('image-dropzone');
-    const fileInput = document.getElementById('foto-produto-input');
-    const placeholderContent = document.getElementById('dropzone-placeholder-content');
-    const previewImg = document.getElementById('image-preview-img');
-    const previewOverlay = document.getElementById('image-preview-overlay');
-    const btnTrocarFoto = document.getElementById('btn-trocar-foto');
-    const btnRemoverFoto = document.getElementById('btn-remover-foto');
-    const imageStatusBadge = document.getElementById('image-status-badge');
+  const TIPOS_IMAGEM = ["image/jpeg", "image/png", "image/webp"];
+  const MAX_INT = 2147483647;
 
-    // Cards Inferiores
-    const metricaUltimoNome = document.getElementById('metrica-ultimo-nome');
-    const metricaUltimoDetalhe = document.getElementById('metrica-ultimo-detalhe');
+  let arquivoImagem = null;
+  let urlPreview = null;
 
-    let arquivoImagem = null;
+  /* ------------------------------------------------------------------
+       Abas
+       ------------------------------------------------------------------ */
+  const ativarAba = (nome) =>
+    bootstrap.Tab.getOrCreateInstance(ABAS[nome]).show();
 
-    /**
-     * Alternância programática de abas Bootstrap
-     */
-    function ativarAba(btnEl) {
-        if (!btnEl) return;
-        const tabInstance = bootstrap.Tab.getOrCreateInstance(btnEl);
-        tabInstance.show();
+  $("btn-avancar-aba1").addEventListener("click", () => ativarAba("estoque"));
+  $("btn-voltar-aba2").addEventListener("click", () => ativarAba("basico"));
+
+  /* ------------------------------------------------------------------
+       Erros por campo
+       ------------------------------------------------------------------ */
+  function marcarErro(chave, mensagem) {
+    const { input, erro } = campos[chave];
+    input.classList.toggle("is-invalid", Boolean(mensagem));
+    input.setAttribute("aria-invalid", String(Boolean(mensagem)));
+    erro.textContent = mensagem || "";
+  }
+
+  function limparErros() {
+    Object.keys(campos).forEach((c) => marcarErro(c, ""));
+    erroFoto.textContent = "";
+    dropzone.classList.remove("is-invalid");
+  }
+
+  // Digitou de novo: some o erro daquele campo
+  Object.entries(campos).forEach(([chave, { input }]) => {
+    input.addEventListener("input", () => marcarErro(chave, ""));
+  });
+
+  function mostrarAviso(html, tipo) {
+    aviso.className = `alert alert-${tipo}`;
+    aviso.innerHTML = html;
+  }
+  function esconderAviso() {
+    aviso.className = "alert d-none";
+    aviso.innerHTML = "";
+  }
+
+  /* ------------------------------------------------------------------
+       Código: só dígitos + gerador
+       ------------------------------------------------------------------ */
+  campos.codigo.input.addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "");
+  });
+
+  $("btn-gerar-codigo").addEventListener("click", () => {
+    // 6 dígitos aleatórios. Se por acaso já existir, o servidor avisa (409) e basta gerar outro.
+    campos.codigo.input.value = String(
+      Math.floor(100000 + Math.random() * 900000),
+    );
+    marcarErro("codigo", "");
+    campos.codigo.input.focus();
+  });
+
+  /* ------------------------------------------------------------------
+       Validação (espelha as regras do produtos.controller.js)
+       ------------------------------------------------------------------ */
+  function inteiroOpcional(texto) {
+    if (texto === "") return { vazio: true };
+    const n = Number(texto);
+    if (!Number.isInteger(n) || n < 0 || n > MAX_INT)
+      return { erro: "Informe um número inteiro maior ou igual a zero." };
+    return { valor: n };
+  }
+
+  function validar() {
+    const erros = {};
+    const corpo = {};
+
+    const nome = campos.nome.input.value.trim();
+    if (nome.length < 2 || nome.length > 100)
+      erros.nome = "O nome deve ter entre 2 e 100 caracteres.";
+    else corpo.nome = nome;
+
+    const codigoTxt = campos.codigo.input.value.trim();
+    const codigo = Number(codigoTxt);
+    if (!codigoTxt) erros.codigo = "Informe o código do produto.";
+    else if (!Number.isInteger(codigo) || codigo <= 0 || codigo > MAX_INT)
+      erros.codigo = "O código deve ser um número inteiro positivo.";
+    else corpo.codigo = codigo;
+
+    const pesoTxt = campos.peso.input.value.trim();
+    if (pesoTxt !== "") {
+      const peso = Math.round(Number(pesoTxt) * 100) / 100; // o banco guarda 2 casas
+      if (!(peso > 0 && peso < 1000000))
+        erros.peso = "O peso deve ser maior que 0,01 kg.";
+      else corpo.peso = peso;
     }
 
-    if (btnAvancarAba1) {
-        btnAvancarAba1.addEventListener('click', () => ativarAba(tabInventarioBtn));
-    }
-    if (btnVoltarAba2) {
-        btnVoltarAba2.addEventListener('click', () => ativarAba(tabBasicoBtn));
-    }
-    if (btnAvancarAba2) {
-        btnAvancarAba2.addEventListener('click', () => ativarAba(tabComplianceBtn));
-    }
-    if (btnVoltarAba3) {
-        btnVoltarAba3.addEventListener('click', () => ativarAba(tabInventarioBtn));
-    }
-
-    /**
-     * Gerador de código SKU padronizado
-     */
-    if (btnGerarSku && inputSku) {
-        btnGerarSku.addEventListener('click', () => {
-            const cat = selectCategoria?.value || 'PRD';
-            const ano = new Date().getFullYear().toString().slice(-2);
-            const aleatorio = Math.floor(1000 + Math.random() * 9000);
-            inputSku.value = `DCS-${cat}-${ano}${aleatorio}`;
-            inputSku.focus();
-            Docisis.showToast(`SKU gerado: ${inputSku.value}`);
-        });
+    const min = inteiroOpcional(campos.minimo.input.value.trim());
+    const max = inteiroOpcional(campos.maximo.input.value.trim());
+    if (min.erro) erros.minimo = min.erro;
+    else if (!min.vazio) corpo.estoque_minimo = min.valor;
+    if (max.erro) erros.maximo = max.erro;
+    else if (!max.vazio) corpo.estoque_maximo = max.valor;
+    if (
+      !erros.minimo &&
+      !erros.maximo &&
+      !min.vazio &&
+      !max.vazio &&
+      min.valor > max.valor
+    ) {
+      erros.maximo = "O estoque máximo não pode ser menor que o mínimo.";
     }
 
-    /**
-     * Calculador Dinâmico de Margem de Lucro
-     */
-    function calcularMargem() {
-        const preco = parseFloat(inputPrecoVenda?.value) || 0;
-        const custo = parseFloat(inputCustoProducao?.value) || 0;
+    return { erros, corpo };
+  }
 
-        if (!badgeMargemLucro || !valorMargemTexto) return;
+  function aplicarErros(erros) {
+    const chaves = Object.keys(erros);
+    chaves.forEach((c) => marcarErro(c, erros[c]));
+    if (chaves.length === 0) return;
 
-        badgeMargemLucro.classList.remove('positive', 'warning', 'danger');
+    const primeira = campos[chaves[0]];
+    ativarAba(primeira.aba);
+    // espera a aba aparecer para o foco funcionar
+    setTimeout(() => primeira.input.focus(), 160);
+  }
 
-        if (preco <= 0) {
-            valorMargemTexto.textContent = 'Margem calculada após preenchimento';
-            return;
-        }
+  /* ------------------------------------------------------------------
+       Foto
+       ------------------------------------------------------------------ */
+  function removerFoto() {
+    arquivoImagem = null;
+    fileInput.value = "";
+    if (urlPreview) URL.revokeObjectURL(urlPreview);
+    urlPreview = null;
+    previewImg.removeAttribute("src");
+    previewImg.classList.add("d-none");
+    placeholder.classList.remove("d-none");
+    previewOverlay.classList.add("d-none");
+    statusBadge.className = "image-status-badge";
+    statusBadge.innerHTML =
+      '<i class="bi bi-image text-muted" aria-hidden="true"></i> Nenhuma foto';
+  }
 
-        const lucro = preco - custo;
-        const margemPercentual = ((lucro / preco) * 100).toFixed(1);
+  function escolherFoto(arquivo) {
+    erroFoto.textContent = "";
+    dropzone.classList.remove("is-invalid");
+    if (!arquivo) return;
 
-        if (margemPercentual >= 40) {
-            badgeMargemLucro.classList.add('positive');
-            valorMargemTexto.innerHTML = `<i class="bi bi-arrow-up-circle me-1"></i> Margem Excelente: <strong>${margemPercentual}%</strong> (${Docisis.formatarMoeda(lucro)}/un)`;
-        } else if (margemPercentual >= 15) {
-            badgeMargemLucro.classList.add('warning');
-            valorMargemTexto.innerHTML = `<i class="bi bi-dash-circle me-1"></i> Margem Moderada: <strong>${margemPercentual}%</strong> (${Docisis.formatarMoeda(lucro)}/un)`;
-        } else {
-            badgeMargemLucro.classList.add('danger');
-            valorMargemTexto.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> Atenção: Margem Baixa de <strong>${margemPercentual}%</strong> (${Docisis.formatarMoeda(lucro)}/un)`;
-        }
+    if (!TIPOS_IMAGEM.includes(arquivo.type)) {
+      erroFoto.textContent = "Use uma imagem PNG, JPG ou WEBP.";
+      dropzone.classList.add("is-invalid");
+      return;
     }
 
-    if (inputPrecoVenda) inputPrecoVenda.addEventListener('input', calcularMargem);
-    if (inputCustoProducao) inputCustoProducao.addEventListener('input', calcularMargem);
+    arquivoImagem = arquivo;
+    if (urlPreview) URL.revokeObjectURL(urlPreview);
+    urlPreview = URL.createObjectURL(arquivo);
+    previewImg.src = urlPreview;
+    previewImg.classList.remove("d-none");
+    placeholder.classList.add("d-none");
+    previewOverlay.classList.remove("d-none");
+    statusBadge.className = "image-status-badge badge-success";
+    statusBadge.innerHTML =
+      '<i class="bi bi-check-circle text-success" aria-hidden="true"></i> Imagem carregada';
+  }
 
-    /**
-     * Gestão do Dropzone e Preview de Imagem
-     */
-    function processarArquivoImagem(file) {
-        if (!file || !file.type.startsWith('image/')) {
-            Docisis.showToast('Selecione uma imagem válida (PNG, JPG, WebP).', 'erro');
-            return;
-        }
+  dropzone.addEventListener("click", (e) => {
+    if (
+      e.target.closest("#btn-trocar-foto") ||
+      e.target.closest("#btn-remover-foto")
+    )
+      return;
+    fileInput.click();
+  });
+  dropzone.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      fileInput.click();
+    }
+  });
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.classList.add("drag-over");
+  });
+  dropzone.addEventListener("dragleave", () =>
+    dropzone.classList.remove("drag-over"),
+  );
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.classList.remove("drag-over");
+    escolherFoto(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener("change", () => escolherFoto(fileInput.files[0]));
+  $("btn-trocar-foto").addEventListener("click", (e) => {
+    e.stopPropagation();
+    fileInput.click();
+  });
+  $("btn-remover-foto").addEventListener("click", (e) => {
+    e.stopPropagation();
+    removerFoto();
+  });
 
-        arquivoImagem = file;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            if (previewImg) {
-                previewImg.src = e.target.result;
-                previewImg.classList.remove('d-none');
-            }
-            if (placeholderContent) placeholderContent.classList.add('d-none');
-            if (previewOverlay) previewOverlay.classList.remove('d-none');
-            if (imageStatusBadge) {
-                imageStatusBadge.className = 'image-status-badge badge-success';
-                imageStatusBadge.innerHTML = '<i class="bi bi-check-circle text-success"></i> Imagem Carregada';
-            }
-        };
-        reader.readAsDataURL(file);
+  /* ------------------------------------------------------------------
+       Salvar
+       ------------------------------------------------------------------ */
+  function botaoCarregando(carregando) {
+    if (carregando) {
+      btnSalvar.dataset.original = btnSalvar.innerHTML;
+      btnSalvar.disabled = true;
+      btnSalvar.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Salvando...';
+    } else {
+      btnSalvar.disabled = false;
+      if (btnSalvar.dataset.original)
+        btnSalvar.innerHTML = btnSalvar.dataset.original;
+    }
+  }
+
+  function limparFormulario() {
+    form.reset();
+    removerFoto();
+    limparErros();
+    ativarAba("basico");
+    campos.nome.input.focus();
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    esconderAviso();
+    limparErros();
+
+    const { erros, corpo } = validar();
+    if (Object.keys(erros).length > 0) {
+      aplicarErros(erros);
+      Docisis.toast("Corrija os campos destacados.", "erro");
+      return;
     }
 
-    if (dropzone) {
-        dropzone.addEventListener('click', (e) => {
-            if (e.target.closest('#btn-trocar-foto') || e.target.closest('#btn-remover-foto')) return;
-            if (fileInput) fileInput.click();
-        });
+    botaoCarregando(true);
+    const r = await Docisis.api("/produtos", { method: "POST", body: corpo });
 
-        dropzone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropzone.classList.add('drag-over');
-        });
-
-        dropzone.addEventListener('dragleave', () => {
-            dropzone.classList.remove('drag-over');
-        });
-
-        dropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropzone.classList.remove('drag-over');
-            const files = e.dataTransfer.files;
-            if (files && files[0]) {
-                processarArquivoImagem(files[0]);
-            }
-        });
+    if (!r.ok) {
+      botaoCarregando(false);
+      if (r.status === 409) {
+        // o único campo único do produto é o código
+        aplicarErros({ codigo: "Já existe um produto com este código." });
+      } else if (r.status === 403) {
+        mostrarAviso(
+          "Você não tem permissão para cadastrar produtos.",
+          "danger",
+        );
+      } else {
+        mostrarAviso(Docisis.util.esc(r.error), "danger");
+      }
+      return;
     }
 
-    if (fileInput) {
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files && fileInput.files[0]) {
-                processarArquivoImagem(fileInput.files[0]);
-            }
-        });
+    // Foto (opcional): só depois de o produto existir
+    let avisoFoto = "";
+    if (arquivoImagem) {
+      const id = r.data && (r.data.id_produto ?? r.data.id);
+      if (id === undefined || id === null) {
+        avisoFoto =
+          "A foto não foi enviada porque o servidor não devolveu o id do produto.";
+      } else {
+        const fd = new FormData();
+        fd.append("imagem", arquivoImagem);
+        const rf = await Docisis.api(
+          `/produtos/${encodeURIComponent(id)}/imagem`,
+          { method: "PUT", body: fd },
+        );
+        if (!rf.ok) avisoFoto = `A foto não foi enviada: ${rf.error}`;
+      }
     }
+    botaoCarregando(false);
 
-    if (btnTrocarFoto) {
-        btnTrocarFoto.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (fileInput) fileInput.click();
-        });
-    }
+    const nome = Docisis.util.esc(corpo.nome);
+    let html =
+      `<strong>Produto "${nome}" cadastrado</strong> (código ${corpo.codigo}). ` +
+      "Para dar saldo a ele, registre um lote com a nota fiscal. " +
+      '<a href="estoque.html" class="alert-link">Ir para o estoque</a>';
+    if (avisoFoto)
+      html += `<br><span class="small">${Docisis.util.esc(avisoFoto)} O produto foi criado sem foto.</span>`;
+    mostrarAviso(html, avisoFoto ? "warning" : "success");
+    Docisis.toast(
+      `Produto "${corpo.nome}" cadastrado!`,
+      avisoFoto ? "aviso" : "sucesso",
+    );
 
-    if (btnRemoverFoto) {
-        btnRemoverFoto.addEventListener('click', (e) => {
-            e.stopPropagation();
-            arquivoImagem = null;
-            if (fileInput) fileInput.value = '';
-            if (previewImg) {
-                previewImg.src = '#';
-                previewImg.classList.add('d-none');
-            }
-            if (placeholderContent) placeholderContent.classList.remove('d-none');
-            if (previewOverlay) previewOverlay.classList.add('d-none');
-            if (imageStatusBadge) {
-                imageStatusBadge.className = 'image-status-badge';
-                imageStatusBadge.innerHTML = '<i class="bi bi-image text-muted"></i> Nenhuma foto';
-            }
-        });
-    }
-
-    /**
-     * Submissão e Cadastro do Produto
-     */
-    async function salvarProduto(redirecionarApos = true) {
-        const nome = document.getElementById('produto-nome')?.value.trim();
-        const sku = document.getElementById('produto-sku')?.value.trim();
-        const categoria = selectCategoria?.value;
-        const precoVenda = parseFloat(inputPrecoVenda?.value) || 0;
-        const custoProducao = parseFloat(inputCustoProducao?.value) || 0;
-        const descricao = document.getElementById('produto-descricao')?.value.trim();
-
-        const estoqueInicial = parseFloat(document.getElementById('estoque-inicial')?.value) || 0;
-        const unidadeMedida = document.getElementById('unidade-medida')?.value || 'un';
-        const estoqueMinimo = parseFloat(document.getElementById('estoque-minimo')?.value) || 5;
-        const estoqueMaximo = parseFloat(document.getElementById('estoque-maximo')?.value) || 50;
-        const localizacao = document.getElementById('estoque-localizacao')?.value || '';
-
-        const lote = document.getElementById('lote-producao')?.value.trim() || 'LOT-PADRAO';
-        const condicao = document.getElementById('condicao-armazenamento')?.value || 'refrigerado';
-        const dataValidade = document.getElementById('data-validade')?.value || '';
-
-        // Validação de campos obrigatórios
-        if (!nome || !sku || !categoria || precoVenda <= 0) {
-            ativarAba(tabBasicoBtn);
-            Docisis.showToast('Preencha os campos obrigatórios na aba Informações Básicas.', 'erro');
-            return;
-        }
-
-        const btnAtivo = btnSalvarProduto;
-        const textoOriginal = btnAtivo ? btnAtivo.innerHTML : 'Cadastrar';
-        if (btnAtivo) {
-            btnAtivo.disabled = true;
-            btnAtivo.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
-        }
-
-        try {
-            // Campos exigidos pela tabela de produtos no backend
-            const codigoNumerico = parseInt(sku.replace(/\D/g, ''), 10) || Math.floor(100000 + Math.random() * 900000);
-            const dtValidadeFormatada = dataValidade || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-            const pesoNumerico = parseFloat(document.getElementById('peso-produto')?.value) || (unidadeMedida === 'kg' ? estoqueInicial : 1.0);
-
-            // Prepara FormData se houver foto, caso contrário JSON
-            let payload;
-            let options = { method: 'POST' };
-
-            if (arquivoImagem) {
-                payload = new FormData();
-                payload.append('nome', nome);
-                payload.append('codigo', codigoNumerico);
-                payload.append('dt_validade', dtValidadeFormatada);
-                payload.append('peso', pesoNumerico);
-                payload.append('sku', sku);
-                payload.append('categoria', categoria);
-                payload.append('preco', precoVenda);
-                payload.append('preco_custo', custoProducao);
-                payload.append('descricao', descricao);
-                payload.append('estoque', estoqueInicial);
-                payload.append('estoque_minimo', estoqueMinimo);
-                payload.append('unidade_medida', unidadeMedida);
-                payload.append('imagem', arquivoImagem);
-                options.body = payload;
-            } else {
-                options.body = {
-                    nome,
-                    codigo: codigoNumerico,
-                    dt_validade: dtValidadeFormatada,
-                    peso: pesoNumerico,
-                    sku,
-                    categoria,
-                    preco: precoVenda,
-                    preco_custo: custoProducao,
-                    descricao,
-                    estoque: estoqueInicial,
-                    estoque_minimo: estoqueMinimo,
-                    unidade_medida: unidadeMedida
-                };
-            }
-
-            const res = await Docisis.api('/produtos', options);
-
-            // Se o backend respondeu com erro de validação (ex: 400 código duplicado, 401 etc)
-            if (!res.ok && res.status > 0) {
-                Docisis.showToast(res.error || 'Não foi possível cadastrar o produto no servidor.', 'erro');
-                return;
-            }
-
-            // Atualiza resumo de métricas do dia
-            if (metricaUltimoNome) metricaUltimoNome.textContent = nome;
-            if (metricaUltimoDetalhe) {
-                metricaUltimoDetalhe.textContent = `SKU: ${sku} • Estoque: ${estoqueInicial} ${unidadeMedida}`;
-            }
-
-            // Armazenar em cache local para integração imediata entre telas
-            try {
-                const itensEstoqueLocal = JSON.parse(localStorage.getItem('docisis_estoque_extra') || '[]');
-                itensEstoqueLocal.unshift({
-                    id: (res.data && res.data.id) ? res.data.id : Date.now(),
-                    nome,
-                    sku,
-                    categoria,
-                    preco_venda: precoVenda,
-                    preco_custo: custoProducao,
-                    saldo_fisico: estoqueInicial,
-                    estoque_minimo: estoqueMinimo,
-                    unidade_medida: unidadeMedida,
-                    lote_principal: lote,
-                    validade_principal: dtValidadeFormatada,
-                    status: estoqueInicial <= estoqueMinimo ? 'CRITICO' : 'NORMAL'
-                });
-                localStorage.setItem('docisis_estoque_extra', JSON.stringify(itensEstoqueLocal));
-            } catch {}
-
-            Docisis.showToast(`Produto "${nome}" cadastrado com sucesso!`);
-
-            if (redirecionarApos) {
-                setTimeout(() => {
-                    window.location.href = 'estoque.html';
-                }, 1200);
-            } else {
-                formProduto.reset();
-                if (btnRemoverFoto) btnRemoverFoto.click();
-                ativarAba(tabBasicoBtn);
-                const nomeInput = document.getElementById('produto-nome');
-                if (nomeInput) nomeInput.focus();
-            }
-
-        } catch (err) {
-            console.error('[Docisis Produtos]', err);
-            Docisis.showToast('Erro ao cadastrar produto.', 'erro');
-        } finally {
-            if (btnAtivo) {
-                btnAtivo.disabled = false;
-                btnAtivo.innerHTML = textoOriginal;
-            }
-        }
-    }
-
-    if (formProduto) {
-        formProduto.addEventListener('submit', (e) => {
-            e.preventDefault();
-            salvarProduto(true);
-        });
-    }
-
-    if (btnSalvarContinuar) {
-        btnSalvarContinuar.addEventListener('click', (e) => {
-            e.preventDefault();
-            salvarProduto(false);
-        });
-    }
+    limparFormulario();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 });

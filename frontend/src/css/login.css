@@ -1,107 +1,52 @@
 /* ==========================================================================
-   DOCISIS - ESTILOS DE LOGIN, 2FA E REDEFINIÇÃO DE SENHA (LOGIN.CSS)
-   Design System e Acessibilidade do Fluxo de Autenticação
+   DOCISIS - ESTILOS DA TELA DE LOGIN (LOGIN.CSS)
+   Login e "Esqueci minha senha"
    ========================================================================== */
 
-/* Círculos de Ícone dos Passos */
-.icon-circle {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Logo (antes era style="max-height: 65px" direto no HTML) */
+.brand-logo-img {
+  max-height: 65px;
 }
 
-.bg-terracotta-light {
-    background-color: var(--docisis-terracotta-light, #fdf2ed);
-    color: var(--docisis-terracotta, #c44918);
+/* Círculo de ícone do passo "Esqueci minha senha" */
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bg-navy-light {
-    background-color: #e2e8f0;
-    color: var(--docisis-navy, #08172e);
+  background-color: #e2e8f0;
+  color: var(--docisis-navy, #08172e);
 }
 
-.bg-success-light {
-    background-color: #e6f4ea;
-    color: #198754;
+/* O Bootstrap só mostra .invalid-feedback quando ela é irmã do input.
+   Aqui o input fica dentro de .input-group-docisis, então a regra é adaptada. */
+.input-group-docisis.is-invalid ~ .invalid-feedback {
+  display: block;
 }
 
-/* --- Caixas de Código PIN 2FA (6 dígitos) --- */
-.pin-container {
-    max-width: 320px;
-    margin: 0 auto;
-}
-
-.pin-box {
-    width: 44px;
-    height: 52px;
-    border: 1.5px solid var(--docisis-border, #e2e8f0);
-    border-radius: 8px;
-    background-color: #f8fafc;
-    color: var(--docisis-navy, #08172e);
-    padding: 0;
-    font-weight: 700;
-    font-size: 1.25rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-}
-
-.pin-box:focus {
-    background-color: #ffffff;
-    border-color: var(--docisis-terracotta, #c44918);
-    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.2);
-    outline: none;
-}
-
-.pin-box:focus-visible {
-    outline: 2px solid var(--docisis-terracotta, #c44918) !important;
-    outline-offset: 2px;
-}
-
-/* --- Checklist Dinâmico de Força de Senha --- */
-.password-checklist {
-    background-color: #f8fafc !important;
-    border-color: #e2e8f0 !important;
-}
-
-.checklist-item {
-    padding: 3px 0;
-    transition: color 0.25s ease;
-    display: flex;
-    align-items: center;
-    font-size: 0.85rem;
-}
-
-.checklist-item.invalid {
-    color: #475569;
-}
-
-.checklist-item.invalid i {
-    color: #dc3545;
-}
-
-.checklist-item.valid {
-    color: #15803d;
-    font-weight: 600;
-}
-
-.checklist-item.valid i {
-    color: #15803d;
-}
-
-/* Transições de Animação de Entrada dos Passos */
+/* Animação de entrada dos passos */
 .auth-step {
-    animation: fadeInStep 0.3s ease-out;
+  animation: fadeInStep 0.3s ease-out;
 }
 
 @keyframes fadeInStep {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-step {
+    animation: none;
+  }
 }

@@ -55,18 +55,29 @@
    * Salva o que o back devolve no login e na renovação do token:
    * { accessToken, refreshToken, funcionario: {...}, permissoes: [...] }
    */
+  // TEMPORÁRIO: chaves do app.js antigo. Enquanto houver páginas ainda não refatoradas
+  // (que carregam o app.js), elas continuam enxergando a sessão. Apague quando
+  // todas as páginas estiverem migradas.
+  const LEGADO = { token: "docisis_token", usuario: "docisis_user" };
+
   function salvarSessao(dados) {
     const access = dados.accessToken || dados.token;
-    if (access) gravar(CHAVES.access, access);
+    if (access) {
+      gravar(CHAVES.access, access);
+      gravar(LEGADO.token, access);
+    }
     if (dados.refreshToken) gravar(CHAVES.refresh, dados.refreshToken);
-    if (dados.funcionario)
+    if (dados.funcionario) {
       gravar(CHAVES.usuario, JSON.stringify(dados.funcionario));
+      gravar(LEGADO.usuario, JSON.stringify(dados.funcionario));
+    }
     if (Array.isArray(dados.permissoes))
       gravar(CHAVES.permissoes, JSON.stringify(dados.permissoes));
   }
 
   function limparSessao() {
     Object.values(CHAVES).forEach(remover);
+    Object.values(LEGADO).forEach(remover);
   }
 
   const getAccessToken = () => ler(CHAVES.access);

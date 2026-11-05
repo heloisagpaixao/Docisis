@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Docisis — Central de Notificações</title>
+    <meta
+      name="description"
+      content="Alertas de validade e de estoque do Docisis."
+    />
+
+    <link
+      rel="stylesheet"
+      href="node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <link rel="stylesheet" href="src/css/global.css" />
+    <link rel="stylesheet" href="src/css/layout.css" />
+    <link rel="stylesheet" href="src/css/components.css" />
+    <link rel="stylesheet" href="src/css/painel.css" />
+  </head>
+
+  <body>
+    <div class="app-layout">
+      <aside class="sidebar-docisis" id="sidebar-docisis"></aside>
+
+      <div class="main-content-wrapper">
+        <header class="topbar-docisis" id="topbar-docisis"></header>
+
+        <main class="workspace-docisis" id="conteudo-principal">
+          <div class="pn-page">
+            <div class="pn-header">
+              <div>
+                <h1 class="pn-title">Central de Notificações</h1>
+                <p class="pn-subtitle">
+                  Alertas de validade e de estoque mínimo/máximo.
+                </p>
+              </div>
+              <div class="pn-actions">
+                <button
+                  type="button"
+                  id="btn-verificar"
+                  class="btn btn-outline-secondary"
+                >
+                  <i class="bi bi-arrow-repeat me-1" aria-hidden="true"></i>
+                  Verificar agora
+                </button>
+                <button
+                  type="button"
+                  id="btn-marcar-todas"
+                  class="btn btn-docisis-navy"
+                >
+                  <i class="bi bi-check2-all me-1" aria-hidden="true"></i>
+                  Marcar todas como lidas
+                </button>
+              </div>
+            </div>
+
+            <section class="pn-kpis" aria-label="Resumo">
+              <div class="pn-kpi pn-tone-danger">
+                <div class="pn-kpi-icon">
+                  <i class="bi bi-exclamation-octagon" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <div class="pn-kpi-valor" id="kpi-criticas">0</div>
+                  <div class="pn-kpi-rotulo">Críticas não lidas</div>
+                </div>
+              </div>
+              <div class="pn-kpi pn-tone-warning">
+                <div class="pn-kpi-icon">
+                  <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <div class="pn-kpi-valor" id="kpi-atencao">0</div>
+                  <div class="pn-kpi-rotulo">Atenção não lidas</div>
+                </div>
+              </div>
+              <div class="pn-kpi pn-tone-info">
+                <div class="pn-kpi-icon">
+                  <i class="bi bi-info-circle" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <div class="pn-kpi-valor" id="kpi-info">0</div>
+                  <div class="pn-kpi-rotulo">Informativas não lidas</div>
+                </div>
+              </div>
+              <div class="pn-kpi pn-tone-neutral">
+                <div class="pn-kpi-icon">
+                  <i class="bi bi-bell" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <div class="pn-kpi-valor" id="kpi-ativas">0</div>
+                  <div class="pn-kpi-rotulo">Alertas ativos</div>
+                </div>
+              </div>
+            </section>
+
+            <div
+              class="pn-tabs"
+              role="tablist"
+              aria-label="Filtro de notificações"
+            >
+              <button
+                type="button"
+                class="pn-tab active"
+                data-aba="nao_lidas"
+                role="tab"
+                aria-selected="true"
+              >
+                Não lidas
+              </button>
+              <button
+                type="button"
+                class="pn-tab"
+                data-aba="ativas"
+                role="tab"
+                aria-selected="false"
+              >
+                Ativas
+              </button>
+              <button
+                type="button"
+                class="pn-tab"
+                data-aba="historico"
+                role="tab"
+                aria-selected="false"
+              >
+                Histórico
+              </button>
+            </div>
+
+            <div class="pn-filtros">
+              <label for="filtro-severidade" class="visually-hidden"
+                >Severidade</label
+              >
+              <select
+                id="filtro-severidade"
+                class="form-select form-select-sm w-auto"
+              >
+                <option value="">Todas as severidades</option>
+                <option value="CRITICA">Crítica</option>
+                <option value="ATENCAO">Atenção</option>
+                <option value="INFO">Informativa</option>
+              </select>
+            </div>
+
+            <section
+              class="pn-card"
+              aria-label="Lista de notificações"
+              aria-live="polite"
+            >
+              <ul class="pn-lista" id="lista-notificacoes"></ul>
+              <div class="pn-pager" id="pager">
+                <span id="pager-info"></span>
+                <div class="pn-pager-btns">
+                  <button
+                    type="button"
+                    id="pager-ant"
+                    class="btn btn-sm btn-outline-secondary"
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    type="button"
+                    id="pager-prox"
+                    class="btn btn-sm btn-outline-secondary"
+                  >
+                    Próxima
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="docisis-toast-container" aria-live="polite" aria-atomic="true">
+      <div id="docisis-toast" class="docisis-toast" role="status">
+        <i class="bi toast-icon fs-5" aria-hidden="true"></i>
+        <div>
+          <strong class="d-block text-dark fw-bold">Notificações</strong>
+          <span id="toast-mensagem" class="text-muted"></span>
+        </div>
+      </div>
+    </div>
+
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="src/js/core/config.js"></script>
+    <script src="src/js/core/utils.js"></script>
+    <script src="src/js/core/auth.js"></script>
+    <script src="src/js/core/api.js"></script>
+    <script src="src/js/core/layout.js"></script>
+
+    <script src="src/js/notificacoes.js"></script>
+  </body>
+</html>

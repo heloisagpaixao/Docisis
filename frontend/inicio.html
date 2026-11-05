@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Docisis — Início</title>
+    <meta
+      name="description"
+      content="Visão geral do estoque, alertas e movimentações recentes do Docisis."
+    />
+
+    <link
+      rel="stylesheet"
+      href="node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <link rel="stylesheet" href="src/css/global.css" />
+    <link rel="stylesheet" href="src/css/layout.css" />
+    <link rel="stylesheet" href="src/css/components.css" />
+    <link rel="stylesheet" href="src/css/painel.css" />
+  </head>
+
+  <body>
+    <div class="app-layout">
+      <aside class="sidebar-docisis" id="sidebar-docisis"></aside>
+
+      <div class="main-content-wrapper">
+        <header class="topbar-docisis" id="topbar-docisis"></header>
+
+        <main class="workspace-docisis" id="conteudo-principal">
+          <div class="pn-page">
+            <div class="pn-header">
+              <div>
+                <h1 class="pn-title" id="saudacao">Olá!</h1>
+                <p class="pn-subtitle" id="data-hoje"></p>
+              </div>
+            </div>
+
+            <section
+              class="pn-kpis"
+              id="bloco-kpis"
+              aria-label="Indicadores do estoque"
+              data-permissao="ESTOQUE_CONSULTAR"
+            >
+              <a class="pn-kpi pn-tone-terracotta" href="estoque.html">
+                <div class="pn-kpi-icon">
+                  <i class="bi bi-box-seam" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <div class="pn-kpi-valor" id="kpi-unidades">–</div>
+                  <div class="pn-kpi-rotulo">Unidades utilizáveis</div>
+                </div>
+              </a>
+              <a class="pn-kpi pn-tone-warning" href="estoque.html">
+                <div class="pn-kpi-icon">
+                  <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <div class="pn-kpi-valor" id="kpi-a-vencer">–</div>
+                  <div class="pn-kpi-rotulo" id="kpi-a-vencer-rotulo">
+                    Lotes a vencer
+                  </div>
+                </div>
+              </a>
+              <a class="pn-kpi pn-tone-danger" href="estoque.html">
+                <div class="pn-kpi-icon">
+                  <i class="bi bi-shield-slash" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <div class="pn-kpi-valor" id="kpi-vencidos">–</div>
+                  <div class="pn-kpi-rotulo">Lotes vencidos</div>
+                </div>
+              </a>
+              <a class="pn-kpi pn-tone-info" href="estoque.html">
+                <div class="pn-kpi-icon">
+                  <i class="bi bi-graph-down-arrow" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <div class="pn-kpi-valor" id="kpi-criticos">–</div>
+                  <div class="pn-kpi-rotulo">Produtos no mínimo</div>
+                </div>
+              </a>
+            </section>
+
+            <div class="pn-grid">
+              <section
+                class="pn-card"
+                id="card-alertas"
+                aria-label="Alertas não lidos"
+                data-permissao="NOTIFICACAO_CONSULTAR"
+              >
+                <div class="pn-card-head">
+                  <h2 class="pn-card-title">Alertas não lidos</h2>
+                  <a class="pn-card-link" href="notificacoes.html">Ver todos</a>
+                </div>
+                <ul class="pn-lista" id="lista-alertas">
+                  <li class="pn-skeleton">Carregando…</li>
+                </ul>
+              </section>
+
+              <section
+                class="pn-card"
+                id="card-movs"
+                aria-label="Últimas movimentações"
+              >
+                <div class="pn-card-head">
+                  <h2 class="pn-card-title">Últimas movimentações</h2>
+                  <a class="pn-card-link" href="historico.html"
+                    >Ver histórico</a
+                  >
+                </div>
+                <ul class="pn-lista" id="lista-movs">
+                  <li class="pn-skeleton">Carregando…</li>
+                </ul>
+              </section>
+            </div>
+
+            <h2 class="pn-card-title mb-3">Atalhos</h2>
+            <section
+              class="pn-atalhos"
+              id="atalhos"
+              aria-label="Atalhos"
+            ></section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="docisis-toast-container" aria-live="polite" aria-atomic="true">
+      <div id="docisis-toast" class="docisis-toast" role="status">
+        <i class="bi toast-icon fs-5" aria-hidden="true"></i>
+        <div>
+          <strong class="d-block text-dark fw-bold">Início</strong>
+          <span id="toast-mensagem" class="text-muted"></span>
+        </div>
+      </div>
+    </div>
+
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="src/js/core/config.js"></script>
+    <script src="src/js/core/utils.js"></script>
+    <script src="src/js/core/auth.js"></script>
+    <script src="src/js/core/api.js"></script>
+    <script src="src/js/core/layout.js"></script>
+
+    <script src="src/js/inicio.js"></script>
+  </body>
+</html>

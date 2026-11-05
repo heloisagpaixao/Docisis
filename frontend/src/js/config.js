@@ -14,7 +14,7 @@
 
     // Páginas usadas nos redirecionamentos
     PAGINA_LOGIN: "login.html",
-    PAGINA_INICIAL: "estoque.html",
+    PAGINA_INICIAL: "inicio.html",
 
     // Prefixo das chaves no localStorage (evita colisão com outras apps em localhost)
     STORAGE_PREFIX: "docisis.",

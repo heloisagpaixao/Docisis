@@ -32,6 +32,47 @@
     return isNaN(d) ? String(iso) : d.toLocaleDateString("pt-BR");
   }
 
+  /** Converte 'YYYY-MM-DD HH:MM:SS' (hora local do banco) ou ISO em Date. */
+  function paraData(valor) {
+    if (!valor) return null;
+    if (valor instanceof Date) return isNaN(valor) ? null : valor;
+    const s = String(valor);
+    const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/.exec(
+      s,
+    );
+    const d = m
+      ? new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0))
+      : new Date(s);
+    return isNaN(d) ? null : d;
+  }
+
+  /** "05/11/2026 14:30" */
+  function formatarDataHora(valor) {
+    const d = paraData(valor);
+    if (!d) return "--";
+    return (
+      d.toLocaleDateString("pt-BR") +
+      " " +
+      d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+    );
+  }
+
+  /** "há 5 min", "há 3 h", "há 2 dias" (cai para a data após 30 dias). */
+  function tempoRelativo(valor) {
+    const d = paraData(valor);
+    if (!d) return "--";
+    const seg = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+    if (seg < 60) return "agora há pouco";
+    const min = Math.floor(seg / 60);
+    if (min < 60) return `há ${min} min`;
+    const h = Math.floor(min / 60);
+    if (h < 24) return `há ${h} h`;
+    const dias = Math.floor(h / 24);
+    if (dias === 1) return "ontem";
+    if (dias <= 30) return `há ${dias} dias`;
+    return d.toLocaleDateString("pt-BR");
+  }
+
   function formatarNumero(n, casas = 0) {
     return Number(n || 0).toLocaleString("pt-BR", {
       minimumFractionDigits: casas,
@@ -124,6 +165,9 @@
   Docisis.util = {
     esc,
     formatarData,
+    paraData,
+    formatarDataHora,
+    tempoRelativo,
     formatarNumero,
     formatarCPF,
     formatarTelefone,

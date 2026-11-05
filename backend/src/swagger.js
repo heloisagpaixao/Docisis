@@ -5,7 +5,7 @@ const doc = {
     title: "API Docisis",
     description:
       "Documentação automática da API da Doceria utilizando Swagger Autogen",
-    version: "2.4.1",
+    version: "1.0.0",
   },
   host: "localhost:3306",
   schemes: ["http"],

@@ -4,13 +4,15 @@ const cors = require("cors");
 const pool = require("./config/database");
 const errorHandler = require("./middlewares/errorHandler");
 
+// 1. IMPORTAR SWAGGER
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger_output.json"); // Ajuste o caminho para o seu arquivo de documentação
+
 const app = express();
-app.disable("x-powered-by"); // não anuncia que o servidor usa Express
-app.use(cors({ exposedHeaders: ["Content-Disposition"] })); // o front lê o nome do arquivo baixado
+app.disable("x-powered-by");
+app.use(cors({ exposedHeaders: ["Content-Disposition"] }));
 app.use(express.json());
 
-// Dados internos: o navegador nunca guarda respostas da API em cache (importante em computador
-// compartilhado). Os endpoints de arquivo (fotos, PDFs) definem a própria regra, mais abaixo.
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store");
   next();
@@ -25,6 +27,7 @@ app.get("/health", async (req, res) => {
   }
 });
 
+// Rotas da API
 app.use("/auth", require("./routes/auth.routes"));
 app.use("/funcionarios", require("./routes/funcionarios.routes"));
 app.use("/cargos", require("./routes/cargos.routes"));
@@ -39,7 +42,10 @@ app.use("/movimentacoes", require("./routes/movimentacoes.routes"));
 app.use("/notificacoes", require("./routes/notificacoes.routes"));
 app.use("/relatorios", require("./routes/relatorios.routes"));
 
-// Rota inexistente
+// 2. ADICIONAR A ROTA DO SWAGGER AQUI (ANTES DO 404)
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Rota inexistente (mantenha sempre depois de todas as rotas válidas)
 app.use((req, res) => res.status(404).json({ erro: "Rota não encontrada" }));
 
 // SEMPRE por último
@@ -48,8 +54,6 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🧁 Docisis API rodando na porta ${PORT}!`);
-  // Confere validade e estoque ao ligar e, depois, a cada NOTIFICACOES_INTERVALO_MIN minutos
   require("./services/notificacoes.service").iniciarRotina();
-  // Apaga refresh tokens vencidos ao ligar e a cada 24 h
   require("./services/auth.service").iniciarLimpeza();
 });

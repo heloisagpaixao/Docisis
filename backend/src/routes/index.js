@@ -11,6 +11,9 @@ const LotesRoutes = require("./lotes.routes");
 const NotasFiscaisRoutes = require("./notasfiscais.routes");
 const ProdutosRoutes = require("./produtos.routes");
 const SaidasRoutes = require("./saidas.routes");
+const MovimentacoesRoutes = require("./movimentacoes.routes")
+const NotificacoesRoutes = require("./notificacoes.routes")
+const RelatoriosRoutes = require("./relatorios.routes")
 
 // Rota base (Root endpoint)
 router.get("/docisis", (req, res) => {
@@ -35,5 +38,8 @@ router.use("/lotes", LotesRoutes);
 router.use("/notasfiscais", NotasFiscaisRoutes);
 router.use("/produtos", ProdutosRoutes);
 router.use("/saidas", SaidasRoutes);
+router.use("/movimentacoes", MovimentacoesRoutes);
+router.use("/notificacoes", NotificacoesRoutes);
+router.use("/relatorios", RelatoriosRoutes);
 
 module.exports = router;

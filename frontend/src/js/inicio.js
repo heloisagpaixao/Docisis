@@ -109,6 +109,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------------------------- Movimentações ----------------------------- */
   async function carregarMovimentacoes() {
+    if (!auth.temPermissao("ESTOQUE_CONSULTAR")) {
+      el("card-movs").classList.add("d-none");
+      return;
+    }
     const lista = el("lista-movs");
     const r = await Docisis.api("/movimentacoes", {
       query: { page: 1, pagina: 1, limit: 6, limite: 6 },

@@ -47,7 +47,7 @@
       icone: "bi-clock-history",
       rotulo: "Histórico",
       titulo: "Histórico de movimentações",
-      permissao: null,
+      permissao: "ESTOQUE_CONSULTAR",
     },
     {
       id: "estoque",

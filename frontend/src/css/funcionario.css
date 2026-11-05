@@ -1,171 +1,23 @@
 /* ==========================================================================
-   DOCISIS - ESTILOS DO MÓDULO DE PERFIL DO FUNCIONÁRIO (FUNCIONARIO.CSS)
-   Contém apenas estilos exclusivos desta tela. Layout e sidebar
-   são gerenciados por layout.css — não duplicar media queries.
+   DOCISIS - AJUSTES DA TELA DE PERFIL (funcionario-ajustes.css)
+   Quando quiser, copie para o funcionario.css e apague este arquivo.
    ========================================================================== */
 
-/* Card Principal de Personalização */
-.profile-card {
-    background-color: #ffffff;
-    border-radius: 14px;
-    padding: 3.5rem 4rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-    width: 100%;
-    max-width: 900px;
+/* Borda vermelha nos campos deste formulário (o .form-control-gray sobrescreve a do Bootstrap) */
+.form-control-gray.is-invalid {
+  border-color: var(--docisis-danger, #dc3545);
 }
 
-.profile-title {
-    font-size: 2rem;
-    font-weight: 500;
-    color: #1e293b;
-    margin-bottom: 1.5rem;
+.form-control-gray.is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
 }
 
-/* Sub-navegação por Abas */
-.nav-tabs-wrapper {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    margin-bottom: 2rem;
-    overflow-x: auto;
+.form-control-gray[readonly] {
+  cursor: not-allowed;
+  opacity: 0.85;
 }
 
-.nav-tabs-docisis {
-    border-bottom: 2px solid #e2e8f0;
-    display: inline-flex;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-.nav-tabs-docisis .nav-item {
-    margin: 0;
-}
-
-.nav-tabs-docisis .nav-link {
-    color: #64748b;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: none;
-    padding: 0.6rem 1.25rem;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    transition: all 0.2s ease;
-    background: transparent;
-    white-space: nowrap;
-}
-
-.nav-tabs-docisis .nav-link:hover {
-    color: var(--docisis-terracotta, #c44918);
-    border-bottom-color: rgba(196, 73, 24, 0.3);
-}
-
-.nav-tabs-docisis .nav-link.active {
-    color: var(--docisis-terracotta, #c44918);
-    background: transparent;
-    border-bottom: 3px solid var(--docisis-terracotta, #c44918);
-}
-
-/* Avatar Circular com Upload */
-.avatar-upload-wrapper {
-    width: 140px;
-    height: 140px;
-    position: relative;
-}
-
-.avatar-circle {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background-color: #d1d5db;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.default-avatar-icon {
-    font-size: 7.5rem;
-    color: #9ca3af;
-    line-height: 1;
-}
-
-#avatar-img-preview {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.avatar-overlay {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.25s ease;
-}
-
-.avatar-circle:hover .avatar-overlay,
-.avatar-circle:focus-within .avatar-overlay {
-    opacity: 1;
-}
-
-@media (hover: none) {
-    .avatar-overlay {
-        opacity: 1;
-    }
-}
-
-/* Inputs do Perfil */
-.form-label-simple {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #475569;
-    margin-bottom: 0.5rem;
-    display: block;
-}
-
-.form-control-gray {
-    background-color: #d9d9d9 !important;
-    border: none !important;
-    border-radius: 6px !important;
-    padding: 0.85rem 1.2rem !important;
-    font-size: 0.95rem !important;
-    color: #1e293b !important;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.form-control-gray:focus {
-    background-color: #e5e7eb !important;
-    box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.2) !important;
-    outline: none !important;
-}
-
-.form-control-gray:focus-visible {
-    outline: 2px solid var(--docisis-terracotta, #c44918) !important;
-    outline-offset: 2px !important;
-}
-
-/* Largura máxima dos formulários internos */
-.max-w-460,
-.max-w-500,
-.max-w-550 {
-    max-width: 550px;
-    width: 100%;
-    margin-left: 0;
-    margin-right: auto;
-}
-
-/* Responsividade do card de perfil */
-@media (max-width: 768px) {
-    .profile-card {
-        padding: 2rem 1.25rem;
-    }
+.avatar-circle.carregando {
+  opacity: 0.6;
+  pointer-events: none;
 }

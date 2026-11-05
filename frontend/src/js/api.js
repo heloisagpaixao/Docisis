@@ -8,6 +8,7 @@
  *   const r = await Docisis.api('/produtos', { method: 'POST', body: { nome: 'Brigadeiro' } });
  *   const r = await Docisis.api('/produtos/3', { method: 'PUT', body: formData });   // upload
  *   const r = await Docisis.api('/estoque', { query: { limite: 10 } });
+ *   const r = await Docisis.api('/funcionarios/3/foto', { resposta: 'blob' });        // r.data = Blob
  *
  * Resposta sempre no mesmo formato (nunca lança erro):
  *   { ok: true|false, status: 200, data: <JSON ou null>, error: <mensagem ou null> }
@@ -37,6 +38,7 @@
       query,
       headers = {},
       auth: usarAuth = true,
+      resposta: tipoResposta,
     } = opcoes;
 
     let url = API_URL + caminho;
@@ -49,7 +51,10 @@
       if (texto) url += (url.includes("?") ? "&" : "?") + texto;
     }
 
-    const cabecalhos = { Accept: "application/json", ...headers };
+    const cabecalhos = {
+      Accept: tipoResposta === "blob" ? "*/*" : "application/json",
+      ...headers,
+    };
     if (usarAuth) {
       const token = auth.getAccessToken();
       if (token) cabecalhos.Authorization = "Bearer " + token;
@@ -72,7 +77,10 @@
     }
 
     let data = null;
-    if (resposta.status !== 204) {
+    if (resposta.ok && tipoResposta === "blob") {
+      // arquivos (ex.: foto de perfil) que exigem o token no cabeçalho
+      data = await resposta.blob();
+    } else if (resposta.status !== 204) {
       try {
         data = await resposta.json();
       } catch {

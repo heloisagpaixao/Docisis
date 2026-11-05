@@ -1,15 +1,13 @@
 # 🍰 Dosisis — Sistema Logístico
 
-O **Dosisis** é uma plataforma web de gestão logística criada para facilitar o controle de produtos, estoque, usuários e movimentações de uma operação de confeitaria.
-
+A **Dosisis** é uma plataforma web de gestão logística criada para facilitar o controle de produtos, estoque, usuários e movimentações de uma operação de confeitaria.
 Com uma interface clara, acolhedora e prática, o sistema reúne as informações mais importantes em um só lugar — desde o acompanhamento de vendas até o cadastro de produtos, a entrada de mercadorias e o controle de permissões da equipe.
 
 ---
 
 ## ✨ Sobre o projeto
 
-O Dosisis nasceu com o objetivo de transformar tarefas operacionais em uma experiência mais simples, visual e organizada. A plataforma foi pensada para que cada pessoa da equipe consiga encontrar rapidamente o que precisa, acompanhar o estoque e tomar decisões com mais segurança.
-
+A Dosisis nasceu com o objetivo de transformar tarefas operacionais em uma experiência mais simples, visual e organizada. A plataforma foi pensada para que cada pessoa da equipe consiga encontrar rapidamente o que precisa, acompanhar o estoque e tomar decisões com mais segurança.
 A identidade visual combina o laranja da marca com tons neutros e azul-marinho, criando uma aparência profissional sem perder o toque caloroso de uma confeitaria.
 
 ---
@@ -20,9 +18,6 @@ A identidade visual combina o laranja da marca com tons neutros e azul-marinho, 
 
 - Visão geral das vendas e dos pedidos do dia.
 - Indicadores de estoque, satisfação e desempenho.
-- Gráfico de performance de vendas.
-- Categorias mais populares.
-- Últimas transações realizadas.
 - Alertas urgentes e insights de produção.
 
 ### 🧁 Cadastro de Produtos
@@ -51,9 +46,7 @@ A identidade visual combina o laranja da marca com tons neutros e azul-marinho, 
 - Cargos de Administrador, Líder e Estoquista.
 - CPF mascarado para maior privacidade visual.
 - Cadastro de novos usuários.
-- Painel de permissões por cargo.
 - Área de segurança da rede e logs de acesso.
-- Exportação local da lista de usuários.
 
 ### 📱 Experiência responsiva
 

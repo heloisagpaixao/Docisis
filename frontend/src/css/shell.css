@@ -1,0 +1,401 @@
+/* ==========================================================================
+   DOCISIS - ESTRUTURA DAS TELAS (shell.css)
+   Barra lateral recolhível + topo padronizado, montados por layout.js.
+   Carregue DEPOIS do layout.css: as regras abaixo têm prioridade (body.dc-shell).
+   Para mudar as cores, edite só as variáveis --dc-* logo abaixo.
+   ========================================================================== */
+
+:root {
+  --dc-side-bg: #ec6226;
+  --dc-side-bg-hover: rgba(255, 255, 255, 0.14);
+  --dc-side-bg-active: rgba(255, 255, 255, 0.24);
+  --dc-side-text: #fff;
+  --dc-side-w: 248px;
+  --dc-side-w-mini: 76px;
+  --dc-top-h: 64px;
+  --dc-top-bg: #fff;
+  --dc-top-border: #e5e7eb;
+  --dc-ease: 0.22s ease;
+}
+
+/* ---------- Estrutura geral ---------- */
+body.dc-shell .app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+body.dc-shell .main-content-wrapper {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Barra lateral ---------- */
+.dc-sidebar {
+  flex: 0 0 var(--dc-side-w);
+  width: var(--dc-side-w);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--dc-side-bg);
+  color: var(--dc-side-text);
+  padding: 1.25rem 0.9rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition:
+    width var(--dc-ease),
+    flex-basis var(--dc-ease),
+    transform var(--dc-ease);
+  z-index: 1040;
+}
+
+.dc-side-brand {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem 1.25rem;
+}
+.dc-side-brand-text {
+  min-width: 0;
+}
+.dc-side-name {
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+.dc-side-sub {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-top: 0.15rem;
+  white-space: nowrap;
+}
+
+.dc-side-toggle {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.dc-side-toggle:hover {
+  background: var(--dc-side-bg-hover);
+}
+.dc-side-toggle i {
+  transition: transform var(--dc-ease);
+}
+
+.dc-side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+.dc-side-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  color: inherit;
+  text-decoration: none;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.dc-side-link i {
+  font-size: 1.2rem;
+  flex: 0 0 22px;
+  text-align: center;
+}
+.dc-side-link:hover {
+  background: var(--dc-side-bg-hover);
+  color: inherit;
+}
+.dc-side-link.active {
+  background: var(--dc-side-bg-active);
+  color: inherit;
+}
+.dc-side-link:focus-visible,
+.dc-side-toggle:focus-visible,
+.dc-side-cta:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.dc-side-foot {
+  margin-top: auto;
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.dc-side-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.8rem;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--dc-side-bg);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.dc-side-cta:hover {
+  background: #fff7f3;
+  color: var(--dc-side-bg);
+}
+.dc-side-sep {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  margin: 0;
+}
+button.dc-side-link {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  text-align: left;
+}
+
+/* ---------- Barra lateral recolhida (desktop) ---------- */
+@media (min-width: 992px) {
+  body.dc-collapsed .dc-sidebar {
+    flex-basis: var(--dc-side-w-mini);
+    width: var(--dc-side-w-mini);
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+  }
+  body.dc-collapsed .dc-side-brand {
+    flex-direction: column;
+    align-items: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  body.dc-collapsed .dc-side-brand-text,
+  body.dc-collapsed .dc-side-label {
+    display: none;
+  }
+  body.dc-collapsed .dc-side-link,
+  body.dc-collapsed .dc-side-cta {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  body.dc-collapsed .dc-side-toggle i {
+    transform: rotate(180deg);
+  }
+}
+
+/* ---------- Topo ---------- */
+.dc-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  height: var(--dc-top-h);
+  flex: 0 0 var(--dc-top-h);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1.5rem;
+  background: var(--dc-top-bg);
+  border-bottom: 1px solid var(--dc-top-border);
+}
+.dc-top-menu {
+  display: none;
+  border: 0;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0.25rem;
+  color: #334155;
+}
+.dc-top-brand {
+  display: inline-flex;
+  align-items: center;
+}
+.dc-top-logo {
+  height: 30px;
+  width: auto;
+}
+.dc-top-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--docisis-navy, #08172e);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dc-top-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.dc-top-search {
+  position: relative;
+  width: 260px;
+  max-width: 100%;
+  margin-right: 0.5rem;
+}
+.dc-top-search i {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+}
+.dc-top-search input {
+  width: 100%;
+  height: 38px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: #f1f3f5;
+  padding: 0 1rem 0 2.4rem;
+  font-size: 0.88rem;
+}
+.dc-top-search input:focus {
+  outline: 0;
+  background: #fff;
+  border-color: var(--dc-side-bg);
+  box-shadow: 0 0 0 3px rgba(236, 98, 38, 0.15);
+}
+
+.dc-top-icon {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #1f2937;
+  text-decoration: none;
+  font-size: 1.15rem;
+}
+.dc-top-icon:hover {
+  background: #f1f3f5;
+  color: #1f2937;
+}
+.dc-top-badge {
+  position: absolute;
+  top: 1px;
+  right: -1px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #dc3545;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+.dc-top-badge.d-none {
+  display: none;
+}
+
+.dc-top-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: 0 0 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fde6db;
+  color: var(--dc-side-bg);
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 1px solid #f3c9b6;
+  text-decoration: none;
+  margin-left: 0.25rem;
+}
+.dc-top-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Mobile / tablet: barra vira gaveta ---------- */
+.dc-overlay {
+  display: none;
+}
+@media (max-width: 991.98px) {
+  .dc-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: min(var(--dc-side-w), 84vw);
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+  body.dc-open .dc-sidebar {
+    transform: translateX(0);
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.25);
+  }
+  body.dc-open .dc-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 1035;
+  }
+  body.dc-open {
+    overflow: hidden;
+  }
+  .dc-side-toggle {
+    display: none;
+  }
+  .dc-top-menu {
+    display: inline-flex;
+  }
+  .dc-topbar {
+    padding: 0 1rem;
+    gap: 0.6rem;
+  }
+  .dc-top-search {
+    display: none;
+  }
+}
+@media (max-width: 575.98px) {
+  .dc-top-brand {
+    display: none;
+  }
+}
+
+@media print {
+  .dc-sidebar,
+  .dc-topbar,
+  .dc-overlay {
+    display: none !important;
+  }
+}

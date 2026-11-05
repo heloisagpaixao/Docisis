@@ -108,6 +108,14 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   let requisicaoAtual = 0; // descarta respostas antigas quando o usuário digita rápido
 
+  // Vindo do topo: estoque.html?busca=texto (pesquisa) e ?nova=1 (abre o modal de movimentação)
+  const params = new URLSearchParams(location.search);
+  const buscaInicial = (params.get("busca") || "").trim();
+  if (buscaInicial) {
+    estado.busca = buscaInicial;
+    buscaInput.value = buscaInicial;
+  }
+
   /* ------------------------------------------------------------------
        Consulta à API
        ------------------------------------------------------------------ */
@@ -594,4 +602,9 @@ document.addEventListener("DOMContentLoaded", () => {
        Início
        ------------------------------------------------------------------ */
   recarregarTudo();
+
+  if (params.get("nova") === "1") {
+    abrirModal(null);
+    history.replaceState(null, "", location.pathname);
+  }
 });

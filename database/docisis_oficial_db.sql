@@ -20,7 +20,7 @@ CREATE DATABASE IF NOT EXISTS docisis_oficial_db
 USE docisis_oficial_db;
 
 -- ===========================
--- CARGOS (agora com nome)
+-- CARGOS 
 -- ===========================
 CREATE TABLE cargos (
     id_cargo INT AUTO_INCREMENT PRIMARY KEY,
@@ -217,3 +217,62 @@ SELECT c.id_cargo, p.id_permissao
 FROM cargos c CROSS JOIN permissoes p
 WHERE c.nome = 'Estoquista'
   AND p.nome IN ('ESTOQUE_CONSULTAR', 'ENTRADA_REGISTRAR', 'SAIDA_REGISTRAR', 'NOTIFICACAO_CONSULTAR');
+
+-- MIGRAÇÃO V2
+ALTER TABLE lotes
+  ADD COLUMN id_produto INT NULL AFTER quantidade,
+  ADD CONSTRAINT fk_lote_produto FOREIGN KEY (id_produto) REFERENCES produtos(id_produto);
+ 
+ALTER TABLE lotes DROP COLUMN materia_prima;
+ALTER TABLE lotes MODIFY id_produto INT NOT NULL;
+
+ALTER TABLE entradas
+  ADD COLUMN quantidade INT NOT NULL AFTER id_lote;
+ 
+ALTER TABLE produtos MODIFY dt_validade DATE NULL;
+
+-- MIGRAÇÃO V3
+ALTER TABLE produtos
+  ADD COLUMN estoque_minimo INT NULL,
+  ADD COLUMN estoque_maximo INT NULL;
+
+CREATE TABLE notificacoes (
+    id_notificacao INT AUTO_INCREMENT PRIMARY KEY,
+    tipo ENUM('VENCIDO','VENCIMENTO_PROXIMO','ESTOQUE_ZERADO','ESTOQUE_BAIXO','ESTOQUE_EXCESSO') NOT NULL,
+    severidade ENUM('INFO','ATENCAO','CRITICA') NOT NULL,
+    mensagem VARCHAR(255) NOT NULL,
+    id_lote INT NULL,
+    id_produto INT NULL,
+    chave_ativa VARCHAR(60) NULL,
+    criada_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    resolvida_em DATETIME NULL,
+    CONSTRAINT uq_notificacao_chave_ativa UNIQUE (chave_ativa),
+    CONSTRAINT fk_notificacao_lote FOREIGN KEY (id_lote) REFERENCES lotes(id) ON DELETE CASCADE,
+    CONSTRAINT fk_notificacao_produto FOREIGN KEY (id_produto) REFERENCES produtos(id_produto) ON DELETE CASCADE
+);
+CREATE INDEX idx_notificacoes_resolvida ON notificacoes(resolvida_em);
+
+CREATE TABLE notificacao_leituras (
+    id_notificacao INT NOT NULL,
+    id_funcionario INT NOT NULL,
+    lida_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_notificacao, id_funcionario),
+    CONSTRAINT fk_leitura_notificacao FOREIGN KEY (id_notificacao) REFERENCES notificacoes(id_notificacao) ON DELETE CASCADE,
+    CONSTRAINT fk_leitura_funcionario FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id) ON DELETE CASCADE
+);
+
+-- MIGRAÇÃO V4
+CREATE TABLE refresh_tokens (
+    id_refresh INT AUTO_INCREMENT PRIMARY KEY,
+    id_funcionario INT NOT NULL,
+    familia CHAR(36) NOT NULL,
+    token_hash CHAR(64) NOT NULL,
+    expira_em DATETIME NOT NULL,
+    revogado_em DATETIME NULL,
+    criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_refresh_token_hash UNIQUE (token_hash),
+    CONSTRAINT fk_refresh_funcionario FOREIGN KEY (id_funcionario) REFERENCES funcionarios(id) ON DELETE CASCADE
+);
+CREATE INDEX idx_refresh_familia ON refresh_tokens(familia);
+CREATE INDEX idx_refresh_funcionario ON refresh_tokens(id_funcionario);
+CREATE INDEX idx_refresh_expira ON refresh_tokens(expira_em);

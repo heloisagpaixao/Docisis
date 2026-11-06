@@ -1,9 +1,98 @@
 /* ==========================================================================
-   DOCISIS - AJUSTES DA TELA DE USUÁRIOS (usuarios-ajustes.css)
-   Substitui os style="..." do HTML. Quando quiser, copie para o usuarios.css
-   e apague este arquivo.
+   DOCISIS - GESTÃO DE USUÁRIOS (usuarios.css)
+   Usa as variáveis do global.css, então o modo escuro funciona sem regras extras.
    ========================================================================== */
 
+.users-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.users-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.users-title-area {
+  display: flex;
+  flex-direction: column;
+}
+.users-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--docisis-navy);
+  letter-spacing: -0.5px;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.users-title i {
+  color: var(--docisis-terracotta);
+}
+.users-subtitle {
+  font-size: 0.92rem;
+  color: var(--docisis-text-muted);
+  margin: 0;
+}
+.users-actions-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.kpi-card.kpi-card-operadores::before {
+  background: linear-gradient(90deg, #08172e, #1e3a8a);
+}
+.kpi-card .kpi-icon-box {
+  background: var(--docisis-terracotta-light);
+  color: var(--docisis-terracotta);
+}
+
+/* ---------- Lista ---------- */
+.users-main-card {
+  background: var(--docisis-surface);
+  border: 1px solid var(--docisis-border);
+  border-radius: var(--docisis-radius-lg);
+  box-shadow: var(--docisis-shadow);
+  overflow: hidden;
+}
+.users-toolbar {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--docisis-border);
+}
+
+.users-table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.88rem;
+}
+.users-table thead th {
+  background: var(--docisis-input-bg);
+  color: var(--docisis-text-label);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 0.95rem 1.15rem;
+  border-bottom: 1.5px solid var(--docisis-border);
+  white-space: nowrap;
+}
+.users-table tbody td {
+  padding: 1rem 1.15rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--docisis-border);
+  color: var(--docisis-text-dark);
+}
+.users-table tbody tr:hover {
+  background: var(--docisis-input-bg);
+}
 .users-table .col-usuario {
   min-width: 240px;
 }
@@ -11,13 +100,290 @@
   min-width: 150px;
 }
 
-/* Ação perigosa (excluir) */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.user-avatar-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 1px solid transparent;
+}
+.avatar-admin {
+  background: #fde6db;
+  color: #8a3112;
+  border-color: #f3c9b6;
+}
+.avatar-lider {
+  background: #e7f1ff;
+  color: #1d4f91;
+  border-color: #bcd6f5;
+}
+.avatar-operador {
+  background: #e6f4ea;
+  color: #146c3a;
+  border-color: #bfe3cb;
+}
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.user-name {
+  font-weight: 700;
+  color: var(--docisis-text-dark);
+}
+.user-email {
+  font-size: 0.8rem;
+  color: var(--docisis-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.timestamp-main {
+  display: block;
+  font-weight: 600;
+  color: var(--docisis-text-dark);
+}
+.timestamp-sub {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--docisis-text-muted);
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.role-admin {
+  background: #fde6db;
+  color: #8a3112;
+  border-color: #f3c9b6;
+}
+.role-lider {
+  background: #e7f1ff;
+  color: #1d4f91;
+  border-color: #bcd6f5;
+}
+.role-operador {
+  background: #e6f4ea;
+  color: #146c3a;
+  border-color: #bfe3cb;
+}
+
+.action-buttons-group {
+  display: flex;
+  gap: 0.35rem;
+}
+.btn-table-action {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--docisis-border);
+  background: var(--docisis-surface);
+  color: var(--docisis-text-label);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-table-action:hover {
+  background: var(--docisis-input-bg);
+  border-color: var(--docisis-text-muted);
+}
 .btn-table-action.acao-perigo {
-  color: var(--docisis-danger, #dc3545);
+  color: var(--docisis-danger);
+}
+.btn-table-action.acao-perigo:hover {
+  background: var(--docisis-danger-light);
+  border-color: var(--docisis-danger);
 }
 .btn-table-action:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.users-footer-bar {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-top: 1px solid var(--docisis-border);
+  background: var(--docisis-surface);
+}
+.users-pagination-info {
+  font-size: 0.85rem;
+  color: var(--docisis-text-muted);
+}
+
+/* ---------- Painel de cadastro ---------- */
+.panel-create-user {
+  position: sticky;
+  top: calc(var(--dc-top-h, 64px) + 1rem);
+  background: var(--docisis-surface);
+  border: 1.5px solid var(--docisis-terracotta);
+  border-radius: var(--docisis-radius-lg);
+  box-shadow: var(--docisis-shadow);
+  overflow: hidden;
+}
+.panel-header-sticky {
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--docisis-border);
+}
+.panel-icon-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--docisis-terracotta-light);
+  color: var(--docisis-terracotta);
+}
+.panel-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--docisis-navy);
+}
+.panel-subtitle {
+  font-size: 0.82rem;
+  color: var(--docisis-text-muted);
+  margin: 0.35rem 0 0;
+}
+.panel-form {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.roles-fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.badge-role-required {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--docisis-input-bg);
+  border: 1px solid var(--docisis-border);
+  color: var(--docisis-text-label);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.role-selector-card {
+  display: block;
+  position: relative;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+}
+.role-radio-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.role-card-content {
+  padding: 0.8rem 0.9rem;
+  border: 1.5px solid var(--docisis-border);
+  border-radius: 10px;
+  background: var(--docisis-surface);
+  transition: all 0.15s ease;
+}
+.role-selector-card:hover .role-card-content {
+  border-color: var(--docisis-text-muted);
+}
+.role-radio-input:checked + .role-card-content {
+  border-color: var(--docisis-terracotta);
+  background: var(--docisis-terracotta-light);
+  box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.14);
+}
+.role-radio-input:focus-visible + .role-card-content {
+  outline: 2px solid var(--docisis-terracotta);
+  outline-offset: 2px;
+}
+.role-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.role-card-name {
+  font-weight: 700;
+  color: var(--docisis-text-dark);
+  font-size: 0.9rem;
+}
+.role-card-desc {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--docisis-text-muted);
+  line-height: 1.4;
+}
+.role-icon-box {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+.role-icon-admin {
+  background: #fde6db;
+  color: #8a3112;
+}
+.role-icon-lider {
+  background: #e7f1ff;
+  color: #1d4f91;
+}
+.role-icon-operador {
+  background: #e6f4ea;
+  color: #146c3a;
+}
+.role-level-pill {
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.level-full {
+  background: #fde6db;
+  color: #8a3112;
+}
+.level-mid {
+  background: #e7f1ff;
+  color: #1d4f91;
+}
+.level-basic {
+  background: #e6f4ea;
+  color: #146c3a;
+}
+
+.permissions-matrix-box {
+  background: var(--docisis-input-bg);
+  border-color: var(--docisis-border) !important;
+}
+.privileges-checklist li {
+  padding: 0.15rem 0;
+  color: var(--docisis-text-label);
 }
 
 /* Senha provisória mostrada uma única vez após o cadastro */
@@ -25,9 +391,25 @@
   display: inline-block;
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
-  background: #fff;
+  background: var(--docisis-surface);
+  color: var(--docisis-text-dark);
   border: 1px dashed currentColor;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.95rem;
   user-select: all;
+}
+
+@media (max-width: 991.98px) {
+  .panel-create-user {
+    position: static;
+  }
+}
+@media (max-width: 768px) {
+  .users-header-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .users-search-group {
+    max-width: 100%;
+  }
 }

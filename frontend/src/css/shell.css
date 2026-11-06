@@ -6,7 +6,7 @@
    ========================================================================== */
 
 :root {
-  --dc-side-bg: #ec6226;
+  --dc-side-bg: #c44918; /* branco sobre este tom = 4,9:1 (passa no WCAG AA) */
   --dc-side-bg-hover: rgba(255, 255, 255, 0.14);
   --dc-side-bg-active: rgba(255, 255, 255, 0.24);
   --dc-side-text: #fff;
@@ -283,10 +283,14 @@ button.dc-side-link {
   outline: 0;
   background: #fff;
   border-color: var(--dc-side-bg);
-  box-shadow: 0 0 0 3px rgba(236, 98, 38, 0.15);
+  box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.2);
 }
 
 .dc-top-icon {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
   position: relative;
   width: 38px;
   height: 38px;

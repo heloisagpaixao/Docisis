@@ -1,9 +1,162 @@
 /* ==========================================================================
-   DOCISIS - AJUSTES DA TELA DE ESTOQUE (estoque-ajustes.css)
-   Substitui os style="..." que estavam no HTML/JS. Quando quiser, copie estas
-   regras para o estoque.css e apague este arquivo.
+   DOCISIS - TELA DE ESTOQUE (estoque.css)
+   Usa as variáveis do global.css, então o modo escuro (dark.css) funciona sem regras extras.
    ========================================================================== */
 
+.stock-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ---------- Cabeçalho ---------- */
+.stock-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+.stock-title-area {
+  display: flex;
+  flex-direction: column;
+}
+.stock-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--docisis-navy);
+  letter-spacing: -0.5px;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.stock-title i {
+  color: var(--docisis-terracotta);
+}
+.stock-subtitle {
+  font-size: 0.92rem;
+  color: var(--docisis-text-muted);
+  margin: 0;
+}
+.stock-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- Indicadores ---------- */
+.kpi-card.kpi-total::before {
+  background: linear-gradient(90deg, #08172e, #1e3a8a);
+}
+.kpi-card.kpi-vencimentos::before {
+  background: linear-gradient(90deg, #d97706, #f59e0b);
+}
+.kpi-card.kpi-criticos::before,
+.kpi-card.kpi-vencidos::before {
+  background: linear-gradient(90deg, #b42318, #ef4444);
+}
+.kpi-total .kpi-icon-box {
+  background-color: rgba(8, 23, 46, 0.07);
+  color: var(--docisis-navy);
+}
+.kpi-vencimentos .kpi-icon-box {
+  background-color: var(--docisis-warning-light);
+  color: var(--docisis-warning);
+}
+.kpi-criticos .kpi-icon-box,
+.kpi-vencidos .kpi-icon-box {
+  background-color: var(--docisis-danger-light);
+  color: var(--docisis-danger);
+}
+
+/* ---------- Cartão da tabela ---------- */
+.stock-main-card {
+  background: var(--docisis-surface);
+  border: 1px solid var(--docisis-border);
+  border-radius: var(--docisis-radius-lg);
+  box-shadow: var(--docisis-shadow);
+  overflow: hidden;
+}
+.stock-toolbar {
+  padding: 1.5rem 1.75rem;
+  border-bottom: 1px solid var(--docisis-border);
+  background: var(--docisis-surface);
+}
+
+/* Busca (também usada na gestão de usuários) */
+.stock-search-group,
+.users-search-group {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+  max-width: 440px;
+}
+.stock-search-group .search-icon,
+.users-search-group .search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--docisis-text-muted);
+  font-size: 1rem;
+  pointer-events: none;
+}
+.stock-search-group .search-input,
+.users-search-group .search-input {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.6rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--docisis-border);
+  background: var(--docisis-input-bg);
+  font-size: 0.9rem;
+  color: var(--docisis-text-dark);
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.stock-search-group .search-input:focus,
+.users-search-group .search-input:focus {
+  outline: none;
+  border-color: var(--docisis-terracotta);
+  background: var(--docisis-surface);
+  box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.14);
+}
+
+/* ---------- Tabela ---------- */
+.stock-table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.88rem;
+}
+.stock-table thead th {
+  background: var(--docisis-input-bg);
+  color: var(--docisis-text-label);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 0.95rem 1.15rem;
+  border-bottom: 1.5px solid var(--docisis-border);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.stock-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.stock-table tbody tr:hover {
+  background-color: var(--docisis-input-bg);
+}
+.stock-table tbody td {
+  padding: 1.05rem 1.15rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--docisis-border);
+  color: var(--docisis-text-dark);
+}
 .stock-table .col-produto {
   min-width: 280px;
 }
@@ -11,18 +164,118 @@
   min-width: 150px;
 }
 
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
 .icone-produto {
   width: 38px;
   height: 38px;
   font-size: 1.1rem;
 }
-
 .nome-produto {
   font-size: 0.92rem;
 }
+.btn-movimentar-item {
+  white-space: nowrap;
+}
 
-/* Cartão "Lotes Vencidos" (substitui o antigo "Valor Total do Inventário") */
-.kpi-vencidos .kpi-icon-box {
-  background-color: #fdecea;
-  color: #dc3545;
+/* ---------- Modal de movimentação ---------- */
+.modal-movimentacao .modal-content {
+  border-radius: var(--docisis-radius-lg);
+  border: 1.5px solid var(--docisis-terracotta);
+  box-shadow: 0 16px 40px rgba(8, 23, 46, 0.18);
+  overflow: hidden;
+}
+.modal-movimentacao .modal-header {
+  border-bottom: 1px solid var(--docisis-border);
+}
+
+.mov-type-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+.mov-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.8rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1.5px solid var(--docisis-border);
+  background: var(--docisis-surface);
+  color: var(--docisis-text-label);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.mov-type-btn:hover {
+  border-color: var(--docisis-text-muted);
+}
+.mov-type-btn.active {
+  color: #fff;
+  border-color: transparent;
+}
+.mov-type-btn.type-entrada.active {
+  background: #157347;
+} /* branco sobre #157347 = 5,4:1 */
+.mov-type-btn.type-saida.active {
+  background: #b42318;
+} /* 6,5:1 */
+.mov-type-btn.type-ajuste.active {
+  background: #2f5597;
+} /* 7:1 */
+.mov-type-btn[hidden] {
+  display: none;
+}
+
+.saldo-preview-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  background: var(--docisis-input-bg);
+  border: 1px solid var(--docisis-border);
+  border-radius: 10px;
+}
+.saldo-item {
+  display: flex;
+  flex-direction: column;
+}
+.saldo-item-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--docisis-text-muted);
+}
+.saldo-item-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--docisis-text-dark);
+}
+.saldo-arrow {
+  font-size: 1.3rem;
+  color: var(--docisis-text-muted);
+}
+
+/* ---------- Impressão ---------- */
+@media (max-width: 768px) {
+  .stock-header-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .stock-search-group {
+    max-width: 100%;
+  }
+  .mov-type-selector {
+    grid-template-columns: 1fr;
+  }
 }

@@ -198,6 +198,8 @@
           '<i class="bi bi-search" aria-hidden="true"></i>' +
           `<input type="search" name="busca" maxlength="100" placeholder="Pesquisar produto…" aria-label="Pesquisar produto no estoque" value="${esc(buscaAtual)}"></form>`
         : "") +
+      '<button type="button" id="dc-top-tema" class="dc-top-icon" aria-pressed="false" title="Modo escuro">' +
+      '<i class="bi bi-moon" aria-hidden="true"></i></button>' +
       (auth.temPermissao("NOTIFICACAO_CONSULTAR")
         ? '<a href="notificacoes.html" class="dc-top-icon" id="topbar-sino" title="Central de notificações" aria-label="Central de notificações">' +
           '<i class="bi bi-bell" aria-hidden="true"></i><span id="topbar-sino-badge" class="dc-top-badge d-none">0</span></a>'
@@ -213,8 +215,33 @@
         abrirGaveta(!document.body.classList.contains("dc-open")),
       );
 
+    iniciarBotaoTema();
     carregarAvatarTopbar(usuario);
     atualizarSino();
+  }
+
+  /** Botão de modo escuro: aria-pressed + nome + ícone sempre refletem o estado atual. */
+  function iniciarBotaoTema() {
+    const botao = document.getElementById("dc-top-tema");
+    if (!botao) return;
+    if (!Docisis.tema) {
+      botao.remove();
+      return;
+    } // theme.js não carregado nesta página
+    const atualizar = () => {
+      const escuro = Docisis.tema.escuro();
+      botao.setAttribute("aria-pressed", String(escuro));
+      botao.setAttribute(
+        "aria-label",
+        escuro ? "Desativar modo escuro" : "Ativar modo escuro",
+      );
+      botao.title = escuro ? "Voltar ao modo claro" : "Ativar modo escuro";
+      botao.querySelector("i").className =
+        "bi " + (escuro ? "bi-sun" : "bi-moon");
+    };
+    botao.addEventListener("click", () => Docisis.tema.alternar());
+    document.addEventListener("docisis:tema", atualizar);
+    atualizar();
   }
 
   /** Atualiza o contador de não lidas do sininho (silencioso se falhar). */

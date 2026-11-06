@@ -1,11 +1,164 @@
 /* ==========================================================================
-   DOCISIS - AJUSTES DA TELA DE PRODUTOS (produtos-ajustes.css)
-   Substitui os style="..." que estavam no HTML e adiciona o estado de erro
-   dos campos. Quando quiser, copie para o produtos.css e apague este arquivo.
+   DOCISIS - CADASTRO DE PRODUTOS (produtos.css)
+   Inclui os campos de formulário "docisis" (form-control-docisis etc.).
+   Usa as variáveis do global.css, então o modo escuro funciona sem regras extras.
    ========================================================================== */
 
-.icone-terracotta {
+.products-container {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.docisis-main-card {
+  background: var(--docisis-surface);
+  border: 1px solid var(--docisis-border);
+  border-radius: var(--docisis-radius-lg);
+  box-shadow: var(--docisis-shadow);
+  padding: 2rem;
+}
+
+.page-header-content {
+  margin-bottom: 1.5rem;
+}
+.page-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--docisis-navy);
+  letter-spacing: -0.4px;
+  margin: 0 0 0.25rem;
+}
+.page-description {
+  color: var(--docisis-text-muted);
+  margin: 0;
+}
+
+/* ---------- Abas (passos) ---------- */
+.nav-tabs-docisis-custom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  border-bottom: 1px solid var(--docisis-border);
+}
+.nav-tabs-docisis-custom .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  color: var(--docisis-text-label);
+  font-weight: 600;
+  font-size: 0.92rem;
+  margin-bottom: -1px;
+}
+.nav-tabs-docisis-custom .nav-link:hover {
   color: var(--docisis-terracotta);
+}
+.nav-tabs-docisis-custom .nav-link.active {
+  color: var(--docisis-terracotta);
+  border-bottom-color: var(--docisis-terracotta);
+  background: transparent;
+}
+.step-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--docisis-input-bg);
+  border: 1px solid var(--docisis-border);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.nav-tabs-docisis-custom .nav-link.active .step-indicator {
+  background: #c44918;
+  border-color: #c44918;
+  color: #fff;
+}
+
+.section-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--docisis-navy);
+  margin-bottom: 1rem;
+}
+.section-subtitle i {
+  color: var(--docisis-terracotta);
+}
+
+/* ---------- Campos ---------- */
+.form-label-custom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--docisis-text-label);
+  margin-bottom: 0.4rem;
+}
+.form-label-custom small {
+  font-size: 0.74rem;
+  color: var(--docisis-text-muted);
+}
+.required-mark {
+  color: var(--docisis-danger);
+}
+
+.form-control-docisis,
+.form-select-docisis {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--docisis-text-dark);
+  background: var(--docisis-input-bg);
+  border: 1px solid var(--docisis-border);
+  border-radius: var(--docisis-radius-sm);
+  transition: all 0.2s ease;
+}
+.form-control-docisis::placeholder {
+  color: var(--docisis-text-muted);
+  opacity: 0.85;
+}
+.form-control-docisis:focus,
+.form-select-docisis:focus {
+  outline: none;
+  background: var(--docisis-surface);
+  border-color: var(--docisis-terracotta);
+  box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.14);
+}
+
+.input-addon-group {
+  display: flex;
+  align-items: stretch;
+}
+.input-addon-group .addon-prefix {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 0.85rem;
+  background: var(--docisis-input-bg);
+  color: var(--docisis-text-muted);
+  border: 1px solid var(--docisis-border);
+  border-right: 0;
+  border-radius: var(--docisis-radius-sm) 0 0 var(--docisis-radius-sm);
+}
+.input-addon-group .form-control-docisis {
+  border-radius: 0 var(--docisis-radius-sm) var(--docisis-radius-sm) 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .btn-gerar-codigo {
@@ -13,30 +166,190 @@
   font-size: 0.78rem;
   font-weight: 600;
 }
+.icone-terracotta {
+  color: var(--docisis-terracotta);
+}
 
-/* Mensagem de erro logo abaixo do campo (aparece só quando tem texto) */
 .campo-erro {
-  color: var(--docisis-danger, #dc3545);
+  color: var(--docisis-danger);
   font-size: 0.8rem;
   font-weight: 500;
   margin-top: 0.3rem;
 }
-
 .campo-erro:empty {
   display: none;
 }
-
-/* Borda vermelha nos campos deste formulário */
 .form-control-docisis.is-invalid,
 .form-select-docisis.is-invalid {
-  border-color: var(--docisis-danger, #dc3545);
+  border-color: var(--docisis-danger);
 }
-
 .form-control-docisis.is-invalid:focus,
 .form-select-docisis.is-invalid:focus {
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.18);
 }
 
+/* ---------- Foto ---------- */
+.image-preview-panel {
+  background: var(--docisis-input-bg);
+  border: 1px solid var(--docisis-border);
+  border-radius: var(--docisis-radius);
+  padding: 1.1rem;
+  margin-bottom: 1rem;
+}
+.image-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+.image-preview-header h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--docisis-navy);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.image-status-badge {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--docisis-surface);
+  border: 1px solid var(--docisis-border);
+  color: var(--docisis-text-muted);
+}
+
+.image-dropzone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 190px;
+  border: 2px dashed var(--docisis-border);
+  border-radius: var(--docisis-radius);
+  background: var(--docisis-surface);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.image-dropzone:hover,
+.image-dropzone.drag-over {
+  border-color: var(--docisis-terracotta);
+  background: var(--docisis-terracotta-light);
+}
 .image-dropzone.is-invalid {
-  border-color: var(--docisis-danger, #dc3545);
+  border-color: var(--docisis-danger);
+}
+.image-dropzone-content {
+  text-align: center;
+  padding: 1rem;
+}
+.image-dropzone-icon {
+  font-size: 2rem;
+  color: var(--docisis-terracotta);
+}
+.image-dropzone-title {
+  font-weight: 700;
+  color: var(--docisis-text-dark);
+  margin: 0.25rem 0 0.1rem;
+}
+.image-dropzone-sub {
+  font-size: 0.78rem;
+  color: var(--docisis-text-muted);
+}
+.image-preview-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.image-preview-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(8, 23, 46, 0.55);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.image-dropzone:hover .image-preview-overlay,
+.image-dropzone:focus-within .image-preview-overlay {
+  opacity: 1;
+}
+.image-preview-overlay.d-none {
+  display: none !important;
+}
+
+/* ---------- Dicas ---------- */
+.tips-contextual-card {
+  background: var(--docisis-terracotta-light);
+  border: 1px solid var(--docisis-border);
+  border-radius: var(--docisis-radius);
+  padding: 1.1rem;
+}
+.tips-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+.tips-icon-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--docisis-surface);
+  color: var(--docisis-terracotta);
+}
+.tips-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--docisis-navy);
+  margin: 0;
+}
+.tips-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.tips-list-item {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.84rem;
+  color: var(--docisis-text-label);
+  line-height: 1.45;
+}
+.tips-list-item i {
+  color: var(--docisis-success);
+  margin-top: 0.1rem;
+}
+
+/* ---------- Rodapé de ações ---------- */
+.form-action-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--docisis-border);
+}
+
+@media (max-width: 575.98px) {
+  .docisis-main-card {
+    padding: 1.25rem;
+  }
 }

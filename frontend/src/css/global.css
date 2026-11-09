@@ -52,6 +52,15 @@ html {
   box-sizing: border-box;
 }
 
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.18s;
+}
+
 *,
 *::before,
 *::after {

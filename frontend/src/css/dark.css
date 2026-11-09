@@ -91,7 +91,8 @@ html[data-theme="dark"] body {
   border-color: #7a4a35;
   color: #ffd2bd;
 }
-[data-theme="dark"] .dc-top-logo {
+[data-theme="dark"] .dc-top-logo,
+[data-theme="dark"] .brand-logo-img {
   filter: brightness(0) invert(1);
 } /* logo escura vira clara; remova se tiver uma versão própria */
 [data-theme="dark"] .dc-side-cta {

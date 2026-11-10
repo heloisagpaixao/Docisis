@@ -35,6 +35,14 @@
       permissao: "ESTOQUE_CONSULTAR",
     },
     {
+      id: "recebimento",
+      href: "recebimento.html",
+      icone: "bi-truck",
+      rotulo: "Receber",
+      titulo: "Receber mercadoria",
+      permissao: "LOTE_GERENCIAR",
+    },
+    {
       id: "historico",
       href: "historico.html",
       icone: "bi-clock-history",
@@ -65,6 +73,7 @@
     inicio: "Início",
     estoque: "Estoque",
     historico: "Histórico",
+    recebimento: "Receber mercadoria",
     produtos: "Cadastro de produtos",
     admin: "Administração",
     notificacoes: "Notificações",

@@ -279,3 +279,58 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Entrada: lote existente x lote novo ---------- */
+.mov-modo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  border: 0;
+  padding: 0;
+  margin: 0 0 1.1rem;
+  min-width: 0;
+}
+.mov-modo.d-none {
+  display: none;
+}
+.mov-modo-opcao {
+  flex: 1 1 220px;
+  position: relative;
+  cursor: pointer;
+  margin: 0;
+}
+.mov-modo-opcao input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.mov-modo-opcao span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.8rem;
+  border: 1.5px solid var(--docisis-border);
+  border-radius: 10px;
+  background: var(--docisis-surface);
+  color: var(--docisis-text-label);
+  font-size: 0.86rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.mov-modo-opcao:hover span {
+  border-color: var(--docisis-text-muted);
+}
+.mov-modo-opcao input:checked + span {
+  border-color: var(--docisis-terracotta);
+  background: var(--docisis-terracotta-light);
+  color: var(--docisis-terracotta);
+  box-shadow: 0 0 0 3px rgba(196, 73, 24, 0.12);
+}
+.mov-modo-opcao input:focus-visible + span {
+  outline: 2px solid var(--docisis-terracotta);
+  outline-offset: 2px;
+}
+.modal-movimentacao .is-invalid {
+  border-color: var(--docisis-danger);
+}

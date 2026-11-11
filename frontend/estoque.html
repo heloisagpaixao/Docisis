@@ -52,14 +52,6 @@
                   </p>
                 </div>
                 <div class="stock-actions-group">
-                  <a
-                    href="recebimento.html"
-                    class="btn-docisis-outline"
-                    data-permissao="LOTE_GERENCIAR"
-                  >
-                    <i class="bi bi-truck" aria-hidden="true"></i> Receber
-                    mercadoria
-                  </a>
                   <div class="dropdown">
                     <button
                       class="btn btn-docisis-outline dropdown-toggle"
@@ -385,8 +377,8 @@
                 Registrar Movimentação de Estoque
               </h2>
               <p class="text-muted small mb-0">
-                Entradas, saídas e ajustes são registrados sobre um lote já
-                cadastrado.
+                Entradas, saídas e ajustes são registrados sobre um lote. Na
+                entrada, você também pode cadastrar um lote novo.
               </p>
             </div>
             <button
@@ -438,7 +430,31 @@
                 </button>
               </div>
 
-              <div class="saldo-preview-card">
+              <!-- Entrada: lote já cadastrado x mercadoria nova (só quem pode cadastrar lote e nota) -->
+              <fieldset class="mov-modo d-none" id="grupo-modo-entrada">
+                <legend class="visually-hidden">Origem da entrada</legend>
+                <label class="mov-modo-opcao">
+                  <input
+                    type="radio"
+                    name="mov-modo"
+                    value="existente"
+                    checked
+                  />
+                  <span
+                    ><i class="bi bi-box-seam" aria-hidden="true"></i> Lote já
+                    cadastrado</span
+                  >
+                </label>
+                <label class="mov-modo-opcao">
+                  <input type="radio" name="mov-modo" value="novo" />
+                  <span
+                    ><i class="bi bi-truck" aria-hidden="true"></i> Novo lote
+                    (chegou mercadoria)</span
+                  >
+                </label>
+              </fieldset>
+
+              <div class="saldo-preview-card" id="saldo-preview-card">
                 <div class="saldo-item">
                   <span class="saldo-item-label">Saldo Atual do Lote</span>
                   <span class="saldo-item-val" id="mov-saldo-atual-preview"
@@ -472,7 +488,7 @@
               </div>
 
               <div class="row g-3">
-                <div class="col-12">
+                <div class="col-12" id="grupo-lote">
                   <label for="mov-lote" class="form-label-uppercase"
                     >Produto / Lote <span class="text-danger">*</span></label
                   >
@@ -481,6 +497,86 @@
                     <select id="mov-lote" class="form-select" required>
                       <option value="">Selecione o lote...</option>
                     </select>
+                  </div>
+                </div>
+
+                <!-- Dados do lote novo (aparece só no modo "Novo lote") -->
+                <div class="col-12 d-none" id="painel-novo-lote">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label for="nl-produto" class="form-label-uppercase"
+                        >Produto <span class="text-danger">*</span></label
+                      >
+                      <div class="input-group-docisis">
+                        <i
+                          class="bi bi-box-seam input-icon"
+                          aria-hidden="true"
+                        ></i>
+                        <select id="nl-produto" class="form-select">
+                          <option value="">Carregando produtos...</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="nl-validade" class="form-label-uppercase"
+                        >Validade do lote
+                        <span class="text-danger">*</span></label
+                      >
+                      <div class="input-group-docisis">
+                        <i
+                          class="bi bi-calendar-event input-icon"
+                          aria-hidden="true"
+                        ></i>
+                        <input
+                          type="date"
+                          id="nl-validade"
+                          class="form-control"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="nl-fornecedor" class="form-label-uppercase"
+                        >Fornecedor <span class="text-danger">*</span></label
+                      >
+                      <div class="input-group-docisis">
+                        <i class="bi bi-shop input-icon" aria-hidden="true"></i>
+                        <input
+                          type="text"
+                          id="nl-fornecedor"
+                          class="form-control"
+                          maxlength="50"
+                          placeholder="Ex: Moinho Paulista"
+                          autocomplete="organization"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="nl-data" class="form-label-uppercase"
+                        >Data da compra
+                        <span class="text-danger">*</span></label
+                      >
+                      <div class="input-group-docisis">
+                        <i
+                          class="bi bi-receipt input-icon"
+                          aria-hidden="true"
+                        ></i>
+                        <input type="date" id="nl-data" class="form-control" />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="nl-arquivo" class="form-label-uppercase"
+                        >Arquivo da nota
+                        <span class="text-muted fw-normal text-lowercase"
+                          >(opcional, PDF/JPG/PNG)</span
+                        ></label
+                      >
+                      <input
+                        type="file"
+                        id="nl-arquivo"
+                        class="form-control"
+                        accept="application/pdf,image/jpeg,image/png"
+                      />
+                    </div>
                   </div>
                 </div>
 

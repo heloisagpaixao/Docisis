@@ -93,6 +93,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnConfirmar = el("btn-confirmar-movimentacao");
   const saldoAtualEl = el("mov-saldo-atual-preview");
   const saldoProjetadoEl = el("mov-saldo-projetado-preview");
+  const grupoModo = el("grupo-modo-entrada");
+  const grupoLote = el("grupo-lote");
+  const painelNovoLote = el("painel-novo-lote");
+  const saldoCard = el("saldo-preview-card");
+  const selectProduto = el("nl-produto");
 
   /* ------------------------------------------------------------------
        Estado
@@ -105,6 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
     lotesDaPagina: [],
     lotesDoModal: new Map(), // id_lote -> lote
     tipoMov: null,
+    modoEntrada: "existente", // 'existente' | 'novo'
+    produtos: null, // lista de produtos (carregada na 1ª vez que abre o modo novo)
+    novoLote: { notaId: null, arquivoEnviado: false }, // reaproveita a nota se o lote falhar e o usuário tentar de novo
   };
   let requisicaoAtual = 0; // descarta respostas antigas quando o usuário digita rápido
 
@@ -387,7 +395,238 @@ document.addEventListener("DOMContentLoaded", () => {
       labelQtd.innerHTML = 'Quantidade <span class="text-danger">*</span>';
       inputQtd.min = "1";
     }
+    // só a ENTRADA tem o modo "novo lote", e só para quem pode cadastrar lote e nota
+    const permiteNovo = tipo === "entrada" && podeNovoLote();
+    grupoModo.classList.toggle("d-none", !permiteNovo);
+    if (!permiteNovo) definirModo("existente");
+    else definirModo(estado.modoEntrada);
     recalcularPrevisao();
+  }
+
+  /* ----- Entrada de lote NOVO (nota fiscal + lote + saldo) ----- */
+  function podeNovoLote() {
+    return [
+      "ENTRADA_REGISTRAR",
+      "LOTE_GERENCIAR",
+      "NOTA_FISCAL_REGISTRAR",
+    ].every((p) => auth.temPermissao(p));
+  }
+
+  function hojeISO() {
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  function definirModo(modo) {
+    const novo =
+      modo === "novo" && estado.tipoMov === "entrada" && podeNovoLote();
+    estado.modoEntrada = novo ? "novo" : "existente";
+    grupoModo.querySelectorAll('input[name="mov-modo"]').forEach((r) => {
+      r.checked = r.value === estado.modoEntrada;
+    });
+    grupoLote.classList.toggle("d-none", novo);
+    saldoCard.classList.toggle("d-none", novo);
+    painelNovoLote.classList.toggle("d-none", !novo);
+    if (estado.tipoMov === "entrada") {
+      labelQtd.innerHTML =
+        (novo ? "Quantidade recebida" : "Quantidade") +
+        ' <span class="text-danger">*</span>';
+    }
+    if (novo) {
+      el("nl-validade").min = hojeISO();
+      el("nl-data").max = hojeISO();
+      if (!el("nl-data").value) el("nl-data").value = hojeISO();
+      carregarProdutosDoModal();
+    }
+  }
+
+  async function carregarProdutosDoModal() {
+    if (estado.produtos) return preencherProdutos();
+    selectProduto.innerHTML =
+      '<option value="">Carregando produtos...</option>';
+    const todos = [];
+    for (let pagina = 1; pagina <= 30; pagina++) {
+      const r = await Docisis.api("/produtos", {
+        query: { page: pagina, pagina, limit: 100, limite: 100 },
+      });
+      if (!r.ok) {
+        selectProduto.innerHTML =
+          '<option value="">Não foi possível carregar os produtos</option>';
+        mostrarAvisoMov(
+          r.status === 403
+            ? "Seu cargo não pode listar os produtos."
+            : r.error || "Não foi possível carregar os produtos.",
+        );
+        return;
+      }
+      const d = r.data;
+      todos.push(...(Array.isArray(d) ? d : (d && d.dados) || []));
+      if (Array.isArray(d) || pagina >= (Number(d && d.totalPaginas) || 1))
+        break;
+    }
+    estado.produtos = todos
+      .map((p) => ({
+        id: p.id_produto ?? p.id,
+        nome: p.nome,
+        codigo: p.codigo,
+      }))
+      .filter((p) => p.id !== undefined && p.id !== null)
+      .sort((a, b) => String(a.nome).localeCompare(String(b.nome), "pt-BR"));
+    preencherProdutos();
+  }
+
+  function preencherProdutos() {
+    selectProduto.innerHTML = estado.produtos.length
+      ? '<option value="">Selecione o produto...</option>' +
+        estado.produtos
+          .map(
+            (p) =>
+              `<option value="${esc(p.id)}">${esc(p.nome)}${p.codigo ? ` (cód. ${esc(p.codigo)})` : ""}</option>`,
+          )
+          .join("")
+      : '<option value="">Nenhum produto cadastrado</option>';
+  }
+
+  const idDe = (d, ...chaves) => {
+    for (const k of chaves)
+      if (d && d[k] !== undefined && d[k] !== null) return d[k];
+    return null;
+  };
+
+  /**
+   * 1) POST /notasfiscais  2) PUT /notasfiscais/:id/arquivo (opcional)  3) POST /lotes
+   * 4) confere o saldo do lote; se o back-end não lançou a quantidade, registra como ENTRADA.
+   * Se falhar depois da nota criada, a nota é reaproveitada na próxima tentativa.
+   */
+  async function registrarNovoLote(qtd) {
+    const fornecedor = el("nl-fornecedor").value.trim();
+    const dataCompra = el("nl-data").value;
+    const validade = el("nl-validade").value;
+    const idProduto = selectProduto.value;
+    const arquivo = el("nl-arquivo").files[0];
+
+    for (const id of [
+      "nl-produto",
+      "nl-validade",
+      "nl-fornecedor",
+      "nl-data",
+      "nl-arquivo",
+    ])
+      el(id).classList.remove("is-invalid");
+    const falha = (id, msg) => {
+      el(id).classList.add("is-invalid");
+      el(id).focus();
+      mostrarAvisoMov(msg);
+    };
+
+    if (!idProduto) return falha("nl-produto", "Selecione o produto.");
+    if (!validade) return falha("nl-validade", "Informe a validade do lote.");
+    if (validade < hojeISO())
+      return falha("nl-validade", "A validade não pode estar no passado.");
+    if (fornecedor.length < 2 || fornecedor.length > 50)
+      return falha(
+        "nl-fornecedor",
+        "Informe o fornecedor (2 a 50 caracteres).",
+      );
+    if (!dataCompra) return falha("nl-data", "Informe a data da compra.");
+    if (dataCompra > hojeISO())
+      return falha("nl-data", "A data da compra não pode estar no futuro.");
+    if (
+      arquivo &&
+      !["application/pdf", "image/jpeg", "image/png"].includes(arquivo.type)
+    )
+      return falha("nl-arquivo", "O arquivo da nota deve ser PDF, JPG ou PNG.");
+    if (arquivo && arquivo.size > 10 * 1024 * 1024)
+      return falha("nl-arquivo", "O arquivo da nota passa de 10 MB.");
+
+    btnConfirmar.disabled = true;
+    try {
+      if (!estado.novoLote.notaId) {
+        const n = await Docisis.api("/notasfiscais", {
+          method: "POST",
+          body: { fornecedor, quantidade: qtd, dt_compra: dataCompra },
+        });
+        if (!n.ok)
+          return mostrarAvisoMov(
+            n.error || "Não foi possível registrar a nota fiscal.",
+          );
+        const idNota =
+          idDe(n.data, "id_nota", "id") ??
+          idDe(n.data && n.data.nota, "id_nota", "id");
+        if (idNota === null)
+          return mostrarAvisoMov(
+            "A nota foi criada, mas o servidor não devolveu o número dela.",
+          );
+        estado.novoLote.notaId = idNota;
+      }
+      const notaId = estado.novoLote.notaId;
+
+      let avisoArquivo = "";
+      if (arquivo && !estado.novoLote.arquivoEnviado) {
+        const fd = new FormData();
+        fd.append("arquivo", arquivo);
+        const a = await Docisis.api(
+          `/notasfiscais/${encodeURIComponent(notaId)}/arquivo`,
+          { method: "PUT", body: fd },
+        );
+        if (a.ok) estado.novoLote.arquivoEnviado = true;
+        else
+          avisoArquivo = ` O arquivo da nota não foi enviado (${a.error || "falha"}).`;
+      }
+
+      const l = await Docisis.api("/lotes", {
+        method: "POST",
+        body: {
+          id_produto: Number(idProduto),
+          id_nota: Number(notaId),
+          dt_validade: validade,
+          quantidade: qtd,
+        },
+      });
+      if (!l.ok)
+        return mostrarAvisoMov(
+          `${l.error || "Não foi possível criar o lote."} A nota fiscal ${notaId} já foi registrada: corrija e confirme de novo.`,
+        );
+
+      const idLote = idDe(l.data, "id", "id_lote");
+      let aviso = avisoArquivo;
+      if (idLote !== null) {
+        let saldo =
+          typeof (l.data && l.data.quantidade) === "number"
+            ? l.data.quantidade
+            : null;
+        if (saldo === null) {
+          const g = await Docisis.api(`/lotes/${encodeURIComponent(idLote)}`);
+          saldo =
+            g.ok && g.data && typeof g.data.quantidade === "number"
+              ? g.data.quantidade
+              : null;
+        }
+        if (saldo !== null && saldo < qtd) {
+          const e = await Docisis.api("/entradas", {
+            method: "POST",
+            body: {
+              id_lote: Number(idLote),
+              quantidade: qtd - saldo,
+              motivo: selectMotivo.value,
+            },
+          });
+          if (!e.ok)
+            aviso += ` O lote ${idLote} foi criado, mas a entrada do saldo falhou: ${e.error}`;
+        }
+      }
+
+      estado.novoLote = { notaId: null, arquivoEnviado: false };
+      bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+      Docisis.toast(
+        `Lote${idLote !== null ? " " + idLote : ""} cadastrado e entrada registrada (nota ${notaId}).${aviso}`,
+        aviso ? "aviso" : "sucesso",
+      );
+      recarregarTudo();
+    } finally {
+      btnConfirmar.disabled = false;
+    }
   }
 
   function loteSelecionado() {
@@ -457,6 +696,10 @@ document.addEventListener("DOMContentLoaded", () => {
     mostrarAvisoMov("");
     el("modal-operador-nome").textContent =
       (auth.getUsuario() || {}).nome || "--";
+    estado.novoLote = { notaId: null, arquivoEnviado: false };
+    // lote clicado na tabela = entrada nesse lote; botão geral = novo lote (se o cargo puder)
+    estado.modoEntrada = idLote ? "existente" : "novo";
+    el("nl-data").value = "";
     definirTipo(permitidos.includes("entrada") ? "entrada" : permitidos[0]);
 
     bootstrap.Modal.getOrCreateInstance(modalEl).show();
@@ -473,6 +716,13 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => definirTipo(btn.dataset.type));
   });
   selectLote.addEventListener("change", recalcularPrevisao);
+  grupoModo.addEventListener("change", (e) => {
+    if (e.target.name === "mov-modo") {
+      mostrarAvisoMov("");
+      definirModo(e.target.value);
+      recalcularPrevisao();
+    }
+  });
   inputQtd.addEventListener("input", recalcularPrevisao);
 
   formMov.addEventListener("submit", async (e) => {
@@ -482,6 +732,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const lote = loteSelecionado();
     const tipo = estado.tipoMov;
     const qtd = Number(inputQtd.value);
+
+    if (tipo === "entrada" && estado.modoEntrada === "novo") {
+      if (inputQtd.value === "" || !Number.isInteger(qtd) || qtd < 1)
+        return mostrarAvisoMov(
+          "Informe a quantidade recebida (inteiro maior que zero).",
+        );
+      return registrarNovoLote(qtd);
+    }
 
     if (!lote) return mostrarAvisoMov("Selecione o lote.");
     if (inputQtd.value === "" || !Number.isInteger(qtd))

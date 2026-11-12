@@ -264,6 +264,30 @@
                       />
                     </div>
                     <div class="toolbar-secondary-actions">
+                      <div
+                        class="visao-toggle"
+                        role="group"
+                        aria-label="Forma de exibição do estoque"
+                      >
+                        <button
+                          type="button"
+                          class="visao-btn active"
+                          data-visao="lote"
+                          aria-pressed="true"
+                        >
+                          <i class="bi bi-list-ul" aria-hidden="true"></i> Por
+                          lote
+                        </button>
+                        <button
+                          type="button"
+                          class="visao-btn"
+                          data-visao="produto"
+                          aria-pressed="false"
+                        >
+                          <i class="bi bi-boxes" aria-hidden="true"></i> Por
+                          produto
+                        </button>
+                      </div>
                       <select
                         id="ordenar-estoque"
                         class="select-filter-custom"
@@ -316,7 +340,7 @@
                   </div>
                 </div>
 
-                <div class="table-responsive-docisis">
+                <div class="table-responsive-docisis" id="visao-lote">
                   <table class="stock-table" id="tabela-estoque">
                     <caption class="visually-hidden">
                       Lotes com saldo em estoque, com validade e situação.
@@ -332,6 +356,26 @@
                       </tr>
                     </thead>
                     <tbody id="tabela-estoque-corpo"></tbody>
+                  </table>
+                </div>
+
+                <div class="table-responsive-docisis d-none" id="visao-produto">
+                  <table class="stock-table" id="tabela-produtos">
+                    <caption class="visually-hidden">
+                      Produtos com saldo somado de todos os lotes. Use "Ver
+                      lotes" para abrir os lotes de cada produto.
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col" class="col-produto">Produto</th>
+                        <th scope="col">Lotes</th>
+                        <th scope="col">Próxima validade</th>
+                        <th scope="col">Saldo utilizável</th>
+                        <th scope="col">Situação</th>
+                        <th scope="col" class="text-end col-acoes">Detalhes</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabela-produtos-corpo"></tbody>
                   </table>
                 </div>
 
@@ -620,6 +664,7 @@
                       required
                     />
                   </div>
+                  <div class="form-text d-none" id="mov-quantidade-dica"></div>
                 </div>
               </div>
             </div>

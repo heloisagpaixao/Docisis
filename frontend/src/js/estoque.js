@@ -81,6 +81,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const paginacaoInfo = el("paginacao-info");
   const paginacaoControles = el("paginacao-controles");
   const pills = document.querySelectorAll(".pill-filter-btn");
+  const visaoBtns = document.querySelectorAll(".visao-btn");
+  const blocoLote = el("visao-lote");
+  const blocoProduto = el("visao-produto");
+  const produtosCorpo = el("tabela-produtos-corpo");
 
   const modalEl = el("modalMovimentacao");
   const formMov = el("form-movimentacao");
@@ -107,6 +111,8 @@ document.addEventListener("DOMContentLoaded", () => {
     busca: "",
     situacao: "", // '' | 'ok' | 'a_vencer' | 'vencido'
     ordem: "validade", // 'validade' | 'produto' | 'saldo'
+    visao: "lote", // 'lote' | 'produto'
+    expandidos: new Set(), // produtos abertos na visão por produto
     lotesDaPagina: [],
     lotesDoModal: new Map(), // id_lote -> lote
     tipoMov: null,
@@ -114,6 +120,13 @@ document.addEventListener("DOMContentLoaded", () => {
     produtos: null, // lista de produtos (carregada na 1ª vez que abre o modo novo)
     novoLote: { notaId: null, arquivoEnviado: false }, // reaproveita a nota se o lote falhar e o usuário tentar de novo
   };
+  let cacheLotes = null; // { chave, dados } - todos os lotes (visão por produto)
+  try {
+    if (localStorage.getItem("docisis.estoque.visao") === "produto")
+      estado.visao = "produto";
+  } catch (_) {
+    /* sem storage */
+  }
   let requisicaoAtual = 0; // descarta respostas antigas quando o usuário digita rápido
 
   // Vindo do topo: estoque.html?busca=texto (pesquisa) e ?nova=1 (abre o modal de movimentação)
@@ -194,6 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function carregarLista() {
+    if (estado.visao === "produto") return carregarProdutos();
     const minhaRequisicao = ++requisicaoAtual;
     paginacaoInfo.textContent = "Carregando registros...";
 
@@ -220,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function recarregarTudo() {
+    cacheLotes = null;
     return Promise.all([carregarResumo(), carregarLista()]);
   }
 
@@ -294,7 +309,14 @@ document.addEventListener("DOMContentLoaded", () => {
     tabelaCorpo.innerHTML = lotes.map(linhaLote).join("");
   }
 
-  function renderizarRodape(total, pagina, totalPaginas, qtdNaPagina) {
+  function renderizarRodape(
+    total,
+    pagina,
+    totalPaginas,
+    qtdNaPagina,
+    rotulo = "lotes",
+    complemento = "",
+  ) {
     if (total === 0) {
       paginacaoInfo.textContent = "Nenhum registro encontrado.";
       paginacaoControles.innerHTML = "";
@@ -302,7 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const inicio = (pagina - 1) * ITENS_POR_PAGINA + 1;
     const fim = inicio + qtdNaPagina - 1;
-    paginacaoInfo.textContent = `Mostrando ${inicio} a ${fim} de ${total} lotes`;
+    paginacaoInfo.textContent = `Mostrando ${inicio} a ${fim} de ${total} ${rotulo}${complemento}`;
 
     if (totalPaginas <= 1) {
       paginacaoControles.innerHTML = "";
@@ -319,6 +341,219 @@ document.addEventListener("DOMContentLoaded", () => {
     html += `<button type="button" class="page-btn" data-pagina="${pagina + 1}" aria-label="Próxima página" ${pagina === totalPaginas ? "disabled" : ""}><i class="bi bi-chevron-right" aria-hidden="true"></i></button>`;
     paginacaoControles.innerHTML = html;
   }
+
+  /* ------------------------------------------------------------------
+       Visão por produto (agrupa os lotes no navegador)
+       ------------------------------------------------------------------ */
+  const PESO_SITUACAO = { ok: 0, a_vencer: 1, vencido: 2 };
+
+  async function buscarTodosOsLotes() {
+    const chave = `${estado.busca}|${estado.situacao}`;
+    if (cacheLotes && cacheLotes.chave === chave)
+      return { ok: true, dados: cacheLotes.dados };
+    const todos = [];
+    for (let pagina = 1; pagina <= 50; pagina++) {
+      const r = await Docisis.api("/estoque", {
+        query: montarQuery({ pagina, limite: LIMITE_MAXIMO_API }),
+      });
+      if (!r.ok) return { ok: false, status: r.status, error: r.error };
+      todos.push(...(r.data.dados || []));
+      if (pagina >= (Number(r.data.totalPaginas) || 1)) break;
+    }
+    cacheLotes = { chave, dados: todos };
+    return { ok: true, dados: todos };
+  }
+
+  function agruparPorProduto(lotes) {
+    const mapa = new Map();
+    lotes.forEach((l) => {
+      const chave = String(l.id_produto ?? l.codigo ?? l.produto_nome);
+      if (!mapa.has(chave))
+        mapa.set(chave, {
+          chave,
+          nome: l.produto_nome,
+          codigo: l.codigo,
+          lotes: [],
+        });
+      mapa.get(chave).lotes.push(l);
+    });
+    const grupos = [...mapa.values()];
+    grupos.forEach((g) => {
+      g.lotes.sort((a, b) =>
+        String(a.dt_validade).localeCompare(String(b.dt_validade)),
+      );
+      g.utilizavel = g.lotes
+        .filter((l) => l.situacao !== "vencido")
+        .reduce((t, l) => t + Number(l.quantidade || 0), 0);
+      g.vencidas = g.lotes
+        .filter((l) => l.situacao === "vencido")
+        .reduce((t, l) => t + Number(l.quantidade || 0), 0);
+      g.situacao = g.lotes.reduce(
+        (pior, l) =>
+          (PESO_SITUACAO[l.situacao] || 0) > (PESO_SITUACAO[pior] || 0)
+            ? l.situacao
+            : pior,
+        "ok",
+      );
+      // próxima validade = a do lote utilizável que vence primeiro (senão, a do vencido mais recente)
+      g.proximo =
+        g.lotes.find((l) => l.situacao !== "vencido") ||
+        g.lotes[g.lotes.length - 1];
+    });
+    const ordem =
+      {
+        validade: (a, b) =>
+          String(a.proximo.dt_validade).localeCompare(
+            String(b.proximo.dt_validade),
+          ),
+        produto: (a, b) =>
+          String(a.nome).localeCompare(String(b.nome), "pt-BR"),
+        saldo: (a, b) => b.utilizavel - a.utilizavel,
+      }[estado.ordem] || (() => 0);
+    return grupos.sort(ordem);
+  }
+
+  function linhasDeProduto(g) {
+    const aberto = estado.expandidos.has(g.chave);
+    const idDetalhe = `det-${String(g.chave).replace(/[^\w-]/g, "_")}`;
+    const nVenc = g.lotes.filter((l) => l.situacao === "vencido").length;
+    const nAVenc = g.lotes.filter((l) => l.situacao === "a_vencer").length;
+    const detalheSit = nVenc
+      ? `${nVenc} lote${nVenc > 1 ? "s" : ""} vencido${nVenc > 1 ? "s" : ""}`
+      : nAVenc
+        ? `${nAVenc} lote${nAVenc > 1 ? "s" : ""} a vencer`
+        : "Todos em dia";
+    const prox = g.proximo;
+    const podeMovimentar = auth.temAlguma(Object.values(PERMISSAO));
+
+    const lotes = g.lotes
+      .map(
+        (l) => `
+            <tr>
+                <td><strong class="small">Lote ${esc(l.id_lote)}</strong><br><small class="text-muted">${esc(l.fornecedor)}</small></td>
+                <td><span class="small">${util.formatarData(l.dt_validade)}</span><br><small class="text-muted">${textoDias(l.dias_para_vencer)}</small></td>
+                <td class="fw-bold ${l.situacao === "vencido" ? "text-danger" : ""}">${util.formatarNumero(l.quantidade)} un</td>
+                <td>${badgeSituacao(l)}</td>
+                <td class="text-end">${podeMovimentar ? `<button type="button" class="btn btn-sm btn-docisis-outline py-1 px-2 btn-movimentar-item" data-lote="${l.id_lote}"><i class="bi bi-arrow-left-right me-1" aria-hidden="true"></i> Movimentar</button>` : ""}</td>
+            </tr>`,
+      )
+      .join("");
+
+    return `
+            <tr class="prod-linha">
+                <td>
+                    <div class="product-cell">
+                        <div class="kpi-icon-box bg-light border text-navy-docisis icone-produto" aria-hidden="true"><i class="bi bi-box-seam"></i></div>
+                        <div>
+                            <strong class="d-block text-navy-docisis nome-produto">${esc(g.nome)}</strong>
+                            <small class="text-muted"><span class="badge bg-light text-secondary border me-1">Cód. ${esc(g.codigo)}</span></small>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="fw-semibold">${g.lotes.length}</span> <small class="text-muted">lote${g.lotes.length > 1 ? "s" : ""}</small></td>
+                <td>
+                    <div class="d-flex flex-column">
+                        <span class="fw-semibold small"><i class="bi bi-calendar3 me-1 text-muted" aria-hidden="true"></i> ${util.formatarData(prox.dt_validade)}</span>
+                        <small class="text-muted">${textoDias(prox.dias_para_vencer)}</small>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex flex-column">
+                        <span class="fw-bold text-dark">${util.formatarNumero(g.utilizavel)} un</span>
+                        ${g.vencidas ? `<small class="text-danger">+ ${util.formatarNumero(g.vencidas)} un vencidas</small>` : ""}
+                    </div>
+                </td>
+                <td>${SITUACAO_BADGE[g.situacao]}<br><small class="text-muted">${detalheSit}</small></td>
+                <td class="text-end">
+                    <button type="button" class="btn btn-sm btn-docisis-outline py-1 px-2 btn-expandir" data-chave="${esc(g.chave)}" aria-expanded="${aberto}" aria-controls="${idDetalhe}">
+                        <i class="bi ${aberto ? "bi-chevron-up" : "bi-chevron-down"} me-1" aria-hidden="true"></i> ${aberto ? "Ocultar lotes" : "Ver lotes"}
+                    </button>
+                </td>
+            </tr>
+            <tr class="prod-detalhe ${aberto ? "" : "d-none"}" id="${idDetalhe}">
+                <td colspan="6">
+                    <table class="prod-sub-tabela">
+                        <thead><tr><th scope="col">Lote</th><th scope="col">Validade</th><th scope="col">Saldo</th><th scope="col">Situação</th><th scope="col"></th></tr></thead>
+                        <tbody>${lotes}</tbody>
+                    </table>
+                </td>
+            </tr>`;
+  }
+
+  async function carregarProdutos() {
+    const minha = ++requisicaoAtual;
+    paginacaoInfo.textContent = "Carregando registros...";
+    const r = await buscarTodosOsLotes();
+    if (minha !== requisicaoAtual) return;
+
+    if (!r.ok) {
+      produtosCorpo.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-danger"><i class="bi bi-exclamation-triangle fs-2 d-block mb-2" aria-hidden="true"></i>${esc(r.error)}</td></tr>`;
+      paginacaoInfo.textContent = "Erro ao carregar.";
+      paginacaoControles.innerHTML = "";
+      if (r.status !== 401) Docisis.toast(r.error, "erro");
+      return;
+    }
+
+    const grupos = agruparPorProduto(r.dados);
+    estado.lotesDaPagina = r.dados; // o modal usa para garantir o lote clicado
+    const totalPaginas = Math.max(
+      1,
+      Math.ceil(grupos.length / ITENS_POR_PAGINA),
+    );
+    estado.pagina = Math.min(estado.pagina, totalPaginas);
+    const fatia = grupos.slice(
+      (estado.pagina - 1) * ITENS_POR_PAGINA,
+      estado.pagina * ITENS_POR_PAGINA,
+    );
+
+    produtosCorpo.innerHTML = fatia.length
+      ? fatia.map(linhasDeProduto).join("")
+      : `<tr><td colspan="6" class="text-center py-5 text-muted"><i class="bi bi-inbox fs-2 d-block mb-2 text-secondary" aria-hidden="true"></i>Nenhum produto encontrado para os filtros selecionados.</td></tr>`;
+    renderizarRodape(
+      grupos.length,
+      estado.pagina,
+      totalPaginas,
+      fatia.length,
+      "produtos",
+      ` (${r.dados.length} lotes)`,
+    );
+  }
+
+  function definirVisao(visao) {
+    estado.visao = visao === "produto" ? "produto" : "lote";
+    try {
+      localStorage.setItem("docisis.estoque.visao", estado.visao);
+    } catch (_) {
+      /* sem storage */
+    }
+    visaoBtns.forEach((b) => {
+      const ativo = b.dataset.visao === estado.visao;
+      b.classList.toggle("active", ativo);
+      b.setAttribute("aria-pressed", String(ativo));
+    });
+    blocoLote.classList.toggle("d-none", estado.visao !== "lote");
+    blocoProduto.classList.toggle("d-none", estado.visao !== "produto");
+  }
+
+  visaoBtns.forEach((b) =>
+    b.addEventListener("click", () => {
+      if (b.dataset.visao === estado.visao) return;
+      definirVisao(b.dataset.visao);
+      estado.pagina = 1;
+      carregarLista();
+    }),
+  );
+
+  produtosCorpo.addEventListener("click", (e) => {
+    const mov = e.target.closest(".btn-movimentar-item");
+    if (mov) return abrirModal(Number(mov.dataset.lote));
+    const btn = e.target.closest(".btn-expandir");
+    if (!btn) return;
+    const chave = btn.dataset.chave;
+    if (estado.expandidos.has(chave)) estado.expandidos.delete(chave);
+    else estado.expandidos.add(chave);
+    carregarProdutos(); // re-renderiza usando o cache (sem nova chamada à API)
+  });
 
   /* ------------------------------------------------------------------
        Eventos: busca, ordenação, filtros, paginação
@@ -389,17 +624,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (tipo === "ajuste") {
       labelQtd.innerHTML =
-        'Nova quantidade (saldo final) <span class="text-danger">*</span>';
+        'Quantidade contada (saldo real) <span class="text-danger">*</span>';
       inputQtd.min = "0";
     } else {
       labelQtd.innerHTML = 'Quantidade <span class="text-danger">*</span>';
       inputQtd.min = "1";
     }
+    el("mov-quantidade-dica").textContent =
+      tipo === "ajuste"
+        ? "Digite quanto realmente existe agora neste lote (contagem física). O sistema calcula a diferença e registra no Histórico."
+        : "";
+    el("mov-quantidade-dica").classList.toggle("d-none", tipo !== "ajuste");
     // só a ENTRADA tem o modo "novo lote", e só para quem pode cadastrar lote e nota
     const permiteNovo = tipo === "entrada" && podeNovoLote();
     grupoModo.classList.toggle("d-none", !permiteNovo);
     if (!permiteNovo) definirModo("existente");
     else definirModo(estado.modoEntrada);
+    if (estado.lotesDoModal.size) preencherSelectLotes();
     recalcularPrevisao();
   }
 
@@ -645,29 +886,80 @@ document.addEventListener("DOMContentLoaded", () => {
     const q = Number(inputQtd.value);
     const valido = inputQtd.value !== "" && Number.isFinite(q);
 
-    let projetado = atual;
-    if (valido) {
-      if (estado.tipoMov === "entrada") projetado = atual + q;
-      else if (estado.tipoMov === "saida") projetado = atual - q;
-      else projetado = q;
+    saldoAtualEl.textContent = `${util.formatarNumero(atual)} un`;
+    if (!valido) {
+      // nada digitado: não mostra previsão
+      saldoProjetadoEl.textContent = "--";
+      saldoProjetadoEl.className = "saldo-item-val";
+      return;
     }
 
-    saldoAtualEl.textContent = `${util.formatarNumero(atual)} un`;
-    saldoProjetadoEl.textContent = `${util.formatarNumero(projetado)} un`;
+    let projetado;
+    if (estado.tipoMov === "entrada") projetado = atual + q;
+    else if (estado.tipoMov === "saida") projetado = atual - q;
+    else projetado = q;
+
+    let texto = `${util.formatarNumero(projetado)} un`;
+    if (estado.tipoMov === "ajuste") {
+      // mostra a diferença que será registrada
+      const dif = q - atual;
+      texto +=
+        dif === 0
+          ? " (sem diferença)"
+          : ` (${dif > 0 ? "+" : "−"}${util.formatarNumero(Math.abs(dif))})`;
+    }
+    saldoProjetadoEl.textContent = texto;
     saldoProjetadoEl.className =
       "saldo-item-val " + (projetado < 0 ? "text-danger" : "text-success");
   }
 
   function preencherSelectLotes(selecionado) {
-    const opcoes = [...estado.lotesDoModal.values()]
-      .map(
-        (l) =>
-          `<option value="${l.id_lote}">${esc(l.produto_nome)} — Lote ${esc(l.id_lote)} · Val. ${util.formatarData(l.dt_validade)} · Saldo ${util.formatarNumero(l.quantidade)}</option>`,
-      )
-      .join("");
-    selectLote.innerHTML =
-      '<option value="">Selecione o lote...</option>' + opcoes;
-    if (selecionado) selectLote.value = String(selecionado);
+    const atual = selecionado ?? selectLote.value;
+    const todos = [...estado.lotesDoModal.values()];
+    const rotulo = (l) =>
+      `${esc(l.produto_nome)} — Lote ${esc(l.id_lote)} · Val. ${util.formatarData(l.dt_validade)} · Saldo ${util.formatarNumero(l.quantidade)}`;
+    const opcao = (l, extra = "") =>
+      `<option value="${l.id_lote}">${rotulo(l)}${extra}</option>`;
+    let html;
+
+    if (estado.tipoMov === "saida") {
+      // Saída: só lotes com saldo; o que vence primeiro vem no topo (FEFO).
+      // Vencidos ficam num grupo à parte, para descarte.
+      const comSaldo = todos.filter((l) => Number(l.quantidade) > 0);
+      const validos = comSaldo
+        .filter((l) => l.situacao !== "vencido")
+        .sort((a, b) =>
+          String(a.dt_validade).localeCompare(String(b.dt_validade)),
+        );
+      const vencidos = comSaldo
+        .filter((l) => l.situacao === "vencido")
+        .sort((a, b) =>
+          String(a.dt_validade).localeCompare(String(b.dt_validade)),
+        );
+      html = '<option value="">Selecione o lote...</option>';
+      if (validos.length) {
+        html += `<optgroup label="Dentro da validade (vence primeiro no topo)">${validos.map((l, i) => opcao(l, i === 0 ? " · ★ sugerido" : "")).join("")}</optgroup>`;
+      }
+      if (vencidos.length) {
+        html += `<optgroup label="Vencidos (use só para descarte)">${vencidos.map((l) => opcao(l, " · VENCIDO")).join("")}</optgroup>`;
+      }
+    } else {
+      html =
+        '<option value="">Selecione o lote...</option>' +
+        [...todos]
+          .sort(
+            (a, b) =>
+              String(a.produto_nome).localeCompare(
+                String(b.produto_nome),
+                "pt-BR",
+              ) || String(a.dt_validade).localeCompare(String(b.dt_validade)),
+          )
+          .map((l) => opcao(l))
+          .join("");
+    }
+    selectLote.innerHTML = html;
+    if (atual && selectLote.querySelector(`option[value="${atual}"]`))
+      selectLote.value = String(atual);
   }
 
   async function carregarLotesDoModal() {
@@ -859,6 +1151,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ------------------------------------------------------------------
        Início
        ------------------------------------------------------------------ */
+  definirVisao(estado.visao);
   recarregarTudo();
 
   if (params.get("nova") === "1") {

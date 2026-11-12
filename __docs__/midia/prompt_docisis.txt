@@ -1,0 +1,11 @@
+O projeto é o seguinte: Um sistema interno de administração de um doceria (Docisis).
+Seguindo o resumo, crie uma tela de cadastro de produtos que contenha: Nome, nota fiscal, peso, código, validade e quantidade. A cor do aside deve ser: #EB5E28, a dos botões: #001D3D e o fundo deve ser branco. O design deve ser o mais minimalista e intuito possivel.
+
+Gostaria agora, que você criasse uma tela de usuários, baseado na tela a seguir. Seguindo o mesmo estilo de design da tela de cadastro: com menu lateral, footer e header.
+
+Agora, crie uma tela de movimentação/logs de produto, baseado na tela a seguir. Seguindo o mesmo estilo de design da tela de cadastro: com menu lateral, footer e header.
+
+Agora, crie uma tela de controle logístico da estoque no formato de uma lista de produtos dessa doceria, baseado na tela a seguir. Seguindo o mesmo estilo de design da tela de cadastro: com menu lateral, footer e header.
+
+Nesse momento, eu preciso de uma tela de perfil do usuário para a edição do mesmo, baseado na tela a seguir. Seguindo o mesmo estilo de design da tela de cadastro: com menu lateral, footer e header.
+

@@ -334,3 +334,65 @@
 .modal-movimentacao .is-invalid {
   border-color: var(--docisis-danger);
 }
+
+/* ---------- Alternância Por lote / Por produto ---------- */
+.visao-toggle {
+  display: inline-flex;
+  border: 1.5px solid var(--docisis-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--docisis-surface);
+}
+.visao-btn {
+  border: 0;
+  background: transparent;
+  color: var(--docisis-text-label);
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 0.5rem 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+.visao-btn + .visao-btn {
+  border-left: 1.5px solid var(--docisis-border);
+}
+.visao-btn:hover {
+  background: var(--docisis-input-bg);
+}
+.visao-btn.active {
+  background: var(--docisis-terracotta-light);
+  color: var(--docisis-terracotta);
+}
+.visao-btn:focus-visible {
+  outline: 2px solid var(--docisis-terracotta);
+  outline-offset: -2px;
+}
+.prod-detalhe > td {
+  background: var(--docisis-input-bg);
+  padding: 0.75rem 1.15rem 1.1rem 3.6rem !important;
+}
+.prod-detalhe:hover {
+  background-color: var(--docisis-input-bg) !important;
+}
+.prod-sub-tabela {
+  width: 100%;
+  font-size: 0.85rem;
+}
+.prod-sub-tabela th {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--docisis-text-label);
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--docisis-border);
+}
+.prod-sub-tabela td {
+  padding: 0.55rem 0.6rem;
+  border-bottom: 1px solid var(--docisis-border);
+  vertical-align: middle;
+}
+.prod-sub-tabela tbody tr:last-child td {
+  border-bottom: 0;
+}
